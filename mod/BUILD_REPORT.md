@@ -1,4 +1,4 @@
-# Мод MDGram 9.3.3 — отчёт сборки (2026-09-09 10:10:05 UTC)
+# Мод MDGram 9.3.3 — отчёт сборки (2026-09-09 10:12:13 UTC)
 
 - APK: APKPure 9.3.3 (30275), SHA1 сверен: 4fa5ae96754b910045d1d84dac7a8261c59793e9
 - apktool: v3.0.3
@@ -51,20 +51,26 @@ I: Importing unknown files...
 I: Built apk into: MDGram-9.3.3-mod-unsigned.apk
 exit code: 0
 total 170012
-drwxr-xr-x  3 runner runner     4096 Sep  9 10:10 .
-drwxr-xr-x  8 runner runner     4096 Sep  9 10:09 ..
--rw-r--r--  1 runner runner 79289406 Sep  9 10:10 MDGram-9.3.3-mod-unsigned.apk
--rw-r--r--  1 runner runner 79302049 Sep  9 10:09 MDGram-9.3.3.apk
--rw-r--r--  1 runner runner 15478013 Sep  9 10:09 apktool.jar
-drwxr-xr-x 12 runner runner     4096 Sep  9 10:10 apktool_out
--rw-r--r--  1 runner runner      459 Sep  9 10:10 build.log
--rw-r--r--  1 runner runner     3868 Sep  9 10:10 patch.py
+drwxr-xr-x  3 runner runner     4096 Sep  9 10:13 .
+drwxr-xr-x  8 runner runner     4096 Sep  9 10:11 ..
+-rw-r--r--  1 runner runner 79289406 Sep  9 10:13 MDGram-9.3.3-mod-unsigned.apk
+-rw-r--r--  1 runner runner 79302049 Sep  9 10:11 MDGram-9.3.3.apk
+-rw-r--r--  1 runner runner 15478013 Sep  9 10:11 apktool.jar
+drwxr-xr-x 12 runner runner     4096 Sep  9 10:12 apktool_out
+-rw-r--r--  1 runner runner      459 Sep  9 10:13 build.log
+-rw-r--r--  1 runner runner     3868 Sep  9 10:12 patch.py
 
 ## Подпись
 - Ключ: переиспользован из mod-keystore/
 - apksigner verify:
-DOES NOT VERIFY
-ERROR: Missing META-INF/MANIFEST.MF
+Signer #1 certificate DN: CN=MDGram Revival Mod, OU=Personal, O=Personal, C=RU
+Signer #1 certificate SHA-256 digest: 8866a3b653e46b8e232d4d1d600b573fa2c2982531c33a1816332252fd9f952e
+Signer #1 certificate SHA-1 digest: 7a93b8157584f9ef5ec3aa0d87114a6d70299947
+Signer #1 certificate MD5 digest: 84e1ab0d8b60c5736d0a832d7cfd6ff5
+WARNING: META-INF/services/q65 not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/services/pa4 not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/services/v02 not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/services/gq6 not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
 
 ## Проверка названия и пакета
 package: name='org.telegram.mdgram' versionCode='30275' versionName='9.3.3' platformBuildVersionName='13' platformBuildVersionCode='33' compileSdkVersion='33' compileSdkVersionCodename='13'

@@ -11,11 +11,11 @@ I: Importing unknown files...
 I: Built apk into: MDGram-9.3.3-mod-unsigned.apk
 exit code: 0
 total 170012
-drwxr-xr-x  3 runner runner     4096 Sep  9 10:10 .
-drwxr-xr-x  8 runner runner     4096 Sep  9 10:09 ..
--rw-r--r--  1 runner runner 79289406 Sep  9 10:10 MDGram-9.3.3-mod-unsigned.apk
--rw-r--r--  1 runner runner 79302049 Sep  9 10:09 MDGram-9.3.3.apk
--rw-r--r--  1 runner runner 15478013 Sep  9 10:09 apktool.jar
-drwxr-xr-x 12 runner runner     4096 Sep  9 10:10 apktool_out
--rw-r--r--  1 runner runner      459 Sep  9 10:10 build.log
--rw-r--r--  1 runner runner     3868 Sep  9 10:10 patch.py
+drwxr-xr-x  3 runner runner     4096 Sep  9 10:13 .
+drwxr-xr-x  8 runner runner     4096 Sep  9 10:11 ..
+-rw-r--r--  1 runner runner 79289406 Sep  9 10:13 MDGram-9.3.3-mod-unsigned.apk
+-rw-r--r--  1 runner runner 79302049 Sep  9 10:11 MDGram-9.3.3.apk
+-rw-r--r--  1 runner runner 15478013 Sep  9 10:11 apktool.jar
+drwxr-xr-x 12 runner runner     4096 Sep  9 10:12 apktool_out
+-rw-r--r--  1 runner runner      459 Sep  9 10:13 build.log
+-rw-r--r--  1 runner runner     3868 Sep  9 10:12 patch.py
