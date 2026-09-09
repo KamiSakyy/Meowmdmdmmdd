@@ -1,4 +1,4 @@
-# Мод MDGram 9.3.3 — отчёт сборки (2026-09-09 10:07:47 UTC)
+# Мод MDGram 9.3.3 — отчёт сборки (2026-09-09 10:10:05 UTC)
 
 - APK: APKPure 9.3.3 (30275), SHA1 сверен: 4fa5ae96754b910045d1d84dac7a8261c59793e9
 - apktool: v3.0.3
@@ -50,12 +50,29 @@ I: Importing lib...
 I: Importing unknown files...
 I: Built apk into: MDGram-9.3.3-mod-unsigned.apk
 exit code: 0
-total 170016
-drwxr-xr-x  3 runner runner     4096 Sep  9 10:08 .
-drwxr-xr-x  8 runner runner     4096 Sep  9 10:07 ..
--rw-r--r--  1 runner runner 79289406 Sep  9 10:08 MDGram-9.3.3-mod-unsigned.apk
--rw-r--r--  1 runner runner 79302049 Sep  9 10:07 MDGram-9.3.3.apk
--rw-r--r--  1 runner runner 15478013 Sep  9 10:07 apktool.jar
-drwxr-xr-x 12 runner runner     4096 Sep  9 10:08 apktool_out
--rw-r--r--  1 runner runner      459 Sep  9 10:08 build.log
--rw-r--r--  1 runner runner     3868 Sep  9 10:07 patch.py
+total 170012
+drwxr-xr-x  3 runner runner     4096 Sep  9 10:10 .
+drwxr-xr-x  8 runner runner     4096 Sep  9 10:09 ..
+-rw-r--r--  1 runner runner 79289406 Sep  9 10:10 MDGram-9.3.3-mod-unsigned.apk
+-rw-r--r--  1 runner runner 79302049 Sep  9 10:09 MDGram-9.3.3.apk
+-rw-r--r--  1 runner runner 15478013 Sep  9 10:09 apktool.jar
+drwxr-xr-x 12 runner runner     4096 Sep  9 10:10 apktool_out
+-rw-r--r--  1 runner runner      459 Sep  9 10:10 build.log
+-rw-r--r--  1 runner runner     3868 Sep  9 10:10 patch.py
+
+## Подпись
+- Ключ: переиспользован из mod-keystore/
+- apksigner verify:
+DOES NOT VERIFY
+ERROR: Missing META-INF/MANIFEST.MF
+
+## Проверка названия и пакета
+package: name='org.telegram.mdgram' versionCode='30275' versionName='9.3.3' platformBuildVersionName='13' platformBuildVersionCode='33' compileSdkVersion='33' compileSdkVersionCodename='13'
+application-label:'MDGram Revival'
+application-label-af:'MDGram Revival'
+application-label-am:'MDGram Revival'
+application-label-ar:'MDGram Revival'
+
+## Установка
+- Сначала УДАЛИ оригинальный MDGram (подпись другая — поверх не встанет).
+- Потом ставь MDGram-9.3.3-mod.apk из релиза mod-9.3.3.
