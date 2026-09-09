@@ -96,7 +96,7 @@ dependencies {
     // виджеты R* при необходимости переносятся в исходники проекта (см. Views/)
     implementation 'com.blankj:utilcodex:1.31.1'                           // SizeUtils/KeyboardUtils/...
     implementation 'io.github.cymchad:BaseRecyclerViewAdapterHelper:3.0.11' // BaseQuickAdapter
-    implementation 'com.github.H07000223:FlycoTabLayout:2.1.2'             // SegmentTabLayout
+    implementation 'io.github.h07000223:flycoTabLayout:3.0.0'                // SegmentTabLayout (AndroidX-форк, Maven Central)
     implementation 'com.jakewharton.processphoenix:process-phoenix:2.1.2'  // смена иконки/перезапуск
     implementation 'org.greenrobot:eventbus:3.3.1'
     implementation 'cat.ereza:customactivityoncrash:2.4.0'

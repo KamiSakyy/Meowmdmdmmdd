@@ -8,6 +8,7 @@ import org.telegram.messenger.LocaleController;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.HeaderCell;
 import org.telegram.ui.Cells.TextCheckCell;
+import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Cells.TextSettingsCell;
 
 /**
@@ -64,6 +65,14 @@ public final class MDCells {
         cell.setTextAndValue(LocaleController.getString(key, resId), value, true);
         cell.setLayoutParams(lp());
         cell.setOnClickListener(listener);
+        return cell;
+    }
+
+    /** Мелкая подпись под строкой (пояснение). */
+    public static View info(Context context, String key, int resId) {
+        TextInfoPrivacyCell cell = new TextInfoPrivacyCell(context);
+        cell.setText(LocaleController.getString(key, resId));
+        cell.setLayoutParams(lp());
         return cell;
     }
 
