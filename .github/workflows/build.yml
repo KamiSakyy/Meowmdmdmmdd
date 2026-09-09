@@ -74,7 +74,7 @@ jobs:
         run: |
           set +e
           mkdir -p build-logs
-          exec > >(tee -a build-logs/so-compare.log) 2>&1
+          exec >> build-logs/so-compare.log 2>&1
           echo "=== наша .so ==="
           md5sum MDGram/app/src/main/jniLibs/x86_64/libtmessages.42.so
           ls -la MDGram/app/src/main/jniLibs/x86_64/
