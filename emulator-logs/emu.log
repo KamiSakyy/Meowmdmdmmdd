@@ -7,17 +7,16 @@ Auto-selecting single ABI x86_64
 == список AVD ==
 mdtest
 total 16
-drwxr-xr-x 3 runner runner 4096 Sep  9 19:42 .
-drwxr-xr-x 3 runner runner 4096 Sep  9 19:42 ..
-drwxr-xr-x 2 runner runner 4096 Sep  9 19:42 mdtest.avd
--rw-r--r-- 1 runner runner   83 Sep  9 19:42 mdtest.ini
+drwxr-xr-x 3 runner runner 4096 Sep  9 21:02 .
+drwxr-xr-x 3 runner runner 4096 Sep  9 21:02 ..
+drwxr-xr-x 2 runner runner 4096 Sep  9 21:02 mdtest.avd
+-rw-r--r-- 1 runner runner   83 Sep  9 21:02 mdtest.ini
 AVDNAME=mdtest
 adb devices: emulator-5554	device
-boot_completed=1 (попыток 40)
+boot_completed=1 (попыток 32)
 == ставим apk/app-release.apk ==
-Performing Streamed Install
-adb: failed to install apk/app-release.apk: cmd: Failure calling service package: Broken pipe (32)
-
+apk/app-release.apk: 1 file pushed, 0 skipped. 1.6 MB/s (81274477 bytes in 47.848s)
+cmd: Failure calling service package: Broken pipe (32)
 == запуск приложения ==
   bash arg: -p
   bash arg: org.telegram.mdgram
@@ -35,167 +34,146 @@ data="android.intent.category.LAUNCHER"
 ** Error: Unable to connect to activity manager; is the system running?
 == процесс ==
 == окно ==
-  mCurrentFocus=Window{4861864 u0 com.android.settings/com.android.settings.FallbackHome}
-  mFocusedApp=ActivityRecord{239e5f1 u0 com.android.settings/.FallbackHome t2}
+  mCurrentFocus=Window{51af8c6 u0 Application Not Responding: com.android.systemui}
+  mFocusedApp=ActivityRecord{fa32df2 u0 com.android.settings/.FallbackHome t2}
 == пакеты mdgram ==
 == краши ==
-09-09 19:53:23.795  1252  1252 D AndroidRuntime: Shutting down VM
-09-09 19:53:23.829  1621  1621 D AndroidRuntime: Shutting down VM
-09-09 19:53:23.872  1621  1621 E AndroidRuntime: FATAL EXCEPTION: main
-09-09 19:53:23.872  1621  1621 E AndroidRuntime: Process: com.google.android.apps.wellbeing, PID: 1621
-09-09 19:53:23.872  1621  1621 E AndroidRuntime: DeadSystemException: The system died; earlier logs will point to the root cause
-09-09 19:53:30.171  1765  1765 D AndroidRuntime: >>>>>> START com.android.internal.os.ZygoteInit uid 0 <<<<<<
-09-09 19:53:30.223  1765  1765 I AndroidRuntime: Using default boot image
-09-09 19:53:30.224  1765  1765 I AndroidRuntime: Leaving lock profiling enabled
-09-09 19:53:33.433  1773  1773 D AndroidRuntime: >>>>>> START com.android.internal.os.ZygoteInit uid 0 <<<<<<
-09-09 19:53:33.512  1773  1773 I AndroidRuntime: Using default boot image
-09-09 19:53:33.513  1773  1773 I AndroidRuntime: Leaving lock profiling enabled
-09-09 19:53:51.484  1845  1845 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
-09-09 19:53:51.585  1845  1845 I AndroidRuntime: Using default boot image
-09-09 19:53:51.589  1845  1845 I AndroidRuntime: Leaving lock profiling enabled
-09-09 19:53:54.925  1845  1845 D AndroidRuntime: Calling main entry com.android.commands.monkey.Monkey
-09-09 19:53:55.360  1845  1845 I AndroidRuntime: VM exiting with result code -3.
-09-09 19:55:11.773  2173  2173 I AndroidRuntime: VM exiting with result code 0, cleanup skipped.
-09-09 19:55:12.061  2210  2210 I AndroidRuntime: VM exiting with result code 0, cleanup skipped.
-09-09 19:55:45.049  2063  2063 I AndroidRuntime: VM exiting with result code 0, cleanup skipped.
-09-09 19:59:02.774  2462  2462 I AndroidRuntime: VM exiting with result code 0, cleanup skipped.
-09-09 20:01:32.992  2081  2302 E AndroidRuntime: FATAL EXCEPTION: pool-3-thread-1
-09-09 20:01:32.992  2081  2302 E AndroidRuntime: Process: com.android.systemui, PID: 2081
-09-09 20:01:32.992  2081  2302 E AndroidRuntime: DeadSystemException: The system died; earlier logs will point to the root cause
-09-09 20:01:33.189  2751  2751 D AndroidRuntime: Shutting down VM
-09-09 20:01:33.191  2751  2751 E AndroidRuntime: FATAL EXCEPTION: main
-09-09 20:01:33.191  2751  2751 E AndroidRuntime: Process: com.google.android.inputmethod.latin, PID: 2751
-09-09 20:01:33.191  2751  2751 E AndroidRuntime: DeadSystemException: The system died; earlier logs will point to the root cause
-09-09 20:01:33.196  2682  2682 D AndroidRuntime: Shutting down VM
-09-09 20:01:33.197  2682  2682 E AndroidRuntime: FATAL EXCEPTION: main
-09-09 20:01:33.197  2682  2682 E AndroidRuntime: Process: com.android.bluetooth, PID: 2682
+09-09 21:09:33.872  2092  2092 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-09 21:09:33.924  2092  2092 I AndroidRuntime: Using default boot image
+09-09 21:09:33.934  2092  2092 I AndroidRuntime: Leaving lock profiling enabled
+09-09 21:09:35.622  2092  2092 D AndroidRuntime: Calling main entry com.android.commands.monkey.Monkey
+09-09 21:09:35.978  2092  2092 I AndroidRuntime: VM exiting with result code -3.
+09-09 21:10:20.496  2341  2341 I AndroidRuntime: VM exiting with result code 0, cleanup skipped.
+09-09 21:10:21.170  2387  2387 I AndroidRuntime: VM exiting with result code 0, cleanup skipped.
+09-09 21:10:52.496  2250  2250 I AndroidRuntime: VM exiting with result code 0, cleanup skipped.
+09-09 21:11:46.247  2858  2858 I AndroidRuntime: VM exiting with result code 0, cleanup skipped.
 == хвост logcat ==
 --------- beginning of main
-09-09 20:05:28.883  3421  3421 E APM::AudioPolicyEngine/Config: parse: Could not parse document /vendor/etc/audio_policy_engine_configuration.xml
-09-09 20:05:28.884  3421  3421 E libxml2 : I/O warning : failed to load external entity "/vendor/etc/audio_policy_engine_configuration.xml"
-09-09 20:05:28.884  3421  3421 W APM::AudioPolicyEngine/Base: loadAudioPolicyEngineConfig: No configuration found, using default matching phone experience.
-09-09 20:05:28.886  3421  3421 E APM::AudioPolicyEngine/Config: parseLegacyVolumeFile: Could not parse document /odm/etc/audio_policy_configuration.xml
-09-09 20:05:28.886  3421  3421 E libxml2 : I/O warning : failed to load external entity "/odm/etc/audio_policy_configuration.xml"
-09-09 20:05:28.897  3379  3383 W zygote64: Verification of void com.android.org.conscrypt.NativeSsl.enablePSKKeyManagerIfRequested() took 137.251ms (480.87 bytecodes/s) (2912B approximate peak alloc)
-09-09 20:05:28.903  3380  3389 W zygote  : Verification of void com.android.org.conscrypt.Conscrypt.setBufferAllocator(javax.net.ssl.SSLSocket, com.android.org.conscrypt.BufferAllocator) took 111.675ms (134.32 bytecodes/s) (1000B approximate peak alloc)
-09-09 20:05:28.966  3421  3421 W APM::AudioPolicyEngine/Base: loadAudioPolicyEngineConfig: No configuration of AUDIO_STREAM_CALL_ASSISTANT found, using default volume configuration
-09-09 20:05:28.974  3381  3381 I cameraserver: ServiceManager: 0xedd80950
-09-09 20:05:28.990  3381  3381 I CameraService: CameraService started (pid=3381)
-09-09 20:05:28.990  3381  3381 I CameraService: CameraService process starting
-09-09 20:05:28.998  3381  3381 W BatteryNotifier: batterystats service unavailable!
-09-09 20:05:29.001  3421  3421 I AudioFlinger: loadHwModule() Loaded primary audio interface, handle 10
-09-09 20:05:29.005  3381  3381 W BatteryNotifier: batterystats service unavailable!
-09-09 20:05:29.008  3421  3421 I AudioFlinger: openOutput() this 0x79d42a46c9d0, module 10 Device type:0x2,@:, SamplingRate 44100, Format 0x000001, Channels 0x3, flags 0x2
-09-09 20:05:29.052  3421  3421 I AudioFlinger: HAL output buffer size 976 frames, normal sink buffer size 976 frames
-09-09 20:05:29.089  3381  3381 I CameraProviderManager: Connecting to new camera provider: internal/0, isRemote? 1
-09-09 20:05:29.116  3381  3381 I CameraProviderManager: Camera provider internal/0 ready with 0 camera devices
-09-09 20:05:29.126  3381  3381 I CameraProviderManager: Connecting to new camera provider: legacy/0, isRemote? 1
-09-09 20:05:29.143  3381  3381 I CameraProviderManager: Camera provider legacy/0 ready with 0 camera devices
-09-09 20:05:29.143  3381  3433 W CameraProviderManager: addProviderLocked: Camera provider HAL with name 'internal/0' already registered
-09-09 20:05:29.146  3381  3433 W CameraProviderManager: addProviderLocked: Camera provider HAL with name 'legacy/0' already registered
-09-09 20:05:29.150  3381  3381 I cameraserver: Waiting for activity service
-09-09 20:05:29.154  3380  3389 W zygote  : Verification of void com.android.org.conscrypt.ConscryptEngineSocket$3.<clinit>() took 113.778ms (1019.52 bytecodes/s) (2584B approximate peak alloc)
-09-09 20:05:29.156  3379  3383 W zygote64: Verification of java.security.cert.Certificate[] com.android.org.conscrypt.NativeSslSession$Impl$1.getLocalCertificates() took 128.340ms (46.75 bytecodes/s) (1464B approximate peak alloc)
-09-09 20:05:29.165  3421  3421 I BufferProvider: found effect "Multichannel Downmix To Stereo" from The Android Open Source Project
-09-09 20:05:29.169  3399  3407 E android.hardware.audio.service.ranchu: device/generic/goldfish/audio/stream_out.cpp:setEventCallback:469 failure: Result::NOT_SUPPORTED
-09-09 20:05:29.171  3421  3421 E AudioFlinger: Failed to add event callback
-09-09 20:05:29.179  3399  3399 E android.hardware.audio.service.ranchu: device/generic/goldfish/audio/primary_device.cpp:getParameters:234 failure: Result::NOT_SUPPORTED
-09-09 20:05:29.180  3421  3436 I AudioFlinger: AudioFlinger's thread 0x79d5acdca040 tid=3436 ready to run
-09-09 20:05:29.181  3421  3436 W AudioFlinger: no wake lock to update, system not ready yet
-09-09 20:05:29.182  3421  3436 D AudioFlinger: ro.audio.silent is ignored since no output device is set
-09-09 20:05:29.185  3399  3399 E android.hardware.audio.service.ranchu: device/generic/goldfish/audio/stream_out.cpp:getPresentationPosition:501 failure: Result::INVALID_STATE
-09-09 20:05:29.206  3421  3436 W AudioFlinger: no wake lock to update, system not ready yet
-09-09 20:05:29.206  3421  3436 D AudioFlinger: ro.audio.silent is ignored since no output device is set
-09-09 20:05:29.224   391   619 I ServiceManager: Waiting for service 'package_native' on '/dev/binder'...
-09-09 20:05:29.250  3421  3421 W AudioFlinger: moveEffects() bad srcOutput 0
-09-09 20:05:29.259  3380  3389 W zygote  : Verification of int com.android.org.conscrypt.ConscryptEngineSocket$SSLInputStream.processDataFromSocket(byte[], int, int) took 102.377ms (1836.33 bytecodes/s) (3352B approximate peak alloc)
-09-09 20:05:29.261  3379  3383 W zygote64: Verification of com.android.org.conscrypt.NativeSslSession com.android.org.conscrypt.NativeSslSession.newInstance(com.android.org.conscrypt.AbstractSessionContext, byte[], java.lang.String, int) took 102.839ms (2518.49 bytecodes/s) (6432B approximate peak alloc)
-09-09 20:05:29.357  3421  3421 I AudioFlinger: openOutput() this 0x79d42a46c9d0, module 10 Device type:0x10000,@:, SamplingRate 44100, Format 0x000001, Channels 0x3, flags 0
-09-09 20:05:29.372  3421  3421 I AudioFlinger: HAL output buffer size 976 frames, normal sink buffer size 976 frames
-09-09 20:05:29.376  3399  3407 E android.hardware.audio.service.ranchu: device/generic/goldfish/audio/stream_out.cpp:setEventCallback:469 failure: Result::NOT_SUPPORTED
-09-09 20:05:29.378  3421  3421 E AudioFlinger: Failed to add event callback
-09-09 20:05:29.383  3379  3383 W zygote64: Verification of byte[] com.android.org.conscrypt.OAEPParameters.engineGetEncoded() took 118.794ms (993.31 bytecodes/s) (3568B approximate peak alloc)
-09-09 20:05:29.385  3399  3407 E android.hardware.audio.service.ranchu: device/generic/goldfish/audio/primary_device.cpp:getParameters:234 failure: Result::NOT_SUPPORTED
-09-09 20:05:29.400  3421  3437 I AudioFlinger: AudioFlinger's thread 0x79d5acd40040 tid=3437 ready to run
-09-09 20:05:29.401  3421  3437 W AudioFlinger: no wake lock to update, system not ready yet
-09-09 20:05:29.401  3421  3437 D AudioFlinger: ro.audio.silent is ignored since no output device is set
-09-09 20:05:29.401  3399  3407 E android.hardware.audio.service.ranchu: device/generic/goldfish/audio/stream_out.cpp:getPresentationPosition:501 failure: Result::INVALID_STATE
-09-09 20:05:29.406  3421  3437 W AudioFlinger: no wake lock to update, system not ready yet
-09-09 20:05:29.406  3421  3437 D AudioFlinger: ro.audio.silent is ignored since no output device is set
-09-09 20:05:29.474  3421  3439 I AudioFlinger: AudioFlinger's thread 0x79d5acca2040 tid=3439 ready to run
-09-09 20:05:29.493  3421  3439 W AudioFlinger: no wake lock to update, system not ready yet
-09-09 20:05:29.499  3421  3439 W AudioFlinger: no wake lock to update, system not ready yet
-09-09 20:05:29.528  3421  3441 I AudioFlinger: AudioFlinger's thread 0x79d5acca2040 tid=3441 ready to run
-09-09 20:05:29.529  3421  3441 W AudioFlinger: no wake lock to update, system not ready yet
-09-09 20:05:29.533  3421  3441 W AudioFlinger: no wake lock to update, system not ready yet
-09-09 20:05:29.560  3421  3443 I AudioFlinger: AudioFlinger's thread 0x79d5acca2040 tid=3443 ready to run
-09-09 20:05:29.564  3421  3443 W AudioFlinger: no wake lock to update, system not ready yet
-09-09 20:05:29.567  3421  3443 W AudioFlinger: no wake lock to update, system not ready yet
-09-09 20:05:29.579  3399  3438 I r_submix: adev_open(name=audio_hw_if)
-09-09 20:05:29.584  3399  3407 I r_submix: adev_init_check()
-09-09 20:05:29.586  3421  3421 I AudioFlinger: loadHwModule() Loaded r_submix audio interface, handle 18
-09-09 20:05:29.590  3399  3407 D r_submix: adev_open_input_stream(addr=0)
-09-09 20:05:29.590  3399  3407 D r_submix: submix_audio_device_create_pipe_l(addr=0, idx=9)
-09-09 20:05:29.591  3399  3407 D r_submix:   now using address 0 for route 9
-09-09 20:05:29.611  3421  3445 I AudioFlinger: AudioFlinger's thread 0x79d5acca2040 tid=3445 ready to run
-09-09 20:05:29.612  3399  3438 I r_submix: in_standby()
-09-09 20:05:29.613  3421  3445 W AudioFlinger: no wake lock to update, system not ready yet
-09-09 20:05:29.613  3399  3438 I r_submix: in_standby()
-09-09 20:05:29.614  3421  3445 W AudioFlinger: no wake lock to update, system not ready yet
-09-09 20:05:29.616  3399  3438 D r_submix: adev_close_input_stream()
-09-09 20:05:29.617  3399  3438 D r_submix: submix_audio_device_release_pipe_l(idx=9) addr=0
-09-09 20:05:29.617  3399  3438 D r_submix: submix_audio_device_destroy_pipe_l(): pipe destroyed
-09-09 20:05:29.662  3421  3421 W APM::AudioPolicyEngine: getDevicesForStrategy() unknown strategy: -1
-09-09 20:05:29.663  3421  3421 W APM::AudioPolicyEngine: getDevicesForStrategy() unknown strategy: -1
-09-09 20:05:29.711  3421  3421 I audioserver: Waiting for activity service
-09-09 20:05:29.712  3379  3383 W zygote64: Verification of byte[] com.android.org.conscrypt.OpenSSLCipher.engineDoFinal(byte[], int, int) took 139.530ms (430.01 bytecodes/s) (2920B approximate peak alloc)
-09-09 20:05:30.226   391   619 I ServiceManager: Waiting for service 'package_native' on '/dev/binder'...
-09-09 20:05:31.230   391   619 W ServiceManager: Service package_native didn't start. Returning NULL
+09-09 21:12:25.612  2116  2139 I system_server: libdebuggerd_client: done dumping process 304
 --------- beginning of system
-09-09 20:05:31.230   391   619 E iorapd  : Cannot get package manager service!
-09-09 20:05:32.231   391   619 W iorapd  : Reconnect to package manager service: 40 times
-09-09 20:05:32.235   391   619 I ServiceManager: Waiting for service 'package_native' on '/dev/binder'...
-09-09 20:05:33.236   391   619 I ServiceManager: Waiting for service 'package_native' on '/dev/binder'...
-09-09 20:05:33.572   300  1995 E SensorsMultiHal: Dropping 1 events after blockingWrite failed.
-09-09 20:05:34.134   736   736 I wpa_supplicant: wlan0: CTRL-EVENT-BEACON-LOSS 
-09-09 20:05:34.238   391   619 I ServiceManager: Waiting for service 'package_native' on '/dev/binder'...
-09-09 20:05:34.763  3380  3389 W zygote  : Verification of void android.media.internal.exo.extractor.mkv.MatroskaExtractor$Track.initializeOutput(android.media.internal.exo.extractor.ExtractorOutput, int) took 109.921ms (12263.26 bytecodes/s) (18496B approximate peak alloc)
-09-09 20:05:35.240   391   619 I ServiceManager: Waiting for service 'package_native' on '/dev/binder'...
-09-09 20:05:35.311  3380  3389 W zygote  : Verification of android.media.internal.exo.extractor.mp4.TrackSampleTable android.media.internal.exo.extractor.mp4.AtomParsers.parseStbl(android.media.internal.exo.extractor.mp4.Track, android.media.internal.exo.extractor.mp4.Atom$ContainerAtom, android.media.internal.exo.extractor.GaplessInfoHolder) took 196.981ms (6376.25 bytecodes/s) (19720B approximate peak alloc)
-09-09 20:05:35.463   409   409 W livelock: sample 1.396s
-09-09 20:05:36.242   391   619 I ServiceManager: Waiting for service 'package_native' on '/dev/binder'...
-09-09 20:05:37.244   391   619 W ServiceManager: Service package_native didn't start. Returning NULL
-09-09 20:05:37.245   391   619 E iorapd  : Cannot get package manager service!
-09-09 20:05:38.245   391   619 W iorapd  : Reconnect to package manager service: 41 times
-09-09 20:05:38.248   391   619 I ServiceManager: Waiting for service 'package_native' on '/dev/binder'...
-09-09 20:05:38.573   300  1995 E SensorsMultiHal: Dropping 1 events after blockingWrite failed.
-09-09 20:05:39.250   391   619 I ServiceManager: Waiting for service 'package_native' on '/dev/binder'...
-09-09 20:05:41.254   391   619 I chatty  : uid=1071(iorapd) Binder:391_3 identical 2 lines
-09-09 20:05:42.256   391   619 I ServiceManager: Waiting for service 'package_native' on '/dev/binder'...
-09-09 20:05:42.326   736   736 I wpa_supplicant: wlan0: CTRL-EVENT-BEACON-LOSS 
-09-09 20:05:42.526  3379  3383 I zygote64: Verified 1359 classes from mainline modules in 1.545s
-09-09 20:05:42.631  3379  3379 I zygote64: Background concurrent copying GC freed 2353(386KB) AllocSpace objects, 0(0B) LOS objects, 49% free, 4799KB/9599KB, paused 100us total 102.661ms
-09-09 20:05:43.379   391   619 W ServiceManager: Service package_native didn't start. Returning NULL
-09-09 20:05:43.380   391   619 E iorapd  : Cannot get package manager service!
-09-09 20:05:42.996  3380  3389 W zygote  : Verification of void android.net.wifi.rtt.CivicLocation.<init>(byte[], java.lang.String) took 499.766ms (90.04 bytecodes/s) (1312B approximate peak alloc)
-09-09 20:05:43.573   300  1995 E SensorsMultiHal: Dropping 1 events after blockingWrite failed.
-09-09 20:05:44.381   391   619 W iorapd  : Reconnect to package manager service: 42 times
-09-09 20:05:44.514   391   619 I ServiceManager: Waiting for service 'package_native' on '/dev/binder'...
-09-09 20:05:44.819  3379  3379 D Zygote  : Forked child process 3450
-09-09 20:05:44.820  3379  3379 I Zygote  : System server process 3450 has been created
-09-09 20:05:44.911  3450  3450 W system_server: Unexpected CPU variant for X86 using defaults: x86_64
-09-09 20:05:44.949   380   427 I adbd    : jdwp connection from 3450
-09-09 20:05:44.969  3379  3379 I Zygote  : Accepting command socket connections
-09-09 20:05:45.011  3380  3389 W zygote  : Verification of void android.net.wifi.rtt.CivicLocation.writeToParcel(android.os.Parcel, int) took 284.588ms (59.74 bytecodes/s) (968B approximate peak alloc)
-09-09 20:05:45.245  3380  3389 W zygote  : Verification of boolean android.net.wifi.rtt.RangingResult.equals(java.lang.Object) took 108.840ms (1010.65 bytecodes/s) (1832B approximate peak alloc)
-09-09 20:05:45.361  3380  3389 W zygote  : Verification of void android.net.wifi.rtt.RangingResultCallback.<init>() took 100.410ms (39.84 bytecodes/s) (752B approximate peak alloc)
-09-09 20:05:45.516   391   619 I ServiceManager: Waiting for service 'package_native' on '/dev/binder'...
-09-09 20:05:45.565  3380  3389 W zygote  : Verification of void android.net.wifi.rtt.ResponderLocation.<init>(byte[], byte[]) took 100.787ms (1240.24 bytecodes/s) (2176B approximate peak alloc)
+09-09 21:12:25.636  2116  2139 I ActivityManager: Collecting stacks for native pid 305
+09-09 21:12:25.639  2116  2139 I system_server: libdebuggerd_client: started dumping process 305
 --------- beginning of kernel
-09-09 20:05:45.743     0     0 D logd    : logdr: UID=2000 GID=2000 PID=3448 n tail=120 logMask=99 pid=0 start=0ns timeout=0ns
-total 88
-drwxr-xr-x  2 runner runner  4096 Sep  9 20:05 .
-drwxr-xr-x 16 runner runner  4096 Sep  9 19:41 ..
--rw-r--r--  1 runner runner 50560 Sep  9 20:05 emu.log
--rw-r--r--  1 runner runner 11820 Sep  9 19:54 emulator.log
--rw-r--r--  1 runner runner 12504 Sep  9 20:06 screen.png
+09-09 21:12:25.682     0     0 I init    : Untracked pid 3378 exited with status 0
+09-09 21:12:25.683     0     0 I init    : Untracked pid 3380 exited with status 0
+09-09 21:12:25.657   276   276 I tombstoned: registered intercept for pid 305 and type kDebuggerdNativeBacktrace
+09-09 21:12:25.663   305   305 I libc    : Requested dump for tid 305 (neuralnetworks@)
+09-09 21:12:25.850  2116  3023 W system_server: Long monitor contention with owner android.bg (2145) at java.lang.String com.android.server.pm.PackageManagerService.getInstantAppPackageName(int)(PackageManagerService.java:7137) waiters=0 in java.lang.String com.android.server.pm.PackageManagerService.getInstantAppPackageName(int) for 1.152s
+09-09 21:12:25.851  2116  2135 W system_server: Long monitor contention with owner android.bg (2145) at java.lang.String com.android.server.pm.PackageManagerService.getInstantAppPackageName(int)(PackageManagerService.java:7137) waiters=1 in int com.android.server.pm.PackageManagerService.getPackageUidInternal(java.lang.String, int, int, int) for 1.603s
+09-09 21:12:26.101  3384  3384 I crash_dump64: obtaining output fd from tombstoned, type: kDebuggerdNativeBacktrace
+09-09 21:12:26.126   276   276 I tombstoned: received crash request for pid 305
+09-09 21:12:26.126   276   276 I tombstoned: found intercept fd 513 for pid 305 and type kDebuggerdNativeBacktrace
+09-09 21:12:26.128  3384  3384 I crash_dump64: performing dump of process 305 (target tid = 305)
+09-09 21:12:26.172  2116  2145 I UsageStatsService: User[0] Flushing usage stats to disk
+09-09 21:12:26.343  2116  2139 I system_server: libdebuggerd_client: done dumping process 305
+09-09 21:12:26.354   276   276 I tombstoned: received crash request for pid 2116
+09-09 21:12:26.354   276   276 I tombstoned: found intercept fd 512 for pid 2116 and type kDebuggerdJavaBacktrace
+09-09 21:12:26.362  2116  2122 I system_server: Wrote stack traces to tombstoned
+09-09 21:12:26.377  2116  2190 I system_server: libdebuggerd_client: done dumping process 2116
+09-09 21:12:26.387  2116  2139 I ActivityManager: Collecting stacks for native pid 1586
+09-09 21:12:26.396  2116  2139 I system_server: libdebuggerd_client: started dumping process 1586
+09-09 21:12:26.400   276   276 I tombstoned: registered intercept for pid 1586 and type kDebuggerdNativeBacktrace
+09-09 21:12:26.414     0     0 I init    : Untracked pid 3386 exited with status 0
+09-09 21:12:26.414     0     0 I init    : Untracked pid 3384 exited with status 0
+09-09 21:12:26.406  2116  2190 I ActivityManager: Done dumping
+09-09 21:12:26.408  2116  2190 I WindowManager: Input event dispatching timed out sending to Application Not Responding: com.android.systemui.  Reason: 51af8c6 Application Not Responding: com.android.systemui (server) is not responding. Waited 5004ms for FocusEvent(hasFocus=true)
+09-09 21:12:26.411  1586  1586 I libc    : Requested dump for tid 1586 (bluetooth@1.1-s)
+09-09 21:12:26.437   749   749 I wpa_supplicant: wlan0: CTRL-EVENT-BEACON-LOSS 
+09-09 21:12:26.502  3058  3058 I SetupWizard: [bea] Start loading FRP status
+09-09 21:12:26.722  3390  3390 I crash_dump64: obtaining output fd from tombstoned, type: kDebuggerdNativeBacktrace
+09-09 21:12:26.732   276   276 I tombstoned: received crash request for pid 1586
+09-09 21:12:26.732   276   276 I tombstoned: found intercept fd 512 for pid 1586 and type kDebuggerdNativeBacktrace
+09-09 21:12:26.735  3390  3390 I crash_dump64: performing dump of process 1586 (target tid = 1586)
+09-09 21:12:27.026  2116  2139 I system_server: libdebuggerd_client: done dumping process 1586
+09-09 21:12:27.055     0     0 I init    : Untracked pid 3390 exited with status 0
+09-09 21:12:27.055     0     0 I init    : Untracked pid 3392 exited with status 0
+09-09 21:12:27.063  2116  2139 I ActivityManager: Collecting stacks for native pid 306
+09-09 21:12:27.066  2116  2139 I system_server: libdebuggerd_client: started dumping process 306
+09-09 21:12:27.074   276   276 I tombstoned: registered intercept for pid 306 and type kDebuggerdNativeBacktrace
+09-09 21:12:27.080   306   306 I libc    : Requested dump for tid 306 (neuralnetworks@)
+09-09 21:12:27.306  2116  2145 W Looper  : Slow dispatch took 12537ms android.bg h=com.android.server.usage.UsageStatsService$H c=null m=5
+09-09 21:12:27.693  3395  3395 I crash_dump64: obtaining output fd from tombstoned, type: kDebuggerdNativeBacktrace
+09-09 21:12:27.696   276   276 I tombstoned: received crash request for pid 306
+09-09 21:12:27.696   276   276 I tombstoned: found intercept fd 512 for pid 306 and type kDebuggerdNativeBacktrace
+09-09 21:12:27.712  3395  3395 I crash_dump64: performing dump of process 306 (target tid = 306)
+09-09 21:12:27.927  2116  2139 I system_server: libdebuggerd_client: done dumping process 306
+09-09 21:12:27.961     0     0 I init    : Untracked pid 3395 exited with status 0
+09-09 21:12:27.961     0     0 I init    : Untracked pid 3397 exited with status 0
+09-09 21:12:27.958  2116  2139 I ActivityManager: Collecting stacks for native pid 307
+09-09 21:12:27.960  2116  2139 I system_server: libdebuggerd_client: started dumping process 307
+09-09 21:12:27.967   276   276 I tombstoned: registered intercept for pid 307 and type kDebuggerdNativeBacktrace
+09-09 21:12:27.969   307   307 I libc    : Requested dump for tid 307 (neuralnetworks@)
+09-09 21:12:28.342  3400  3400 I crash_dump64: obtaining output fd from tombstoned, type: kDebuggerdNativeBacktrace
+09-09 21:12:28.347   276   276 I tombstoned: received crash request for pid 307
+09-09 21:12:28.348   276   276 I tombstoned: found intercept fd 512 for pid 307 and type kDebuggerdNativeBacktrace
+09-09 21:12:28.352  3400  3400 I crash_dump64: performing dump of process 307 (target tid = 307)
+09-09 21:12:28.489  2116  2139 I system_server: libdebuggerd_client: done dumping process 307
+09-09 21:12:28.502     0     0 I init    : Untracked pid 3400 exited with status 0
+09-09 21:12:28.508     0     0 I init    : Untracked pid 3402 exited with status 0
+09-09 21:12:28.516  2116  2139 I ActivityManager: Collecting stacks for native pid 308
+09-09 21:12:28.526  2116  2139 I system_server: libdebuggerd_client: started dumping process 308
+09-09 21:12:28.531   276   276 I tombstoned: registered intercept for pid 308 and type kDebuggerdNativeBacktrace
+09-09 21:12:28.532   308   308 I libc    : Requested dump for tid 308 (neuralnetworks@)
+09-09 21:12:28.620  2116  2126 I system_server: Background concurrent copying GC freed 220394(10107KB) AllocSpace objects, 51(2156KB) LOS objects, 49% free, 11MB/23MB, paused 274us total 1.364s
+09-09 21:12:28.628  2116  2127 W JavaBinder: BinderProxy is being destroyed but the application did not call unlinkToDeath to unlink all of its death recipients beforehand.  Releasing leaked death recipient: com.android.server.AlarmManagerService$2
+09-09 21:12:28.628  2116  2127 I BpBinder: onLastStrongRef automatically unlinking death recipients: <uncached descriptor>
+09-09 21:12:28.632  2116  2127 W JavaBinder: BinderProxy is being destroyed but the application did not call unlinkToDeath to unlink all of its death recipients beforehand.  Releasing leaked death recipient: com.android.server.AlarmManagerService$2
+09-09 21:12:28.632  2116  2127 I BpBinder: onLastStrongRef automatically unlinking death recipients: <uncached descriptor>
+09-09 21:12:28.633  2116  2127 W JavaBinder: BinderProxy is being destroyed but the application did not call unlinkToDeath to unlink all of its death recipients beforehand.  Releasing leaked death recipient: com.android.server.AlarmManagerService$2
+09-09 21:12:28.633  2116  2127 I BpBinder: onLastStrongRef automatically unlinking death recipients: <uncached descriptor>
+09-09 21:12:28.639  2116  2127 W JavaBinder: BinderProxy is being destroyed but the application did not call unlinkToDeath to unlink all of its death recipients beforehand.  Releasing leaked death recipient: com.android.server.AlarmManagerService$2
+09-09 21:12:28.640  2116  2127 I BpBinder: onLastStrongRef automatically unlinking death recipients: <uncached descriptor>
+09-09 21:12:28.702  2116  2128 W InputChannel-JNI: Input channel object 'ClientState{5fc6b17 uid=1000 pid=2601 displayId=0} (server)' was finalized without being disposed!
+09-09 21:12:28.969  3405  3405 I crash_dump64: obtaining output fd from tombstoned, type: kDebuggerdNativeBacktrace
+09-09 21:12:28.976   276   276 I tombstoned: received crash request for pid 308
+09-09 21:12:28.976   276   276 I tombstoned: found intercept fd 512 for pid 308 and type kDebuggerdNativeBacktrace
+09-09 21:12:28.983  3405  3405 I crash_dump64: performing dump of process 308 (target tid = 308)
+09-09 21:12:29.166  2116  2139 I system_server: libdebuggerd_client: done dumping process 308
+09-09 21:12:29.192     0     0 I init    : Untracked pid 3405 exited with status 0
+09-09 21:12:29.193     0     0 I init    : Untracked pid 3407 exited with status 0
+09-09 21:12:29.188  2116  2139 I ActivityManager: Collecting stacks for native pid 309
+09-09 21:12:29.192  2116  2139 I system_server: libdebuggerd_client: started dumping process 309
+09-09 21:12:29.195   276   276 I tombstoned: registered intercept for pid 309 and type kDebuggerdNativeBacktrace
+09-09 21:12:29.201   309   309 I libc    : Requested dump for tid 309 (stats@1.0-servi)
+09-09 21:12:29.441  3410  3410 I crash_dump64: obtaining output fd from tombstoned, type: kDebuggerdNativeBacktrace
+09-09 21:12:29.454   276   276 I tombstoned: received crash request for pid 309
+09-09 21:12:29.454   276   276 I tombstoned: found intercept fd 512 for pid 309 and type kDebuggerdNativeBacktrace
+09-09 21:12:29.472  3410  3410 I crash_dump64: performing dump of process 309 (target tid = 309)
+09-09 21:12:29.641  2116  2139 I system_server: libdebuggerd_client: done dumping process 309
+09-09 21:12:29.669     0     0 I init    : Untracked pid 3410 exited with status 0
+09-09 21:12:29.673     0     0 I init    : Untracked pid 3412 exited with status 0
+09-09 21:12:29.659  2116  2139 I ActivityManager: Collecting stacks for native pid 2422
+09-09 21:12:29.669  2116  2139 I system_server: libdebuggerd_client: started dumping process 2422
+09-09 21:12:29.678   276   276 I tombstoned: registered intercept for pid 2422 and type kDebuggerdNativeBacktrace
+09-09 21:12:29.687  2422  2422 I libc    : Requested dump for tid 2422 (gnss@2.0-servic)
+09-09 21:12:29.992  3415  3415 I crash_dump64: obtaining output fd from tombstoned, type: kDebuggerdNativeBacktrace
+09-09 21:12:30.011   276   276 I tombstoned: received crash request for pid 2422
+09-09 21:12:30.011   276   276 I tombstoned: found intercept fd 512 for pid 2422 and type kDebuggerdNativeBacktrace
+09-09 21:12:30.022  3415  3415 I crash_dump64: performing dump of process 2422 (target tid = 2422)
+09-09 21:12:30.062  2116  2203 D WifiConfigStore: Writing to stores completed in 46 ms.
+09-09 21:12:30.146  2116  2139 I system_server: libdebuggerd_client: done dumping process 2422
+09-09 21:12:30.170     0     0 I init    : Untracked pid 3415 exited with status 0
+09-09 21:12:30.170     0     0 I init    : Untracked pid 3417 exited with status 0
+09-09 21:12:30.172  2116  2139 I ActivityManager: Collecting stacks for native pid 310
+09-09 21:12:30.176  2116  2139 I system_server: libdebuggerd_client: started dumping process 310
+09-09 21:12:30.181   276   276 I tombstoned: registered intercept for pid 310 and type kDebuggerdNativeBacktrace
+09-09 21:12:30.187   310   310 I libc    : Requested dump for tid 310 (sensors@2.1-ser)
+09-09 21:12:30.510  3420  3420 I crash_dump64: obtaining output fd from tombstoned, type: kDebuggerdNativeBacktrace
+09-09 21:12:30.524   276   276 I tombstoned: received crash request for pid 310
+09-09 21:12:30.524   276   276 I tombstoned: found intercept fd 512 for pid 310 and type kDebuggerdNativeBacktrace
+09-09 21:12:30.528  3420  3420 I crash_dump64: performing dump of process 310 (target tid = 310)
+09-09 21:12:30.734  2116  2139 I system_server: libdebuggerd_client: done dumping process 310
+09-09 21:12:30.756     0     0 I init    : Untracked pid 3420 exited with status 0
+09-09 21:12:30.757     0     0 I init    : Untracked pid 3422 exited with status 0
+09-09 21:12:30.758  2116  2139 I ActivityManager: Collecting stacks for native pid 439
+09-09 21:12:30.761  2116  2139 I system_server: libdebuggerd_client: started dumping process 439
+09-09 21:12:30.764   276   276 I tombstoned: registered intercept for pid 439 and type kDebuggerdNativeBacktrace
+09-09 21:12:30.770   276   276 I tombstoned: received crash request for pid 439
+09-09 21:12:30.770   276   276 I tombstoned: found intercept fd 512 for pid 439 and type kDebuggerdNativeBacktrace
+09-09 21:12:31.074     0     0 D logd    : logdr: UID=2000 GID=2000 PID=3423 n tail=120 logMask=99 pid=0 start=0ns timeout=0ns
+total 112
+drwxr-xr-x  2 runner runner  4096 Sep  9 21:12 .
+drwxr-xr-x 17 runner runner  4096 Sep  9 21:01 ..
+-rw-r--r--  1 runner runner 47329 Sep  9 21:12 emu.log
+-rw-r--r--  1 runner runner  8271 Sep  9 21:07 emulator.log
+-rw-r--r--  1 runner runner 43987 Sep  9 21:13 screen.png
