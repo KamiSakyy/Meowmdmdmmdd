@@ -1,4 +1,4 @@
-# Тест мода на эмуляторе (2026-09-09 10:34:39 UTC)
+# Тест мода на эмуляторе (2026-09-09 10:49:16 UTC)
 
 - test.yml: P1 название, P2 ОТКЛЮЧЁН (подозреваемый), P3 About, P6 p2()=true, .so нормализация
 - x86_64 .so в оригинале: 2
@@ -43,7 +43,8 @@ package: name='org.telegram.mdgram' versionCode='30275' versionName='9.3.3' plat
 application-label:'MDGram Revival'
 
 ## Вердикт эмулятора
-- Процесс после 30с: UNKNOWN
+- Процесс после 30с: DEAD
 - FATAL EXCEPTION: 0
 - Скриншоты:
-(нет)
+test/screenshot-1.png
+test/screenshot-2.png
