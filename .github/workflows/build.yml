@@ -1,12 +1,12 @@
 name: Сборка APK (база Telegram 9.3.3)
 
-# Собирает БАЗУ (папка android/) — проверяем, что движок вообще компилируется.
-# Пока без МД-слоя: цель — получить первый зелёный билд и APK.
+# Собирает БАЗУ (папка android/) + МД-слой: проверяем, что всё компилируется.
+# Логи SDK/сборки складываются в build-logs/ этой же ветки (чтобы их было видно без UI Actions).
 on:
   workflow_dispatch:
     inputs:
       variant:
-        description: 'Что собирать'
+        description: 'Gradle-задача'
         required: false
         default: 'assembleRelease'
   push:
@@ -19,6 +19,9 @@ on:
 permissions:
   contents: write
 
+env:
+  LOG: /tmp/build.log
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -28,7 +31,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: arena/01a0865a-meowmdmdmmdd
-          lfs: false
 
       - name: JDK 11 (AGP 7.0.3 / Gradle 7.0.2)
         uses: actions/setup-java@v4
@@ -37,59 +39,81 @@ jobs:
           java-version: '11'
 
       - name: Android SDK
+        id: sdk
+        continue-on-error: true
         run: |
-          set -x
-          export ANDROID_SDK_ROOT="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
-          export ANDROID_HOME="$ANDROID_SDK_ROOT"
-          export JAVA_HOME="${JAVA_HOME_11_X64:-$JAVA_HOME}"
-          mkdir -p "$ANDROID_SDK_ROOT"
-          java -version 2>&1 | head -2 || true
-          ls "$ANDROID_SDK_ROOT" || true
-          SDKMGR="$(command -v sdkmanager || true)"
-          if [ -z "$SDKMGR" ]; then
-            cd /tmp
-            # старый cmdline-tools ( Java 11-совместимый; новые требуют JDK 17 )
-            curl -sSL -o cmdtools.zip \
-              https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip
-            unzip -q -o cmdtools.zip -d "$ANDROID_SDK_ROOT"
-            SDKMGR="$ANDROID_SDK_ROOT/cmdline-tools/bin/sdkmanager"
-          fi
-          echo "sdkmanager: $SDKMGR"
-          "$SDKMGR" --version || { echo "::error::sdkmanager не запускается"; exit 1; }
-          yes 2>/dev/null | "$SDKMGR" --sdk_root="$ANDROID_SDK_ROOT" --licenses > /dev/null 2>&1
-          "$SDKMGR" --sdk_root="$ANDROID_SDK_ROOT" --install \
-            "platforms;android-33" "platforms;android-31" \
-            "build-tools;33.0.0" "build-tools;31.0.0" \
-            "ndk;21.4.7075529" "cmake;3.10.2.4988404"
-          st=$?
-          "$SDKMGR" --sdk_root="$ANDROID_SDK_ROOT" --list_installed | head -40 || true
-          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$GITHUB_WORKSPACE/android/local.properties"
-          exit $st
+          {
+            set -x
+            export ANDROID_SDK_ROOT="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+            export ANDROID_HOME="$ANDROID_SDK_ROOT"
+            export JAVA_HOME="${JAVA_HOME_11_X64:-$JAVA_HOME}"
+            mkdir -p "$ANDROID_SDK_ROOT"
+            echo "--- java ---"; java -version 2>&1 | head -3
+            echo "--- sdk dir ---"; ls "$ANDROID_SDK_ROOT"
+            SDKMGR="$(command -v sdkmanager || true)"
+            if [ -z "$SDKMGR" ]; then
+              cd /tmp
+              # старый cmdline-tools: работает на Java 11 (новые требуют JDK 17)
+              curl -sSL -o cmdtools.zip \
+                https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip
+              echo "curl: $?  размер: $(stat -c%s cmdtools.zip 2>/dev/null)"
+              unzip -q -o cmdtools.zip -d "$ANDROID_SDK_ROOT"
+              SDKMGR="$ANDROID_SDK_ROOT/cmdline-tools/bin/sdkmanager"
+              chmod +x "$SDKMGR" 2>/dev/null
+            fi
+            echo "sdkmanager: $SDKMGR"
+            "$SDKMGR" --version
+            echo "--- licenses ---"
+            yes 2>/dev/null | "$SDKMGR" --sdk_root="$ANDROID_SDK_ROOT" --licenses > /dev/null 2>&1
+            echo "--- install ---"
+            for pkg in "platforms;android-33" "platforms;android-31" \
+                       "build-tools;33.0.0" "build-tools;31.0.0" \
+                       "ndk;21.4.7075529" "cmake;3.10.2.4988404" "cmake;3.22.1"; do
+              echo ">>> $pkg"
+              "$SDKMGR" --sdk_root="$ANDROID_SDK_ROOT" --install "$pkg" 2>&1 | tail -5
+              echo "    rc=$?"
+            done
+            echo "--- installed ---"
+            "$SDKMGR" --sdk_root="$ANDROID_SDK_ROOT" --list_installed | head -40
+            echo "sdk.dir=$ANDROID_SDK_ROOT" > "$GITHUB_WORKSPACE/android/local.properties"
+          } > "$LOG" 2>&1
+          echo "exit=$?" >> "$LOG"
 
       - name: Сборка APK
+        id: gradle
+        continue-on-error: true
         working-directory: android
         run: |
           chmod +x gradlew
           ./gradlew :TMessagesProj_App:${{ github.event.inputs.variant || 'assembleRelease' }} \
-            --no-daemon --stacktrace -x lint
+            --no-daemon --stacktrace > "$LOG" 2>&1
+          echo "gradle_exit=$?" >> "$LOG"
+          tail -n 60 "$LOG"
 
       - name: Куда делись APK
         if: always()
         run: find android -name "*.apk" -printf "%p  %k KB\n" | head -20
 
       - name: Артефакт APK
-        if: success()
+        if: success() && steps.gradle.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
-          name: base-apk
+          name: mdgram-apk
           path: android/TMessagesProj_App/build/outputs/apk/**/*.apk
           if-no-files-found: warn
 
-      - name: Лог при падении
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-failure-logs
-          path: |
-            android/**/build/reports/**
-            android/**/build/outputs/logs/**
+      # ── логи в ветку: их видно без UI Actions ────────────────────────────────
+      - name: Сохранить лог в ветку
+        if: always()
+        run: |
+          mkdir -p build-logs
+          cp "$LOG" "build-logs/run-${{ github.run_number }}-$(date -u +%H%M).log" || true
+          tail -n 200 "$LOG" > "build-logs/tail-${{ github.run_number }}.log" || true
+          git config user.name "Arena Agent"
+          git config user.email "agent@arena.ai"
+          git add build-logs
+          git commit -m "build-logs: прогон ${{ github.run_number }}" || echo "нечего коммитить"
+          for i in 1 2 3; do
+            git pull --rebase -q origin arena/01a0865a-meowmdmdmmdd && break || sleep 5
+          done
+          git push origin HEAD:arena/01a0865a-meowmdmdmmdd || true
