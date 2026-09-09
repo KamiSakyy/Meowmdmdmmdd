@@ -1,0 +1,10 @@
+=== наша .so ===
+47e8a5b8c18863ec582af10c1788d7e3  MDGram/app/src/main/jniLibs/x86_64/libtmessages.42.so
+total 27440
+drwxr-xr-x 2 runner runner     4096 Sep  9 23:13 .
+drwxr-xr-x 6 runner runner     4096 Sep  9 23:13 ..
+-rw-r--r-- 1 runner runner  1365056 Sep  9 23:13 liblanguage_id_l2c_jni.so
+-rw-r--r-- 1 runner runner 26737880 Sep  9 23:13 libtmessages.42.so
+=== качаем официальный Telegram 9.3.3 (30275) ===
+скачано: 5501 байт
+официальный APK скачать не удалось
