@@ -2,7 +2,7 @@ name: "Исследование кода (поиск по декомпилу)"
 
 # Батарея поиска по декомпилированному MDGram 9.3.3.
 # Результаты коммитятся в research/ — читаем и проектируем точные патчи.
-# Свои паттерны: добавь строки в .research-request (по одному grep-паттерну).
+# Свои паттерны: .research-request (grep). Целые классы: .research-files (подстрока пути).
 
 on:
   push:
@@ -10,6 +10,7 @@ on:
     paths:
       - .github/workflows/research.yml
       - .research-request
+      - .research-files
 
 permissions:
   contents: write
@@ -112,16 +113,17 @@ jobs:
                       al.append(f"### {f.name} :: {ln.strip()}\n```\n" + "\n".join(lines[i:j+1])[:6000] + "\n```")
           w("APPLOADER.md", "## ApplicationLoader\n" + "\n".join(al) + "\n")
           rep.append(f"- APPLOADER: методов {len(al)}")
-          # 5. REQUEST: паттерны из .research-request, один проход по всем файлам
-          pats = []
+          # 5. REQUEST: встроенные + .research-request паттерны, один проход
+          pats = ["send request ", "with token = ", "getCustomEmoji", "TL_messages_getStickers",
+                  "getObjectSize", "stickerSet", "TL_account_updateStatus", "TL_messages_readHistory"]
           try:
               for l in open("../.research-request", encoding="utf-8", errors="ignore"):
                   l = l.strip()
-                  if l and not l.startswith("#"):
+                  if l and not l.startswith("#") and l not in pats:
                       pats.append(l)
           except FileNotFoundError:
               pass
-          pats = pats[:15]
+          pats = pats[:25]
           found = {p: [] for p in pats}
           rx = [(p, re.compile(p)) for p in pats]
           files = list(pathlib.Path("apktool_out").rglob("*.smali")) + list(pathlib.Path("jadx_out").rglob("*.java"))
@@ -134,15 +136,42 @@ jobs:
                   for p, r in rx:
                       if len(found[p]) >= 20:
                           continue
-                      if r.search(ln):
+                      try:
+                          hit = r.search(ln)
+                      except Exception:
+                          hit = None
+                      if hit:
                           ctx = "\n".join(f"      {x.strip()[:150]}" for x in lines[max(0,i-2):i+3])
                           found[p].append(f"- {f}:{i+1}\n{ctx}")
           out = []
           for p in pats:
               out.append(f"### PATTERN: {p} (совпадений: {len(found[p])})")
               out.extend(found[p][:20])
-          w("REQUEST_RESULTS.md", "# Результаты по .research-request\n\n" + "\n".join(out) + "\n")
-          rep.append(f"- REQUEST: паттернов {len(pats)}, файлов просканировано {len(files)}")
+          w("REQUEST_RESULTS.md", "# Результаты поиска\n\n" + "\n".join(out) + "\n")
+          rep.append(f"- REQUEST: паттернов {len(pats)}, файлов {len(files)}")
+          # 6. FILES: целые классы из .research-files (подстрока пути, макс 5 на строку)
+          pats6 = []
+          try:
+              for l in open("../.research-files", encoding="utf-8", errors="ignore"):
+                  l = l.strip()
+                  if l and not l.startswith("#"):
+                      pats6.append(l)
+          except FileNotFoundError:
+              pass
+          FD = OUT / "files"; FD.mkdir(exist_ok=True)
+          idx6 = []
+          for p in pats6[:15]:
+              n = 0
+              for f in files:
+                  if p in str(f).replace("\\", "/"):
+                      dst = FD / f"{f.parent.parent.name}-{f.parent.name}-{f.name}".replace("$", "_")[-120:]
+                      dst.write_bytes(f.read_bytes()[:120000])
+                      idx6.append(f"{p} -> {dst.name}"); n += 1
+                      if n >= 5: break
+              if n == 0:
+                  idx6.append(f"{p} -> НЕ НАЙДЕН")
+          w("FILES.md", "## Дампы классов\n" + "\n".join(f"- {x}" for x in idx6) + "\n")
+          rep.append(f"- FILES: строк {len(pats6)}, дампов {len([x for x in idx6 if 'НЕ НАЙДЕН' not in x])}")
           print("\n".join(rep))
           PYEOF
           python3 research.py | tee ../research/INDEX.md
