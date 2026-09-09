@@ -15,4 +15,16 @@ P2 OTA URL->127.0.0.1: замен=6, файлов=6
   apktool_out/smali_classes2/pka.smali (1)
   apktool_out/smali_classes2/ska.smali (1)
 P3 Ab.d0 OFICIAL: OK (apktool_out/smali_classes2/org/telegram/mdgram/Activies/Ab.smali, v1=1)
+DIAG styles со значениями 0/1: 11
+  apktool_out/res/values/styles.xml:89: <item name="android:maxLines">1</item>
+  apktool_out/res/values/styles.xml:3586: <item name="widgetPreviewDot">0</item>
+  apktool_out/res/values/styles.xml:3593: <item name="widgetPreviewDot">0</item>
+  apktool_out/res/values/styles.xml:3613: <item name="widgetPreviewDot">0</item>
+  apktool_out/res/values/styles.xml:4566: <item name="android:lines">1</item>
+  apktool_out/res/values/styles.xml:4786: <item name="android:maxLines">1</item>
+  apktool_out/res/values/styles.xml:5266: <item name="android:lines">1</item>
+  apktool_out/res/values/styles.xml:5354: <item name="android:maxLines">1</item>
+  apktool_out/res/values/styles.xml:5485: <item name="android:maxLines">1</item>
+  apktool_out/res/values/styles.xml:5492: <item name="android:maxLines">1</item>
+  apktool_out/res/values/styles.xml:5699: <item name="android:maxEms">1</item>
 INFO: уникальных http-строк в smali: 123 (список в mod/update-url-candidates.txt)
