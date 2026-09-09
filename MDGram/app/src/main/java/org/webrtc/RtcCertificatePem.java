@@ -1,43 +1,75 @@
+/*
+ *  Copyright 2018 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
 
 import org.webrtc.PeerConnection;
-/* loaded from: classes3.dex */
+
+/**
+ * Easily storable/serializable version of a native C++ RTCCertificatePEM.
+ */
 public class RtcCertificatePem {
-    private static final long DEFAULT_EXPIRY = 2592000;
-    public final String certificate;
-    public final String privateKey;
+  /** PEM string representation of the private key. */
+  public final String privateKey;
+  /** PEM string representation of the certificate. */
+  public final String certificate;
+  /** Default expiration time of 30 days. */
+  private static final long DEFAULT_EXPIRY = 60 * 60 * 24 * 30;
 
-    @CalledByNative
-    public RtcCertificatePem(String str, String str2) {
-        this.privateKey = str;
-        this.certificate = str2;
-    }
+  /** Instantiate an RtcCertificatePem object from stored strings. */
+  @CalledByNative
+  public RtcCertificatePem(String privateKey, String certificate) {
+    this.privateKey = privateKey;
+    this.certificate = certificate;
+  }
 
-    public static RtcCertificatePem generateCertificate() {
-        return nativeGenerateCertificate(PeerConnection.KeyType.ECDSA, DEFAULT_EXPIRY);
-    }
+  @CalledByNative
+  String getPrivateKey() {
+    return privateKey;
+  }
 
-    private static native RtcCertificatePem nativeGenerateCertificate(PeerConnection.KeyType keyType, long j);
+  @CalledByNative
+  String getCertificate() {
+    return certificate;
+  }
 
-    @CalledByNative
-    public String getCertificate() {
-        return this.certificate;
-    }
+  /**
+   * Generate a new RtcCertificatePem with the default settings of KeyType = ECDSA and
+   * expires = 30 days.
+   */
+  public static RtcCertificatePem generateCertificate() {
+    return nativeGenerateCertificate(PeerConnection.KeyType.ECDSA, DEFAULT_EXPIRY);
+  }
 
-    @CalledByNative
-    public String getPrivateKey() {
-        return this.privateKey;
-    }
+  /**
+   * Generate a new RtcCertificatePem with a custom KeyType and the default setting of
+   * expires = 30 days.
+   */
+  public static RtcCertificatePem generateCertificate(PeerConnection.KeyType keyType) {
+    return nativeGenerateCertificate(keyType, DEFAULT_EXPIRY);
+  }
 
-    public static RtcCertificatePem generateCertificate(PeerConnection.KeyType keyType) {
-        return nativeGenerateCertificate(keyType, DEFAULT_EXPIRY);
-    }
+  /**
+   * Generate a new RtcCertificatePem with a custom expires and the default setting of
+   * KeyType = ECDSA.
+   */
+  public static RtcCertificatePem generateCertificate(long expires) {
+    return nativeGenerateCertificate(PeerConnection.KeyType.ECDSA, expires);
+  }
 
-    public static RtcCertificatePem generateCertificate(long j) {
-        return nativeGenerateCertificate(PeerConnection.KeyType.ECDSA, j);
-    }
+  /** Generate a new RtcCertificatePem with a custom KeyType and a custom expires. */
+  public static RtcCertificatePem generateCertificate(
+      PeerConnection.KeyType keyType, long expires) {
+    return nativeGenerateCertificate(keyType, expires);
+  }
 
-    public static RtcCertificatePem generateCertificate(PeerConnection.KeyType keyType, long j) {
-        return nativeGenerateCertificate(keyType, j);
-    }
+  private static native RtcCertificatePem nativeGenerateCertificate(
+      PeerConnection.KeyType keyType, long expires);
 }

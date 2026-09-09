@@ -1,38 +1,214 @@
+/*
+ * This is the source code of Telegram for Android v. 1.3.x.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Nikolai Kudashov, 2013-2018.
+ */
+
 package org.telegram.messenger;
-/* loaded from: classes2.dex */
-public abstract class NativeLoader {
-    public static volatile boolean a = false;
 
-    /* JADX WARN: Removed duplicated region for block: B:59:0x00d5 A[Catch: all -> 0x001c, TryCatch #6 {, blocks: (B:4:0x0003, B:65:0x00f4, B:68:0x00fd, B:9:0x000a, B:11:0x0015, B:17:0x0020, B:18:0x0023, B:42:0x0089, B:44:0x0091, B:47:0x009b, B:49:0x00b6, B:51:0x00ba, B:52:0x00bf, B:57:0x00d1, B:59:0x00d5, B:60:0x00e9, B:56:0x00cb, B:21:0x0030, B:24:0x003b, B:27:0x0046, B:30:0x0051, B:33:0x005c, B:36:0x0067, B:38:0x006d, B:41:0x0084), top: B:82:0x0003 }] */
-    /* JADX WARN: Removed duplicated region for block: B:63:0x00f0 A[RETURN] */
-    /* JADX WARN: Removed duplicated region for block: B:76:0x00f4 A[EXC_TOP_SPLITTER, SYNTHETIC] */
-    /*
-        Code decompiled incorrectly, please refer to instructions dump.
-        To view partially-correct add '--show-bad-code' argument
-    */
-    public static synchronized void a(android.content.Context r7) {
-        /*
-            Method dump skipped, instructions count: 261
-            To view this dump add '--comments-level debug' option
-        */
-        throw new UnsupportedOperationException("Method not decompiled: org.telegram.messenger.NativeLoader.a(android.content.Context):void");
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.os.Build;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+
+public class NativeLoader {
+
+    private final static int LIB_VERSION = 42;
+    private final static String LIB_NAME = "tmessages." + LIB_VERSION;
+    private final static String LIB_SO_NAME = "lib" + LIB_NAME + ".so";
+    private final static String LOCALE_LIB_SO_NAME = "lib" + LIB_NAME + "loc.so";
+    private String crashPath = "";
+
+    private static volatile boolean nativeLoaded = false;
+
+    private static File getNativeLibraryDir(Context context) {
+        File f = null;
+        if (context != null) {
+            try {
+                f = new File((String)ApplicationInfo.class.getField("nativeLibraryDir").get(context.getApplicationInfo()));
+            } catch (Throwable th) {
+                th.printStackTrace();
+            }
+        }
+        if (f == null) {
+            f = new File(context.getApplicationInfo().dataDir, "lib");
+        }
+        if (f.isDirectory()) {
+            return f;
+        }
+        return null;
     }
 
-    /* JADX WARN: Multi-variable type inference failed */
-    /* JADX WARN: Removed duplicated region for block: B:63:0x00c9 A[EXC_TOP_SPLITTER, SYNTHETIC] */
-    /* JADX WARN: Removed duplicated region for block: B:68:0x00d3 A[EXC_TOP_SPLITTER, SYNTHETIC] */
-    /* JADX WARN: Type inference failed for: r2v2 */
-    /* JADX WARN: Type inference failed for: r2v4, types: [java.util.zip.ZipFile] */
-    /* JADX WARN: Type inference failed for: r2v7, types: [int] */
-    /*
-        Code decompiled incorrectly, please refer to instructions dump.
-        To view partially-correct add '--show-bad-code' argument
-    */
-    public static boolean b(android.content.Context r5, java.io.File r6, java.io.File r7, java.lang.String r8) {
-        /*
-            Method dump skipped, instructions count: 220
-            To view this dump add '--comments-level debug' option
-        */
-        throw new UnsupportedOperationException("Method not decompiled: org.telegram.messenger.NativeLoader.b(android.content.Context, java.io.File, java.io.File, java.lang.String):boolean");
+    @SuppressLint({"UnsafeDynamicallyLoadedCode", "SetWorldReadable"})
+    private static boolean loadFromZip(Context context, File destDir, File destLocalFile, String folder) {
+        try {
+            for (File file : destDir.listFiles()) {
+                file.delete();
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+
+        ZipFile zipFile = null;
+        InputStream stream = null;
+        try {
+            zipFile = new ZipFile(context.getApplicationInfo().sourceDir);
+            ZipEntry entry = zipFile.getEntry("lib/" + folder + "/" + LIB_SO_NAME);
+            if (entry == null) {
+                throw new Exception("Unable to find file in apk:" + "lib/" + folder + "/" + LIB_NAME);
+            }
+            stream = zipFile.getInputStream(entry);
+
+            OutputStream out = new FileOutputStream(destLocalFile);
+            byte[] buf = new byte[4096];
+            int len;
+            while ((len = stream.read(buf)) > 0) {
+                Thread.yield();
+                out.write(buf, 0, len);
+            }
+            out.close();
+
+            destLocalFile.setReadable(true, false);
+            destLocalFile.setExecutable(true, false);
+            destLocalFile.setWritable(true);
+
+            try {
+                System.load(destLocalFile.getAbsolutePath());
+                nativeLoaded = true;
+            } catch (Error e) {
+                FileLog.e(e);
+            }
+            return true;
+        } catch (Exception e) {
+            FileLog.e(e);
+        } finally {
+            if (stream != null) {
+                try {
+                    stream.close();
+                } catch (Exception e) {
+                    FileLog.e(e);
+                }
+            }
+            if (zipFile != null) {
+                try {
+                    zipFile.close();
+                } catch (Exception e) {
+                    FileLog.e(e);
+                }
+            }
+        }
+        return false;
     }
+
+    @SuppressLint("UnsafeDynamicallyLoadedCode")
+    public static synchronized void initNativeLibs(Context context) {
+        if (nativeLoaded) {
+            return;
+        }
+
+        try {
+            try {
+                System.loadLibrary(LIB_NAME);
+                nativeLoaded = true;
+                if (BuildVars.LOGS_ENABLED) {
+                    FileLog.d("loaded normal lib");
+                }
+                return;
+            } catch (Error e) {
+                FileLog.e(e);
+            }
+
+            String folder;
+            try {
+                String str = Build.CPU_ABI;
+                if (Build.CPU_ABI.equalsIgnoreCase("x86_64")) {
+                    folder = "x86_64";
+                } else if (Build.CPU_ABI.equalsIgnoreCase("arm64-v8a")) {
+                    folder = "arm64-v8a";
+                } else if (Build.CPU_ABI.equalsIgnoreCase("armeabi-v7a")) {
+                    folder = "armeabi-v7a";
+                } else if (Build.CPU_ABI.equalsIgnoreCase("armeabi")) {
+                    folder = "armeabi";
+                } else if (Build.CPU_ABI.equalsIgnoreCase("x86")) {
+                    folder = "x86";
+                } else if (Build.CPU_ABI.equalsIgnoreCase("mips")) {
+                    folder = "mips";
+                } else {
+                    folder = "armeabi";
+                    if (BuildVars.LOGS_ENABLED) {
+                        FileLog.e("Unsupported arch: " + Build.CPU_ABI);
+                    }
+                }
+            } catch (Exception e) {
+                FileLog.e(e);
+                folder = "armeabi";
+            }
+
+            String javaArch = System.getProperty("os.arch");
+            if (javaArch != null && javaArch.contains("686")) {
+                folder = "x86";
+            }
+
+            /*File destFile = getNativeLibraryDir(context);
+            if (destFile != null) {
+                destFile = new File(destFile, LIB_SO_NAME);
+                if (destFile.exists()) {
+                    try {
+                        System.loadLibrary(LIB_NAME);
+                        nativeLoaded = true;
+                        return;
+                    } catch (Error e) {
+                        FileLog.e(e);
+                    }
+                }
+            }*/
+
+            File destDir = new File(context.getFilesDir(), "lib");
+            destDir.mkdirs();
+
+            File destLocalFile = new File(destDir, LOCALE_LIB_SO_NAME);
+            if (destLocalFile.exists()) {
+                try {
+                    if (BuildVars.LOGS_ENABLED) {
+                        FileLog.d("Load local lib");
+                    }
+                    System.load(destLocalFile.getAbsolutePath());
+                    nativeLoaded = true;
+                    return;
+                } catch (Error e) {
+                    FileLog.e(e);
+                }
+                destLocalFile.delete();
+            }
+
+            if (BuildVars.LOGS_ENABLED) {
+                FileLog.e("Library not found, arch = " + folder);
+            }
+
+            if (loadFromZip(context, destDir, destLocalFile, folder)) {
+                return;
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+
+        try {
+            System.loadLibrary(LIB_NAME);
+            nativeLoaded = true;
+        } catch (Error e) {
+            FileLog.e(e);
+        }
+    }
+
+    private static native void init(String path, boolean enable);
+    //public static native void crash();
 }

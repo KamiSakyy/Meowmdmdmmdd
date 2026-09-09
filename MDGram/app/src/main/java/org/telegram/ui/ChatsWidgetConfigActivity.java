@@ -1,56 +1,53 @@
 package org.telegram.ui;
 
+import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.os.Bundle;
-import java.util.ArrayList;
-import org.telegram.ui.ChatsWidgetConfigActivity;
-import org.telegram.ui.w;
-/* loaded from: classes2.dex */
+import android.view.View;
+
+import org.telegram.messenger.AndroidUtilities;
+
 public class ChatsWidgetConfigActivity extends ExternalActionActivity {
-    private int creatingAppWidgetId = 0;
 
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void S(ArrayList arrayList) {
-        Intent intent = new Intent();
-        intent.putExtra("appWidgetId", this.creatingAppWidgetId);
-        setResult(-1, intent);
-        finish();
-    }
+    private int creatingAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 
-    @Override // org.telegram.ui.ExternalActionActivity
-    public boolean y(Intent intent, boolean z, boolean z2, boolean z3, int i, int i2) {
-        if (!w(intent, z, z2, z3, i, i2)) {
+    @Override
+    protected boolean handleIntent(Intent intent, boolean isNew, boolean restore, boolean fromPassword, int intentAccount, int state) {
+        if (!checkPasscode(intent, isNew, restore, fromPassword, intentAccount, state)) {
             return false;
         }
         Bundle extras = intent.getExtras();
         if (extras != null) {
-            this.creatingAppWidgetId = extras.getInt("appWidgetId", 0);
+            creatingAppWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
         }
-        if (this.creatingAppWidgetId != 0) {
-            Bundle bundle = new Bundle();
-            bundle.putBoolean("onlySelect", true);
-            bundle.putInt("dialogsType", 10);
-            bundle.putBoolean("allowSwitchAccount", true);
-            w wVar = new w(0, this.creatingAppWidgetId);
-            wVar.I2(new w.c() { // from class: bl1
-                @Override // org.telegram.ui.w.c
-                public final void a(ArrayList arrayList) {
-                    ChatsWidgetConfigActivity.this.S(arrayList);
-                }
+        if (creatingAppWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
+            Bundle args = new Bundle();
+            args.putBoolean("onlySelect", true);
+            args.putInt("dialogsType", 10);
+            args.putBoolean("allowSwitchAccount", true);
+            EditWidgetActivity fragment = new EditWidgetActivity(EditWidgetActivity.TYPE_CHATS, creatingAppWidgetId);
+            fragment.setDelegate(dialogs -> {
+                Intent resultValue = new Intent();
+                resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, creatingAppWidgetId);
+                setResult(RESULT_OK, resultValue);
+                finish();
             });
-            if (org.telegram.messenger.a.Y1()) {
-                if (this.layersActionBarLayout.getFragmentStack().isEmpty()) {
-                    this.layersActionBarLayout.U(wVar);
+
+            if (AndroidUtilities.isTablet()) {
+                if (layersActionBarLayout.getFragmentStack().isEmpty()) {
+                    layersActionBarLayout.addFragmentToStack(fragment);
                 }
-            } else if (this.actionBarLayout.getFragmentStack().isEmpty()) {
-                this.actionBarLayout.U(wVar);
+            } else {
+                if (actionBarLayout.getFragmentStack().isEmpty()) {
+                    actionBarLayout.addFragmentToStack(fragment);
+                }
             }
-            if (!org.telegram.messenger.a.Y1()) {
-                this.backgroundTablet.setVisibility(8);
+            if (!AndroidUtilities.isTablet()) {
+                backgroundTablet.setVisibility(View.GONE);
             }
-            this.actionBarLayout.b();
-            if (org.telegram.messenger.a.Y1()) {
-                this.layersActionBarLayout.b();
+            actionBarLayout.showLastFragment();
+            if (AndroidUtilities.isTablet()) {
+                layersActionBarLayout.showLastFragment();
             }
             intent.setAction(null);
         } else {

@@ -1,630 +1,603 @@
 package org.telegram.tgnet;
 
+import org.telegram.messenger.BuildVars;
+import org.telegram.messenger.FileLog;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.LinkedList;
-import org.telegram.messenger.l;
-/* loaded from: classes2.dex */
-public class NativeByteBuffer extends b1 {
-    public static final ThreadLocal a = new a();
 
-    /* renamed from: a  reason: collision with other field name */
-    public int f13746a;
+public class NativeByteBuffer extends AbstractSerializedData {
 
-    /* renamed from: a  reason: collision with other field name */
-    public long f13747a;
+    protected long address;
+    public ByteBuffer buffer;
+    private boolean justCalc;
+    private int len;
+    public boolean reused = true;
 
-    /* renamed from: a  reason: collision with other field name */
-    public ByteBuffer f13748a;
-
-    /* renamed from: a  reason: collision with other field name */
-    public boolean f13749a;
-    public boolean b = true;
-
-    /* loaded from: classes2.dex */
-    public class a extends ThreadLocal {
-        @Override // java.lang.ThreadLocal
-        /* renamed from: a */
-        public LinkedList initialValue() {
-            return new LinkedList();
+    private static final ThreadLocal<LinkedList<NativeByteBuffer>> addressWrappers = new ThreadLocal<LinkedList<NativeByteBuffer>>() {
+        @Override
+        protected LinkedList<NativeByteBuffer> initialValue() {
+            return new LinkedList<>();
         }
-    }
+    };
 
-    private NativeByteBuffer(int i, boolean z) {
-    }
-
-    public static native long native_getFreeBuffer(int i);
-
-    public static native ByteBuffer native_getJavaByteBuffer(long j);
-
-    public static native int native_limit(long j);
-
-    public static native int native_position(long j);
-
-    public static native void native_reuse(long j);
-
-    public static NativeByteBuffer wrap(long j) {
-        if (j != 0) {
-            NativeByteBuffer nativeByteBuffer = (NativeByteBuffer) ((LinkedList) a.get()).poll();
-            if (nativeByteBuffer == null) {
-                nativeByteBuffer = new NativeByteBuffer(0, true);
+    public static NativeByteBuffer wrap(long address) {
+        if (address != 0) {
+            LinkedList<NativeByteBuffer> queue = addressWrappers.get();
+            NativeByteBuffer result = queue.poll();
+            if (result == null) {
+                result = new NativeByteBuffer(0, true);
             }
-            nativeByteBuffer.f13747a = j;
-            nativeByteBuffer.b = false;
-            ByteBuffer native_getJavaByteBuffer = native_getJavaByteBuffer(j);
-            nativeByteBuffer.f13748a = native_getJavaByteBuffer;
-            native_getJavaByteBuffer.limit(native_limit(j));
-            int native_position = native_position(j);
-            if (native_position <= nativeByteBuffer.f13748a.limit()) {
-                nativeByteBuffer.f13748a.position(native_position);
+            result.address = address;
+            result.reused = false;
+            result.buffer = native_getJavaByteBuffer(address);
+            result.buffer.limit(native_limit(address));
+            int position = native_position(address);
+            if (position <= result.buffer.limit()) {
+                result.buffer.position(position);
             }
-            nativeByteBuffer.f13748a.order(ByteOrder.LITTLE_ENDIAN);
-            return nativeByteBuffer;
+            result.buffer.order(ByteOrder.LITTLE_ENDIAN);
+            return result;
+        } else {
+            return null;
         }
-        return null;
     }
 
-    public int capacity() {
-        return this.f13748a.capacity();
+    private NativeByteBuffer(int address, boolean wrap) {
+
     }
 
-    public void compact() {
-        this.f13748a.compact();
-    }
-
-    public void finalize() {
-        if (!this.b) {
-            reuse();
+    public NativeByteBuffer(int size) throws Exception {
+        if (size >= 0) {
+            address = native_getFreeBuffer(size);
+            if (address != 0) {
+                buffer = native_getJavaByteBuffer(address);
+                buffer.position(0);
+                buffer.limit(size);
+                buffer.order(ByteOrder.LITTLE_ENDIAN);
+            }
+        } else {
+            throw new Exception("invalid NativeByteBuffer size");
         }
-        super.finalize();
     }
 
-    public int getIntFromByte(byte b) {
-        return b >= 0 ? b : b + 256;
-    }
-
-    public int getPosition() {
-        return this.f13748a.position();
-    }
-
-    public boolean hasRemaining() {
-        return this.f13748a.hasRemaining();
-    }
-
-    public int length() {
-        if (!this.f13749a) {
-            return this.f13748a.position();
-        }
-        return this.f13746a;
-    }
-
-    public int limit() {
-        return this.f13748a.limit();
+    public NativeByteBuffer(boolean calculate) {
+        justCalc = calculate;
     }
 
     public int position() {
-        return this.f13748a.position();
+        return buffer.position();
     }
 
-    public void put(ByteBuffer byteBuffer) {
-        this.f13748a.put(byteBuffer);
+    public void position(int position) {
+        buffer.position(position);
     }
 
-    @Override // defpackage.b1
-    public boolean readBool(boolean z) {
-        int readInt32 = readInt32(z);
-        if (readInt32 == -1720552011) {
-            return true;
-        }
-        if (readInt32 == -1132882121) {
-            return false;
-        }
-        if (!z) {
-            if (s60.f18613b) {
-                l.n("Not bool value!");
-            }
-            return false;
-        }
-        throw new RuntimeException("Not bool value!");
+    public int capacity() {
+        return buffer.capacity();
     }
 
-    @Override // defpackage.b1
-    public byte[] readByteArray(boolean z) {
-        int i;
-        try {
-            int intFromByte = getIntFromByte(this.f13748a.get());
-            if (intFromByte >= 254) {
-                intFromByte = getIntFromByte(this.f13748a.get()) | (getIntFromByte(this.f13748a.get()) << 8) | (getIntFromByte(this.f13748a.get()) << 16);
-                i = 4;
-            } else {
-                i = 1;
-            }
-            byte[] bArr = new byte[intFromByte];
-            this.f13748a.get(bArr);
-            while ((intFromByte + i) % 4 != 0) {
-                this.f13748a.get();
-                i++;
-            }
-            return bArr;
-        } catch (Exception e) {
-            if (!z) {
-                if (s60.f18613b) {
-                    l.n("read byte array error");
-                    l.p(e);
-                }
-                return new byte[0];
-            }
-            throw new RuntimeException("read byte array error", e);
-        }
+    public int limit() {
+        return buffer.limit();
     }
 
-    @Override // defpackage.b1
-    public NativeByteBuffer readByteBuffer(boolean z) {
-        int i;
-        try {
-            int intFromByte = getIntFromByte(this.f13748a.get());
-            if (intFromByte >= 254) {
-                intFromByte = getIntFromByte(this.f13748a.get()) | (getIntFromByte(this.f13748a.get()) << 8) | (getIntFromByte(this.f13748a.get()) << 16);
-                i = 4;
-            } else {
-                i = 1;
-            }
-            NativeByteBuffer nativeByteBuffer = new NativeByteBuffer(intFromByte);
-            int limit = this.f13748a.limit();
-            ByteBuffer byteBuffer = this.f13748a;
-            byteBuffer.limit(byteBuffer.position() + intFromByte);
-            nativeByteBuffer.f13748a.put(this.f13748a);
-            this.f13748a.limit(limit);
-            nativeByteBuffer.f13748a.position(0);
-            while ((intFromByte + i) % 4 != 0) {
-                this.f13748a.get();
-                i++;
-            }
-            return nativeByteBuffer;
-        } catch (Exception e) {
-            if (!z) {
-                if (s60.f18613b) {
-                    l.n("read byte array error");
-                    l.p(e);
-                    return null;
-                }
-                return null;
-            }
-            throw new RuntimeException("read byte array error", e);
-        }
+    public void limit(int limit) {
+        buffer.limit(limit);
     }
 
-    public void readBytes(byte[] bArr, boolean z) {
-        try {
-            this.f13748a.get(bArr);
-        } catch (Exception e) {
-            if (!z) {
-                if (s60.f18613b) {
-                    l.n("read raw error");
-                    l.p(e);
-                    return;
-                }
-                return;
-            }
-            throw new RuntimeException("read raw error", e);
-        }
-    }
-
-    public byte[] readData(int i, boolean z) {
-        byte[] bArr = new byte[i];
-        readBytes(bArr, z);
-        return bArr;
-    }
-
-    @Override // defpackage.b1
-    public double readDouble(boolean z) {
-        try {
-            return Double.longBitsToDouble(readInt64(z));
-        } catch (Exception e) {
-            if (!z) {
-                if (s60.f18613b) {
-                    l.n("read double error");
-                    l.p(e);
-                    return 0.0d;
-                }
-                return 0.0d;
-            }
-            throw new RuntimeException("read double error", e);
-        }
-    }
-
-    @Override // defpackage.b1
-    public int readInt32(boolean z) {
-        try {
-            return this.f13748a.getInt();
-        } catch (Exception e) {
-            if (!z) {
-                if (s60.f18613b) {
-                    l.n("read int32 error");
-                    l.p(e);
-                    return 0;
-                }
-                return 0;
-            }
-            throw new RuntimeException("read int32 error", e);
-        }
-    }
-
-    @Override // defpackage.b1
-    public long readInt64(boolean z) {
-        try {
-            return this.f13748a.getLong();
-        } catch (Exception e) {
-            if (!z) {
-                if (s60.f18613b) {
-                    l.n("read int64 error");
-                    l.p(e);
-                    return 0L;
-                }
-                return 0L;
-            }
-            throw new RuntimeException("read int64 error", e);
-        }
-    }
-
-    @Override // defpackage.b1
-    public String readString(boolean z) {
-        int i;
-        int position = getPosition();
-        try {
-            int intFromByte = getIntFromByte(this.f13748a.get());
-            if (intFromByte >= 254) {
-                intFromByte = getIntFromByte(this.f13748a.get()) | (getIntFromByte(this.f13748a.get()) << 8) | (getIntFromByte(this.f13748a.get()) << 16);
-                i = 4;
-            } else {
-                i = 1;
-            }
-            byte[] bArr = new byte[intFromByte];
-            this.f13748a.get(bArr);
-            while ((intFromByte + i) % 4 != 0) {
-                this.f13748a.get();
-                i++;
-            }
-            return new String(bArr, "UTF-8");
-        } catch (Exception e) {
-            if (!z) {
-                if (s60.f18613b) {
-                    l.n("read string error");
-                    l.p(e);
-                }
-                position(position);
-                return "";
-            }
-            throw new RuntimeException("read string error", e);
-        }
-    }
-
-    @Override // defpackage.b1
-    public int remaining() {
-        return this.f13748a.remaining();
-    }
-
-    public void reuse() {
-        if (this.f13747a != 0) {
-            ((LinkedList) a.get()).add(this);
-            this.b = true;
-            native_reuse(this.f13747a);
-        }
+    public void put(ByteBuffer buff) {
+        buffer.put(buff);
     }
 
     public void rewind() {
-        if (this.f13749a) {
-            this.f13746a = 0;
+        if (justCalc) {
+            len = 0;
         } else {
-            this.f13748a.rewind();
+            buffer.rewind();
         }
     }
 
-    public void skip(int i) {
-        if (i == 0) {
-            return;
-        }
-        if (!this.f13749a) {
-            ByteBuffer byteBuffer = this.f13748a;
-            byteBuffer.position(byteBuffer.position() + i);
-            return;
-        }
-        this.f13746a += i;
+    public void compact() {
+        buffer.compact();
     }
 
-    @Override // defpackage.b1
-    public void writeBool(boolean z) {
-        if (!this.f13749a) {
-            if (z) {
-                writeInt32(-1720552011);
-                return;
+    public boolean hasRemaining() {
+        return buffer.hasRemaining();
+    }
+
+    public void writeInt32(int x) {
+        try {
+            if (!justCalc) {
+                buffer.putInt(x);
             } else {
-                writeInt32(-1132882121);
-                return;
+                len += 4;
+            }
+        } catch (Exception e) {
+            if (BuildVars.LOGS_ENABLED) {
+                FileLog.e("write int32 error");
+                FileLog.e(e);
             }
         }
-        this.f13746a += 4;
+    }
+
+    public void writeInt64(long x) {
+        try {
+            if (!justCalc) {
+                buffer.putLong(x);
+            } else {
+                len += 8;
+            }
+        } catch (Exception e) {
+            if (BuildVars.LOGS_ENABLED) {
+                FileLog.e("write int64 error");
+                FileLog.e(e);
+            }
+        }
+    }
+
+    public void writeBool(boolean value) {
+        if (!justCalc) {
+            if (value) {
+                writeInt32(0x997275b5);
+            } else {
+                writeInt32(0xbc799737);
+            }
+        } else {
+            len += 4;
+        }
+    }
+
+    public void writeBytes(byte[] b) {
+        try {
+            if (!justCalc) {
+                buffer.put(b);
+            } else {
+                len += b.length;
+            }
+        } catch (Exception e) {
+            if (BuildVars.LOGS_ENABLED) {
+                FileLog.e("write raw error");
+                FileLog.e(e);
+            }
+        }
+    }
+
+    public void writeBytes(byte[] b, int offset, int count) {
+        try {
+            if (!justCalc) {
+                buffer.put(b, offset, count);
+            } else {
+                len += count;
+            }
+        } catch (Exception e) {
+            if (BuildVars.LOGS_ENABLED) {
+                FileLog.e("write raw error");
+                FileLog.e(e);
+            }
+        }
     }
 
     public void writeByte(int i) {
         writeByte((byte) i);
     }
 
-    public void writeByteArray(byte[] bArr, int i, int i2) {
+    public void writeByte(byte b) {
         try {
-            if (i2 <= 253) {
-                if (this.f13749a) {
-                    this.f13746a++;
-                } else {
-                    this.f13748a.put((byte) i2);
-                }
-            } else if (this.f13749a) {
-                this.f13746a += 4;
+            if (!justCalc) {
+                buffer.put(b);
             } else {
-                this.f13748a.put((byte) -2);
-                this.f13748a.put((byte) i2);
-                this.f13748a.put((byte) (i2 >> 8));
-                this.f13748a.put((byte) (i2 >> 16));
-            }
-            if (this.f13749a) {
-                this.f13746a += i2;
-            } else {
-                this.f13748a.put(bArr, i, i2);
-            }
-            for (int i3 = i2 <= 253 ? 1 : 4; (i2 + i3) % 4 != 0; i3++) {
-                if (this.f13749a) {
-                    this.f13746a++;
-                } else {
-                    this.f13748a.put((byte) 0);
-                }
+                len += 1;
             }
         } catch (Exception e) {
-            if (s60.f18613b) {
-                l.n("write byte array error");
-                l.p(e);
+            if (BuildVars.LOGS_ENABLED) {
+                FileLog.e("write byte error");
+                FileLog.e(e);
             }
         }
     }
 
-    @Override // defpackage.b1
-    public void writeByteBuffer(NativeByteBuffer nativeByteBuffer) {
-        int i;
+    public void writeString(String s) {
+        if (s == null) {
+            if (BuildVars.LOGS_ENABLED) {
+                FileLog.e("write string null");
+                FileLog.e(new Throwable());
+            }
+            s = "";
+        }
         try {
-            int limit = nativeByteBuffer.limit();
-            if (limit <= 253) {
-                if (!this.f13749a) {
-                    this.f13748a.put((byte) limit);
+            writeByteArray(s.getBytes("UTF-8"));
+        } catch (Exception e) {
+            if (BuildVars.LOGS_ENABLED) {
+                FileLog.e("write string error");
+                FileLog.e(e);
+            }
+        }
+    }
+
+    public void writeByteArray(byte[] b, int offset, int count) {
+        try {
+            if (count <= 253) {
+                if (!justCalc) {
+                    buffer.put((byte) count);
                 } else {
-                    this.f13746a++;
+                    len += 1;
                 }
-            } else if (!this.f13749a) {
-                this.f13748a.put((byte) -2);
-                this.f13748a.put((byte) limit);
-                this.f13748a.put((byte) (limit >> 8));
-                this.f13748a.put((byte) (limit >> 16));
             } else {
-                this.f13746a += 4;
-            }
-            if (!this.f13749a) {
-                nativeByteBuffer.rewind();
-                this.f13748a.put(nativeByteBuffer.f13748a);
-            } else {
-                this.f13746a += limit;
-            }
-            if (limit <= 253) {
-                i = 1;
-            } else {
-                i = 4;
-            }
-            while ((limit + i) % 4 != 0) {
-                if (!this.f13749a) {
-                    this.f13748a.put((byte) 0);
+                if (!justCalc) {
+                    buffer.put((byte) 254);
+                    buffer.put((byte) count);
+                    buffer.put((byte) (count >> 8));
+                    buffer.put((byte) (count >> 16));
                 } else {
-                    this.f13746a++;
+                    len += 4;
+                }
+            }
+            if (!justCalc) {
+                buffer.put(b, offset, count);
+            } else {
+                len += count;
+            }
+            int i = count <= 253 ? 1 : 4;
+            while ((count + i) % 4 != 0) {
+                if (!justCalc) {
+                    buffer.put((byte) 0);
+                } else {
+                    len += 1;
                 }
                 i++;
             }
         } catch (Exception e) {
-            l.p(e);
+            if (BuildVars.LOGS_ENABLED) {
+                FileLog.e("write byte array error");
+                FileLog.e(e);
+            }
         }
     }
 
-    public void writeBytes(byte[] bArr) {
+    public void writeByteArray(byte[] b) {
         try {
-            if (!this.f13749a) {
-                this.f13748a.put(bArr);
+            if (b.length <= 253) {
+                if (!justCalc) {
+                    buffer.put((byte) b.length);
+                } else {
+                    len += 1;
+                }
             } else {
-                this.f13746a += bArr.length;
+                if (!justCalc) {
+                    buffer.put((byte) 254);
+                    buffer.put((byte) b.length);
+                    buffer.put((byte) (b.length >> 8));
+                    buffer.put((byte) (b.length >> 16));
+                } else {
+                    len += 4;
+                }
+            }
+            if (!justCalc) {
+                buffer.put(b);
+            } else {
+                len += b.length;
+            }
+            int i = b.length <= 253 ? 1 : 4;
+            while ((b.length + i) % 4 != 0) {
+                if (!justCalc) {
+                    buffer.put((byte) 0);
+                } else {
+                    len += 1;
+                }
+                i++;
             }
         } catch (Exception e) {
-            if (s60.f18613b) {
-                l.n("write raw error");
-                l.p(e);
+            if (BuildVars.LOGS_ENABLED) {
+                FileLog.e("write byte array error");
+                FileLog.e(e);
             }
         }
     }
 
-    @Override // defpackage.b1
     public void writeDouble(double d) {
         try {
             writeInt64(Double.doubleToRawLongBits(d));
         } catch (Exception e) {
-            if (s60.f18613b) {
-                l.n("write double error");
-                l.p(e);
+            if (BuildVars.LOGS_ENABLED) {
+                FileLog.e("write double error");
+                FileLog.e(e);
             }
         }
     }
 
-    @Override // defpackage.b1
-    public void writeInt32(int i) {
+    public void writeByteBuffer(NativeByteBuffer b) {
         try {
-            if (!this.f13749a) {
-                this.f13748a.putInt(i);
+            int l = b.limit();
+            if (l <= 253) {
+                if (!justCalc) {
+                    buffer.put((byte) l);
+                } else {
+                    len += 1;
+                }
             } else {
-                this.f13746a += 4;
+                if (!justCalc) {
+                    buffer.put((byte) 254);
+                    buffer.put((byte) l);
+                    buffer.put((byte) (l >> 8));
+                    buffer.put((byte) (l >> 16));
+                } else {
+                    len += 4;
+                }
             }
-        } catch (Exception e) {
-            if (s60.f18613b) {
-                l.n("write int32 error");
-                l.p(e);
-            }
-        }
-    }
-
-    @Override // defpackage.b1
-    public void writeInt64(long j) {
-        try {
-            if (!this.f13749a) {
-                this.f13748a.putLong(j);
+            if (!justCalc) {
+                b.rewind();
+                buffer.put(b.buffer);
             } else {
-                this.f13746a += 8;
+                len += l;
+            }
+            int i = l <= 253 ? 1 : 4;
+            while ((l + i) % 4 != 0) {
+                if (!justCalc) {
+                    buffer.put((byte) 0);
+                } else {
+                    len += 1;
+                }
+                i++;
             }
         } catch (Exception e) {
-            if (s60.f18613b) {
-                l.n("write int64 error");
-                l.p(e);
-            }
+            FileLog.e(e);
         }
     }
 
-    @Override // defpackage.b1
-    public void writeString(String str) {
-        if (str == null) {
-            if (s60.f18613b) {
-                l.n("write string null");
-                l.p(new Throwable());
-            }
-            str = "";
-        }
-        try {
-            writeByteArray(str.getBytes("UTF-8"));
-        } catch (Exception e) {
-            if (s60.f18613b) {
-                l.n("write string error");
-                l.p(e);
-            }
+    public void writeBytes(NativeByteBuffer b) {
+        if (justCalc) {
+            len += b.limit();
+        } else {
+            b.rewind();
+            buffer.put(b.buffer);
         }
     }
 
-    public void limit(int i) {
-        this.f13748a.limit(i);
+    public int getIntFromByte(byte b) {
+        return b >= 0 ? b : ((int) b) + 256;
     }
 
-    public void position(int i) {
-        this.f13748a.position(i);
-    }
-
-    public void writeByte(byte b) {
-        try {
-            if (!this.f13749a) {
-                this.f13748a.put(b);
-            } else {
-                this.f13746a++;
-            }
-        } catch (Exception e) {
-            if (s60.f18613b) {
-                l.n("write byte error");
-                l.p(e);
-            }
+    public int length() {
+        if (!justCalc) {
+            return buffer.position();
         }
+        return len;
     }
 
-    public NativeByteBuffer(int i) {
-        if (i >= 0) {
-            long native_getFreeBuffer = native_getFreeBuffer(i);
-            this.f13747a = native_getFreeBuffer;
-            if (native_getFreeBuffer != 0) {
-                ByteBuffer native_getJavaByteBuffer = native_getJavaByteBuffer(native_getFreeBuffer);
-                this.f13748a = native_getJavaByteBuffer;
-                native_getJavaByteBuffer.position(0);
-                this.f13748a.limit(i);
-                this.f13748a.order(ByteOrder.LITTLE_ENDIAN);
-                return;
-            }
+    public void skip(int count) {
+        if (count == 0) {
             return;
         }
-        throw new Exception("invalid NativeByteBuffer size");
+        if (!justCalc) {
+            buffer.position(buffer.position() + count);
+        } else {
+            len += count;
+        }
     }
 
-    public void readBytes(byte[] bArr, int i, int i2, boolean z) {
+    public int getPosition() {
+        return buffer.position();
+    }
+
+    public int readInt32(boolean exception) {
         try {
-            this.f13748a.get(bArr, i, i2);
+            return buffer.getInt();
         } catch (Exception e) {
-            if (!z) {
-                if (s60.f18613b) {
-                    l.n("read raw error");
-                    l.p(e);
-                    return;
-                }
-                return;
-            }
-            throw new RuntimeException("read raw error", e);
-        }
-    }
-
-    public void writeBytes(byte[] bArr, int i, int i2) {
-        try {
-            if (!this.f13749a) {
-                this.f13748a.put(bArr, i, i2);
+            if (exception) {
+                throw new RuntimeException("read int32 error", e);
             } else {
-                this.f13746a += i2;
-            }
-        } catch (Exception e) {
-            if (s60.f18613b) {
-                l.n("write raw error");
-                l.p(e);
-            }
-        }
-    }
-
-    public NativeByteBuffer(boolean z) {
-        this.f13749a = z;
-    }
-
-    public void writeBytes(NativeByteBuffer nativeByteBuffer) {
-        if (this.f13749a) {
-            this.f13746a += nativeByteBuffer.limit();
-            return;
-        }
-        nativeByteBuffer.rewind();
-        this.f13748a.put(nativeByteBuffer.f13748a);
-    }
-
-    @Override // defpackage.b1
-    public void writeByteArray(byte[] bArr) {
-        try {
-            if (bArr.length <= 253) {
-                if (this.f13749a) {
-                    this.f13746a++;
-                } else {
-                    this.f13748a.put((byte) bArr.length);
-                }
-            } else if (this.f13749a) {
-                this.f13746a += 4;
-            } else {
-                this.f13748a.put((byte) -2);
-                this.f13748a.put((byte) bArr.length);
-                this.f13748a.put((byte) (bArr.length >> 8));
-                this.f13748a.put((byte) (bArr.length >> 16));
-            }
-            if (this.f13749a) {
-                this.f13746a += bArr.length;
-            } else {
-                this.f13748a.put(bArr);
-            }
-            for (int i = bArr.length <= 253 ? 1 : 4; (bArr.length + i) % 4 != 0; i++) {
-                if (this.f13749a) {
-                    this.f13746a++;
-                } else {
-                    this.f13748a.put((byte) 0);
+                if (BuildVars.LOGS_ENABLED) {
+                    FileLog.e("read int32 error");
+                    FileLog.e(e);
                 }
             }
+        }
+        return 0;
+    }
+
+    public boolean readBool(boolean exception) {
+        int consructor = readInt32(exception);
+        if (consructor == 0x997275b5) {
+            return true;
+        } else if (consructor == 0xbc799737) {
+            return false;
+        }
+        if (exception) {
+            throw new RuntimeException("Not bool value!");
+        } else {
+            if (BuildVars.LOGS_ENABLED) {
+                FileLog.e("Not bool value!");
+            }
+        }
+        return false;
+    }
+
+    public long readInt64(boolean exception) {
+        try {
+            return buffer.getLong();
         } catch (Exception e) {
-            if (s60.f18613b) {
-                l.n("write byte array error");
-                l.p(e);
+            if (exception) {
+                throw new RuntimeException("read int64 error", e);
+            } else {
+                if (BuildVars.LOGS_ENABLED) {
+                    FileLog.e("read int64 error");
+                    FileLog.e(e);
+                }
+            }
+        }
+        return 0;
+    }
+
+    public void readBytes(byte[] b, boolean exception) {
+        try {
+            buffer.get(b);
+        } catch (Exception e) {
+            if (exception) {
+                throw new RuntimeException("read raw error", e);
+            } else {
+                if (BuildVars.LOGS_ENABLED) {
+                    FileLog.e("read raw error");
+                    FileLog.e(e);
+                }
             }
         }
     }
+
+    public void readBytes(byte[] b, int offset, int count, boolean exception) {
+        try {
+            buffer.get(b, offset, count);
+        } catch (Exception e) {
+            if (exception) {
+                throw new RuntimeException("read raw error", e);
+            } else {
+                if (BuildVars.LOGS_ENABLED) {
+                    FileLog.e("read raw error");
+                    FileLog.e(e);
+                }
+            }
+        }
+    }
+
+    public byte[] readData(int count, boolean exception) {
+        byte[] arr = new byte[count];
+        readBytes(arr, exception);
+        return arr;
+    }
+
+    public String readString(boolean exception) {
+        int startReadPosition = getPosition();
+        try {
+            int sl = 1;
+            int l = getIntFromByte(buffer.get());
+            if (l >= 254) {
+                l = getIntFromByte(buffer.get()) | (getIntFromByte(buffer.get()) << 8) | (getIntFromByte(buffer.get()) << 16);
+                sl = 4;
+            }
+            byte[] b = new byte[l];
+            buffer.get(b);
+            int i = sl;
+            while ((l + i) % 4 != 0) {
+                buffer.get();
+                i++;
+            }
+            return new String(b, "UTF-8");
+        } catch (Exception e) {
+            if (exception) {
+                throw new RuntimeException("read string error", e);
+            } else {
+                if (BuildVars.LOGS_ENABLED) {
+                    FileLog.e("read string error");
+                    FileLog.e(e);
+                }
+            }
+            position(startReadPosition);
+        }
+        return "";
+    }
+
+    public byte[] readByteArray(boolean exception) {
+        try {
+            int sl = 1;
+            int l = getIntFromByte(buffer.get());
+            if (l >= 254) {
+                l = getIntFromByte(buffer.get()) | (getIntFromByte(buffer.get()) << 8) | (getIntFromByte(buffer.get()) << 16);
+                sl = 4;
+            }
+            byte[] b = new byte[l];
+            buffer.get(b);
+            int i = sl;
+            while ((l + i) % 4 != 0) {
+                buffer.get();
+                i++;
+            }
+            return b;
+        } catch (Exception e) {
+            if (exception) {
+                throw new RuntimeException("read byte array error", e);
+            } else {
+                if (BuildVars.LOGS_ENABLED) {
+                    FileLog.e("read byte array error");
+                    FileLog.e(e);
+                }
+            }
+        }
+        return new byte[0];
+    }
+
+    public NativeByteBuffer readByteBuffer(boolean exception) {
+        try {
+            int sl = 1;
+            int l = getIntFromByte(buffer.get());
+            if (l >= 254) {
+                l = getIntFromByte(buffer.get()) | (getIntFromByte(buffer.get()) << 8) | (getIntFromByte(buffer.get()) << 16);
+                sl = 4;
+            }
+            NativeByteBuffer b = new NativeByteBuffer(l);
+            int old = buffer.limit();
+            buffer.limit(buffer.position() + l);
+            b.buffer.put(buffer);
+            buffer.limit(old);
+            b.buffer.position(0);
+            int i = sl;
+            while ((l + i) % 4 != 0) {
+                buffer.get();
+                i++;
+            }
+            return b;
+        } catch (Exception e) {
+            if (exception) {
+                throw new RuntimeException("read byte array error", e);
+            } else {
+                if (BuildVars.LOGS_ENABLED) {
+                    FileLog.e("read byte array error");
+                    FileLog.e(e);
+                }
+            }
+        }
+        return null;
+    }
+
+    public double readDouble(boolean exception) {
+        try {
+            return Double.longBitsToDouble(readInt64(exception));
+        } catch (Exception e) {
+            if (exception) {
+                throw new RuntimeException("read double error", e);
+            } else {
+                if (BuildVars.LOGS_ENABLED) {
+                    FileLog.e("read double error");
+                    FileLog.e(e);
+                }
+            }
+        }
+        return 0;
+    }
+
+    public void reuse() {
+        if (address != 0) {
+            addressWrappers.get().add(this);
+            reused = true;
+            native_reuse(address);
+        }
+    }
+
+    @Override
+    public int remaining() {
+        return buffer.remaining();
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        if (!reused) {
+            reuse();
+        }
+        super.finalize();
+    }
+
+    public static native long native_getFreeBuffer(int length);
+    public static native ByteBuffer native_getJavaByteBuffer(long address);
+    public static native int native_limit(long address);
+    public static native int native_position(long address);
+    public static native void native_reuse(long address);
 }

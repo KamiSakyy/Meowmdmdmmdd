@@ -1,84 +1,90 @@
+/*
+ * This is the source code of Telegram for Android v. 5.x.x.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Nikolai Kudashov, 2013-2018.
+ */
+
 package org.telegram.messenger;
 
 import android.content.Intent;
+
+import org.telegram.messenger.support.JobIntentService;
+
 import java.util.concurrent.CountDownLatch;
-import org.telegram.messenger.KeepAliveJob;
-/* loaded from: classes2.dex */
-public class KeepAliveJob extends e84 {
 
-    /* renamed from: a */
-    public static volatile CountDownLatch f12210a;
-    public static volatile boolean d;
-    public static final Object b = new Object();
-    public static Runnable a = new sd4();
+public class KeepAliveJob extends JobIntentService {
 
-    public static void l() {
-        Utilities.b.j(new sd4());
-    }
+    private static volatile CountDownLatch countDownLatch;
+    private static volatile boolean startingJob;
+    private static final Object sync = new Object();
 
-    public static void m() {
-        synchronized (b) {
-            if (f12210a != null) {
-                if (s60.f18613b) {
-                    l.k("finish keep-alive job");
-                }
-                f12210a.countDown();
+    public static void startJob() {
+        Utilities.globalQueue.postRunnable(() -> {
+            if (startingJob || countDownLatch != null) {
+                return;
             }
-            if (d) {
-                if (s60.f18613b) {
-                    l.k("finish queued keep-alive job");
-                }
-                d = false;
-            }
-        }
-    }
-
-    public static /* synthetic */ void n() {
-        if (!d && f12210a == null) {
             try {
-                if (s60.f18613b) {
-                    l.k("starting keep-alive job");
+                if (BuildVars.LOGS_ENABLED) {
+                    FileLog.d("starting keep-alive job");
                 }
-                synchronized (b) {
-                    d = true;
+                synchronized (sync) {
+                    startingJob = true;
                 }
-                e84.d(b.f12514a, KeepAliveJob.class, 1000, new Intent());
-            } catch (Exception unused) {
-            }
-        }
-    }
+                enqueueWork(ApplicationLoader.applicationContext, KeepAliveJob.class, 1000, new Intent());
+            } catch (Exception ignore) {
 
-    public static void o() {
-        Utilities.b.j(new Runnable() { // from class: td4
-            @Override // java.lang.Runnable
-            public final void run() {
-                KeepAliveJob.n();
             }
         });
     }
 
-    @Override // defpackage.e84
-    public void g(Intent intent) {
-        synchronized (b) {
-            if (!d) {
+    private static void finishJobInternal() {
+        synchronized (sync) {
+            if (countDownLatch != null) {
+                if (BuildVars.LOGS_ENABLED) {
+                    FileLog.d("finish keep-alive job");
+                }
+                countDownLatch.countDown();
+            }
+            if (startingJob) {
+                if (BuildVars.LOGS_ENABLED) {
+                    FileLog.d("finish queued keep-alive job");
+                }
+                startingJob = false;
+            }
+        }
+    }
+
+    public static void finishJob() {
+        Utilities.globalQueue.postRunnable(KeepAliveJob::finishJobInternal);
+    }
+
+    private static Runnable finishJobByTimeoutRunnable = KeepAliveJob::finishJobInternal;
+
+    @Override
+    protected void onHandleWork(Intent intent) {
+        synchronized (sync) {
+            if (!startingJob) {
                 return;
             }
-            f12210a = new CountDownLatch(1);
-            if (s60.f18613b) {
-                l.k("started keep-alive job");
-            }
-            Utilities.b.k(a, 60000L);
-            try {
-                f12210a.await();
-            } catch (Throwable unused) {
-            }
-            Utilities.b.b(a);
-            synchronized (b) {
-                f12210a = null;
-            }
-            if (s60.f18613b) {
-                l.k("ended keep-alive job");
-            }
+            countDownLatch = new CountDownLatch(1);
+        }
+        if (BuildVars.LOGS_ENABLED) {
+            FileLog.d("started keep-alive job");
+        }
+        Utilities.globalQueue.postRunnable(finishJobByTimeoutRunnable, 60 * 1000);
+        try {
+            countDownLatch.await();
+        } catch (Throwable ignore) {
+
+        }
+        Utilities.globalQueue.cancelRunnable(finishJobByTimeoutRunnable);
+        synchronized (sync) {
+            countDownLatch = null;
+        }
+        if (BuildVars.LOGS_ENABLED) {
+            FileLog.d("ended keep-alive job");
         }
     }
 }

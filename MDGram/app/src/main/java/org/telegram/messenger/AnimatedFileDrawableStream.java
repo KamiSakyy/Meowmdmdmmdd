@@ -1,126 +1,137 @@
 package org.telegram.messenger;
 
+import org.telegram.tgnet.TLRPC;
+
 import java.util.concurrent.CountDownLatch;
-/* loaded from: classes2.dex */
-public class AnimatedFileDrawableStream implements s13 {
-    public int a;
 
-    /* renamed from: a  reason: collision with other field name */
-    public long f12165a;
+public class AnimatedFileDrawableStream implements FileLoadOperationStream {
 
-    /* renamed from: a  reason: collision with other field name */
-    public Object f12166a;
+    private final FileLoadOperation loadOperation;
+    private CountDownLatch countDownLatch;
+    private TLRPC.Document document;
+    private ImageLocation location;
+    private Object parentObject;
+    private int currentAccount;
+    private volatile boolean canceled;
+    private final Object sync = new Object();
+    private long lastOffset;
+    private boolean waitingForLoad;
+    private boolean preview;
+    private boolean finishedLoadingFile;
+    private String finishedFilePath;
 
-    /* renamed from: a  reason: collision with other field name */
-    public String f12167a;
+    public AnimatedFileDrawableStream(TLRPC.Document d, ImageLocation l, Object p, int a, boolean prev) {
+        document = d;
+        location = l;
+        parentObject = p;
+        currentAccount = a;
+        preview = prev;
+        loadOperation = FileLoader.getInstance(currentAccount).loadStreamFile(this, document, location, parentObject, 0, preview);
+    }
 
-    /* renamed from: a  reason: collision with other field name */
-    public CountDownLatch f12168a;
+    public boolean isFinishedLoadingFile() {
+        return finishedLoadingFile;
+    }
 
-    /* renamed from: a  reason: collision with other field name */
-    public final j f12169a;
+    public String getFinishedFilePath() {
+        return finishedFilePath;
+    }
 
-    /* renamed from: a  reason: collision with other field name */
-    public t f12170a;
-
-    /* renamed from: a  reason: collision with other field name */
-    public tm9 f12171a;
-
-    /* renamed from: a  reason: collision with other field name */
-    public volatile boolean f12172a;
-    public final Object b = new Object();
-
-    /* renamed from: b  reason: collision with other field name */
-    public boolean f12173b;
-    public boolean c;
-    public boolean d;
-
-    public AnimatedFileDrawableStream(tm9 tm9Var, t tVar, Object obj, int i, boolean z) {
-        this.f12171a = tm9Var;
-        this.f12170a = tVar;
-        this.f12166a = obj;
-        this.a = i;
-        this.c = z;
-        this.f12169a = k.r0(i).f1(this, this.f12171a, this.f12170a, this.f12166a, 0L, this.c);
+    public int read(int offset, int readLength) {
+        synchronized (sync) {
+            if (canceled) {
+                return 0;
+            }
+        }
+        if (readLength == 0) {
+            return 0;
+        } else {
+            long availableLength = 0;
+            try {
+                while (availableLength == 0) {
+                    long[] result = loadOperation.getDownloadedLengthFromOffset(offset, readLength);
+                    availableLength = result[0];
+                    if (!finishedLoadingFile && result[1] != 0) {
+                        finishedLoadingFile = true;
+                        finishedFilePath = loadOperation.getCacheFileFinal().getAbsolutePath();
+                    }
+                    if (availableLength == 0) {
+                        if (loadOperation.isPaused() || lastOffset != offset || preview) {
+                            FileLoader.getInstance(currentAccount).loadStreamFile(this, document, location, parentObject, offset, preview);
+                        }
+                        synchronized (sync) {
+                            if (canceled) {
+                                FileLoader.getInstance(currentAccount).cancelLoadFile(document);
+                                return 0;
+                            }
+                            countDownLatch = new CountDownLatch(1);
+                        }
+                        if (!preview) {
+                            FileLoader.getInstance(currentAccount).setLoadingVideo(document, false, true);
+                        }
+                        waitingForLoad = true;
+                        countDownLatch.await();
+                        waitingForLoad = false;
+                    }
+                }
+                lastOffset = offset + availableLength;
+            } catch (Exception e) {
+                FileLog.e(e, false);
+            }
+            return (int) availableLength;
+        }
     }
 
     public void cancel() {
         cancel(true);
     }
 
-    public int getCurrentAccount() {
-        return this.a;
-    }
-
-    public tm9 getDocument() {
-        return this.f12171a;
-    }
-
-    public String getFinishedFilePath() {
-        return this.f12167a;
-    }
-
-    public t getLocation() {
-        return this.f12170a;
-    }
-
-    public Object getParentObject() {
-        return this.f12171a;
-    }
-
-    public boolean isFinishedLoadingFile() {
-        return this.d;
-    }
-
-    public boolean isPreview() {
-        return this.c;
-    }
-
-    public boolean isWaitingForLoad() {
-        return this.f12173b;
-    }
-
-    @Override // defpackage.s13
-    public void newDataAvailable() {
-        CountDownLatch countDownLatch = this.f12168a;
-        if (countDownLatch != null) {
-            countDownLatch.countDown();
+    public void cancel(boolean removeLoading) {
+        synchronized (sync) {
+            if (countDownLatch != null) {
+                countDownLatch.countDown();
+                if (removeLoading && !canceled && !preview) {
+                    FileLoader.getInstance(currentAccount).removeLoadingVideo(document, false, true);
+                }
+            }
+            canceled = true;
         }
-    }
-
-    /* JADX WARN: Multi-variable type inference failed */
-    /* JADX WARN: Removed duplicated region for block: B:33:0x0072 A[Catch: all -> 0x00a4, TRY_ENTER, TryCatch #1 {Exception -> 0x00ac, blocks: (B:15:0x0025, B:17:0x002a, B:19:0x0030, B:22:0x0042, B:24:0x004a, B:26:0x0050, B:31:0x006f, B:32:0x0071, B:40:0x008b, B:42:0x008f, B:43:0x009a, B:30:0x0057, B:33:0x0072, B:35:0x0076, B:36:0x0081, B:38:0x0083, B:39:0x008a), top: B:61:0x0025 }] */
-    /* JADX WARN: Type inference failed for: r12v3 */
-    /* JADX WARN: Type inference failed for: r12v4, types: [boolean, int] */
-    /* JADX WARN: Type inference failed for: r12v5 */
-    /*
-        Code decompiled incorrectly, please refer to instructions dump.
-        To view partially-correct add '--show-bad-code' argument
-    */
-    public int read(int r18, int r19) {
-        /*
-            Method dump skipped, instructions count: 189
-            To view this dump add '--comments-level debug' option
-        */
-        throw new UnsupportedOperationException("Method not decompiled: org.telegram.messenger.AnimatedFileDrawableStream.read(int, int):int");
     }
 
     public void reset() {
-        synchronized (this.b) {
-            this.f12172a = false;
+        synchronized (sync) {
+            canceled = false;
         }
     }
 
-    public void cancel(boolean z) {
-        synchronized (this.b) {
-            CountDownLatch countDownLatch = this.f12168a;
-            if (countDownLatch != null) {
-                countDownLatch.countDown();
-                if (z && !this.f12172a && !this.c) {
-                    k.r0(this.a).h1(this.f12171a, false, true);
-                }
-            }
-            this.f12172a = true;
+    public TLRPC.Document getDocument() {
+        return document;
+    }
+
+    public ImageLocation getLocation() {
+        return location;
+    }
+
+    public Object getParentObject() {
+        return document;
+    }
+
+    public boolean isPreview() {
+        return preview;
+    }
+
+    public int getCurrentAccount() {
+        return currentAccount;
+    }
+
+    public boolean isWaitingForLoad() {
+        return waitingForLoad;
+    }
+
+    @Override
+    public void newDataAvailable() {
+        if (countDownLatch != null) {
+            countDownLatch.countDown();
         }
     }
 }

@@ -1,321 +1,238 @@
 package org.telegram.messenger.voip;
 
-import android.graphics.Point;
-import java.nio.ByteBuffer;
-import java.util.concurrent.CountDownLatch;
-import org.telegram.messenger.e0;
-import org.telegram.messenger.l;
-import org.telegram.messenger.voip.Instance;
-import org.telegram.messenger.voip.NativeInstance;
+import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.ApplicationLoader;
+import org.telegram.messenger.BuildVars;
+import org.telegram.messenger.FileLog;
+import org.telegram.messenger.SharedConfig;
 import org.webrtc.ContextUtils;
 import org.webrtc.VideoSink;
-/* loaded from: classes2.dex */
+
+import java.nio.ByteBuffer;
+import java.util.concurrent.CountDownLatch;
+
 public class NativeInstance {
-    private AudioLevelsCallback audioLevelsCallback;
-    private RequestBroadcastPartCallback cancelRequestBroadcastPartCallback;
-    private Instance.FinalState finalState;
-    private boolean isGroup;
-    private long nativePtr;
-    private Instance.OnRemoteMediaStateUpdatedListener onRemoteMediaStateUpdatedListener;
+
+    private Instance.OnStateUpdatedListener onStateUpdatedListener;
     private Instance.OnSignalBarsUpdatedListener onSignalBarsUpdatedListener;
     private Instance.OnSignalingDataListener onSignalDataListener;
-    private Instance.OnStateUpdatedListener onStateUpdatedListener;
-    private PayloadCallback payloadCallback;
+    private Instance.OnRemoteMediaStateUpdatedListener onRemoteMediaStateUpdatedListener;
+    private long nativePtr;
     private String persistentStateFilePath;
-    private RequestBroadcastPartCallback requestBroadcastPartCallback;
-    private RequestCurrentTimeCallback requestCurrentTimeCallback;
-    private CountDownLatch stopBarrier;
-    private float[] temp = new float[1];
+
+    private PayloadCallback payloadCallback;
+    private AudioLevelsCallback audioLevelsCallback;
     private VideoSourcesCallback unknownParticipantsCallback;
+    private RequestBroadcastPartCallback requestBroadcastPartCallback;
+    private RequestBroadcastPartCallback cancelRequestBroadcastPartCallback;
+    private RequestCurrentTimeCallback requestCurrentTimeCallback;
+    private float[] temp = new float[1];
 
-    /* loaded from: classes2.dex */
-    public interface AudioLevelsCallback {
-        void run(int[] iArr, float[] fArr, boolean[] zArr);
-    }
+    private boolean isGroup;
 
-    /* loaded from: classes2.dex */
-    public interface PayloadCallback {
-        void run(int i, String str);
-    }
-
-    /* loaded from: classes2.dex */
-    public interface RequestBroadcastPartCallback {
-        void run(long j, long j2, int i, int i2);
-    }
-
-    /* loaded from: classes2.dex */
-    public interface RequestCurrentTimeCallback {
-        void run(long j);
-    }
-
-    /* loaded from: classes2.dex */
     public static class SsrcGroup {
         public String semantics;
         public int[] ssrcs;
     }
 
-    /* loaded from: classes2.dex */
+    public interface PayloadCallback {
+        void run(int ssrc, String value);
+    }
+
+    public interface AudioLevelsCallback {
+        void run(int[] uids, float[] levels, boolean[] voice);
+    }
+
     public interface VideoSourcesCallback {
-        void run(long j, int[] iArr);
+        void run(long taskPtr, int[] ssrcs);
     }
 
-    public static native long createVideoCapturer(VideoSink videoSink, int i);
-
-    public static native void destroyVideoCapturer(long j);
-
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void lambda$onAudioLevelsUpdated$1(int[] iArr, float[] fArr, boolean[] zArr) {
-        this.audioLevelsCallback.run(iArr, fArr, zArr);
+    public interface RequestBroadcastPartCallback {
+        void run(long timestamp, long duration, int videoChannel, int quality);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void lambda$onEmitJoinPayload$3(int i, String str) {
-        this.payloadCallback.run(i, str);
+    public interface RequestCurrentTimeCallback {
+        void run(long taskPtr);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void lambda$onNetworkStateUpdated$0(boolean z, boolean z2) {
-        this.onStateUpdatedListener.onStateUpdated(z ? 1 : 0, z2);
-    }
-
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void lambda$onParticipantDescriptionsRequired$2(long j, int[] iArr) {
-        this.unknownParticipantsCallback.run(j, iArr);
-    }
-
-    public static NativeInstance make(String str, Instance.Config config, String str2, Instance.Endpoint[] endpointArr, Instance.Proxy proxy, int i, Instance.EncryptionKey encryptionKey, VideoSink videoSink, long j, AudioLevelsCallback audioLevelsCallback) {
-        if (s60.f18613b) {
-            l.k("create new tgvoip instance, version " + str);
+    public static NativeInstance make(String version, Instance.Config config, String path, Instance.Endpoint[] endpoints, Instance.Proxy proxy, int networkType, Instance.EncryptionKey encryptionKey, VideoSink remoteSink, long videoCapturer, AudioLevelsCallback audioLevelsCallback) {
+        if (BuildVars.LOGS_ENABLED) {
+            FileLog.d("create new tgvoip instance, version " + version);
         }
-        NativeInstance nativeInstance = new NativeInstance();
-        nativeInstance.persistentStateFilePath = str2;
-        nativeInstance.audioLevelsCallback = audioLevelsCallback;
-        Point point = org.telegram.messenger.a.f12447a;
-        Point point2 = org.telegram.messenger.a.f12447a;
-        nativeInstance.nativePtr = makeNativeInstance(str, nativeInstance, config, str2, endpointArr, proxy, i, encryptionKey, videoSink, j, Math.min(point.x, point.y) / Math.max(point2.x, point2.y));
-        return nativeInstance;
+        NativeInstance instance = new NativeInstance();
+        instance.persistentStateFilePath = path;
+        instance.audioLevelsCallback = audioLevelsCallback;
+        float aspectRatio = Math.min(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y) / (float) Math.max(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y);
+        instance.nativePtr = makeNativeInstance(version, instance, config, path, endpoints, proxy, networkType, encryptionKey, remoteSink, videoCapturer, aspectRatio);
+        return instance;
     }
 
-    public static NativeInstance makeGroup(String str, long j, boolean z, boolean z2, PayloadCallback payloadCallback, AudioLevelsCallback audioLevelsCallback, VideoSourcesCallback videoSourcesCallback, RequestBroadcastPartCallback requestBroadcastPartCallback, RequestBroadcastPartCallback requestBroadcastPartCallback2, RequestCurrentTimeCallback requestCurrentTimeCallback) {
-        ContextUtils.initialize(org.telegram.messenger.b.f12514a);
-        NativeInstance nativeInstance = new NativeInstance();
-        nativeInstance.payloadCallback = payloadCallback;
-        nativeInstance.audioLevelsCallback = audioLevelsCallback;
-        nativeInstance.unknownParticipantsCallback = videoSourcesCallback;
-        nativeInstance.requestBroadcastPartCallback = requestBroadcastPartCallback;
-        nativeInstance.cancelRequestBroadcastPartCallback = requestBroadcastPartCallback2;
-        nativeInstance.requestCurrentTimeCallback = requestCurrentTimeCallback;
-        nativeInstance.isGroup = true;
-        nativeInstance.nativePtr = makeGroupNativeInstance(nativeInstance, str, e0.f12742l, j, z, z2);
-        return nativeInstance;
+    public static NativeInstance makeGroup(String logPath, long videoCapturer, boolean screencast, boolean noiseSupression, PayloadCallback payloadCallback, AudioLevelsCallback audioLevelsCallback, VideoSourcesCallback unknownParticipantsCallback, RequestBroadcastPartCallback requestBroadcastPartCallback, RequestBroadcastPartCallback cancelRequestBroadcastPartCallback, RequestCurrentTimeCallback requestCurrentTimeCallback) {
+        ContextUtils.initialize(ApplicationLoader.applicationContext);
+        NativeInstance instance = new NativeInstance();
+        instance.payloadCallback = payloadCallback;
+        instance.audioLevelsCallback = audioLevelsCallback;
+        instance.unknownParticipantsCallback = unknownParticipantsCallback;
+        instance.requestBroadcastPartCallback = requestBroadcastPartCallback;
+        instance.cancelRequestBroadcastPartCallback = cancelRequestBroadcastPartCallback;
+        instance.requestCurrentTimeCallback = requestCurrentTimeCallback;
+        instance.isGroup = true;
+        instance.nativePtr = makeGroupNativeInstance(instance, logPath, SharedConfig.disableVoiceAudioEffects, videoCapturer, screencast, noiseSupression);
+        return instance;
     }
-
-    private static native long makeGroupNativeInstance(NativeInstance nativeInstance, String str, boolean z, long j, boolean z2, boolean z3);
-
-    private static native long makeNativeInstance(String str, NativeInstance nativeInstance, Instance.Config config, String str2, Instance.Endpoint[] endpointArr, Instance.Proxy proxy, int i, Instance.EncryptionKey encryptionKey, VideoSink videoSink, long j, float f);
-
-    private void onAudioLevelsUpdated(final int[] iArr, final float[] fArr, final boolean[] zArr) {
-        if (this.isGroup && iArr != null && iArr.length == 0) {
-            return;
-        }
-        org.telegram.messenger.a.m3(new Runnable() { // from class: ti6
-            @Override // java.lang.Runnable
-            public final void run() {
-                NativeInstance.this.lambda$onAudioLevelsUpdated$1(iArr, fArr, zArr);
-            }
-        });
-    }
-
-    private void onCancelRequestBroadcastPart(long j, int i, int i2) {
-        this.cancelRequestBroadcastPartCallback.run(j, 0L, 0, 0);
-    }
-
-    private void onEmitJoinPayload(final String str, final int i) {
-        try {
-            org.telegram.messenger.a.m3(new Runnable() { // from class: ri6
-                @Override // java.lang.Runnable
-                public final void run() {
-                    NativeInstance.this.lambda$onEmitJoinPayload$3(i, str);
-                }
-            });
-        } catch (Exception e) {
-            l.p(e);
-        }
-    }
-
-    private void onNetworkStateUpdated(final boolean z, final boolean z2) {
-        if (this.onStateUpdatedListener != null) {
-            org.telegram.messenger.a.m3(new Runnable() { // from class: ui6
-                @Override // java.lang.Runnable
-                public final void run() {
-                    NativeInstance.this.lambda$onNetworkStateUpdated$0(z, z2);
-                }
-            });
-        }
-    }
-
-    private void onParticipantDescriptionsRequired(final long j, final int[] iArr) {
-        if (this.unknownParticipantsCallback == null) {
-            return;
-        }
-        org.telegram.messenger.a.m3(new Runnable() { // from class: si6
-            @Override // java.lang.Runnable
-            public final void run() {
-                NativeInstance.this.lambda$onParticipantDescriptionsRequired$2(j, iArr);
-            }
-        });
-    }
-
-    private void onRemoteMediaStateUpdated(int i, int i2) {
-        Instance.OnRemoteMediaStateUpdatedListener onRemoteMediaStateUpdatedListener = this.onRemoteMediaStateUpdatedListener;
-        if (onRemoteMediaStateUpdatedListener != null) {
-            onRemoteMediaStateUpdatedListener.onMediaStateUpdated(i, i2);
-        }
-    }
-
-    private void onRequestBroadcastPart(long j, long j2, int i, int i2) {
-        this.requestBroadcastPartCallback.run(j, j2, i, i2);
-    }
-
-    private void onSignalBarsUpdated(int i) {
-        Instance.OnSignalBarsUpdatedListener onSignalBarsUpdatedListener = this.onSignalBarsUpdatedListener;
-        if (onSignalBarsUpdatedListener != null) {
-            onSignalBarsUpdatedListener.onSignalBarsUpdated(i);
-        }
-    }
-
-    private void onSignalingData(byte[] bArr) {
-        Instance.OnSignalingDataListener onSignalingDataListener = this.onSignalDataListener;
-        if (onSignalingDataListener != null) {
-            onSignalingDataListener.onSignalingData(bArr);
-        }
-    }
-
-    private void onStateUpdated(int i) {
-        Instance.OnStateUpdatedListener onStateUpdatedListener = this.onStateUpdatedListener;
-        if (onStateUpdatedListener != null) {
-            onStateUpdatedListener.onStateUpdated(i, false);
-        }
-    }
-
-    private void onStop(Instance.FinalState finalState) {
-        this.finalState = finalState;
-        CountDownLatch countDownLatch = this.stopBarrier;
-        if (countDownLatch != null) {
-            countDownLatch.countDown();
-        }
-    }
-
-    private void requestCurrentTime(long j) {
-        this.requestCurrentTimeCallback.run(j);
-    }
-
-    public static native void setVideoStateCapturer(long j, int i);
-
-    private native void stopGroupNative();
-
-    private native void stopNative();
-
-    public static native void switchCameraCapturer(long j, boolean z);
-
-    public native void activateVideoCapturer(long j);
-
-    public native long addIncomingVideoOutput(int i, String str, SsrcGroup[] ssrcGroupArr, VideoSink videoSink);
-
-    public native void clearVideoCapturer();
-
-    public native String getDebugInfo();
-
-    public native String getLastError();
 
     public int getPeerCapabilities() {
         return 0;
     }
 
-    public native byte[] getPersistentState();
-
-    public native long getPreferredRelayId();
-
-    public native Instance.TrafficStats getTrafficStats();
-
-    public native String getVersion();
-
-    public native boolean hasVideoCapturer();
-
     public boolean isGroup() {
-        return this.isGroup;
+        return isGroup;
     }
 
-    public native void onMediaDescriptionAvailable(long j, int[] iArr);
-
-    public native void onRequestTimeComplete(long j, long j2);
-
-    public native void onSignalingDataReceive(byte[] bArr);
-
-    public native void onStreamPartAvailable(long j, ByteBuffer byteBuffer, int i, long j2, int i2, int i3);
-
-    public native void prepareForStream(boolean z);
-
-    public native void removeIncomingVideoOutput(long j);
-
-    public native void resetGroupInstance(boolean z, boolean z2);
-
-    public native void setAudioOutputGainControlEnabled(boolean z);
-
-    public native void setBufferSize(int i);
-
-    public native void setEchoCancellationStrength(int i);
-
-    public native void setGlobalServerConfig(String str);
-
-    public native void setJoinResponsePayload(String str);
-
-    public native void setMuteMicrophone(boolean z);
-
-    public native void setNetworkType(int i);
-
-    public native void setNoiseSuppressionEnabled(boolean z);
-
-    public void setOnRemoteMediaStateUpdatedListener(Instance.OnRemoteMediaStateUpdatedListener onRemoteMediaStateUpdatedListener) {
-        this.onRemoteMediaStateUpdatedListener = onRemoteMediaStateUpdatedListener;
+    public void setOnStateUpdatedListener(Instance.OnStateUpdatedListener listener) {
+        onStateUpdatedListener = listener;
     }
 
-    public void setOnSignalBarsUpdatedListener(Instance.OnSignalBarsUpdatedListener onSignalBarsUpdatedListener) {
-        this.onSignalBarsUpdatedListener = onSignalBarsUpdatedListener;
+    public void setOnSignalBarsUpdatedListener(Instance.OnSignalBarsUpdatedListener listener) {
+        onSignalBarsUpdatedListener = listener;
     }
 
-    public void setOnSignalDataListener(Instance.OnSignalingDataListener onSignalingDataListener) {
-        this.onSignalDataListener = onSignalingDataListener;
+    public void setOnSignalDataListener(Instance.OnSignalingDataListener listener) {
+        onSignalDataListener = listener;
     }
 
-    public void setOnStateUpdatedListener(Instance.OnStateUpdatedListener onStateUpdatedListener) {
-        this.onStateUpdatedListener = onStateUpdatedListener;
+    public void setOnRemoteMediaStateUpdatedListener(Instance.OnRemoteMediaStateUpdatedListener listener) {
+        onRemoteMediaStateUpdatedListener = listener;
     }
 
-    public native void setVideoEndpointQuality(String str, int i);
+    private void onStateUpdated(int state/*, boolean */) {
+        if (onStateUpdatedListener != null) {
+            onStateUpdatedListener.onStateUpdated(state, false);
+        }
+    }
 
-    public native void setVideoState(int i);
+    private void onSignalBarsUpdated(int signalBars) {
+        if (onSignalBarsUpdatedListener != null) {
+            onSignalBarsUpdatedListener.onSignalBarsUpdated(signalBars);
+        }
+    }
 
-    public native void setVolume(int i, double d);
+    private void onSignalingData(byte[] data) {
+        if (onSignalDataListener != null) {
+            onSignalDataListener.onSignalingData(data);
+        }
+    }
 
-    public native void setupOutgoingVideo(VideoSink videoSink, int i);
+    private void onRemoteMediaStateUpdated(int audioState, int videoState) {
+        if (onRemoteMediaStateUpdatedListener != null) {
+            onRemoteMediaStateUpdatedListener.onMediaStateUpdated(audioState, videoState);
+        }
+    }
 
-    public native void setupOutgoingVideoCreated(long j);
+    //group calls
+    private void onNetworkStateUpdated(boolean connected, boolean inTransition) {
+        if (onStateUpdatedListener != null) {
+            AndroidUtilities.runOnUIThread(() -> onStateUpdatedListener.onStateUpdated(connected ? 1 : 0, inTransition));
+        }
+    }
+
+    private void onAudioLevelsUpdated(int[] uids, float[] levels, boolean[] voice) {
+        if (isGroup && uids != null && uids.length == 0) {
+            return;
+        }
+        AndroidUtilities.runOnUIThread(() -> audioLevelsCallback.run(uids, levels, voice));
+    }
+
+    private void onParticipantDescriptionsRequired(long taskPtr, int[] ssrcs) {
+        if (unknownParticipantsCallback == null) {
+            return;
+        }
+        AndroidUtilities.runOnUIThread(() -> unknownParticipantsCallback.run(taskPtr, ssrcs));
+    }
+
+    private void onEmitJoinPayload(String json, int ssrc) {
+        try {
+            AndroidUtilities.runOnUIThread(() -> payloadCallback.run(ssrc, json));
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+    }
+
+    private void onRequestBroadcastPart(long timestamp, long duration, int videoChannel, int quality) {
+        requestBroadcastPartCallback.run(timestamp, duration, videoChannel, quality);
+    }
+
+    private void onCancelRequestBroadcastPart(long timestamp, int videoChannel, int quality) {
+        cancelRequestBroadcastPartCallback.run(timestamp, 0, 0, 0);
+    }
+
+    private void requestCurrentTime(long taskPtr) {
+        requestCurrentTimeCallback.run(taskPtr);
+    }
+
+    public native void setJoinResponsePayload(String payload);
+    public native void prepareForStream(boolean isRtpStream);
+    public native void resetGroupInstance(boolean set, boolean disconnect);
+
+    private Instance.FinalState finalState;
+    private CountDownLatch stopBarrier;
+    private void onStop(Instance.FinalState state) {
+        finalState = state;
+        if (stopBarrier != null) {
+            stopBarrier.countDown();
+        }
+    }
 
     public Instance.FinalState stop() {
-        this.stopBarrier = new CountDownLatch(1);
+        stopBarrier = new CountDownLatch(1);
         stopNative();
         try {
-            this.stopBarrier.await();
+            stopBarrier.await();
         } catch (Exception e) {
-            l.p(e);
+            FileLog.e(e);
         }
-        return this.finalState;
+        return finalState;
     }
 
     public void stopGroup() {
         stopGroupNative();
     }
 
-    public native void switchCamera(boolean z);
+    private static native long makeGroupNativeInstance(NativeInstance instance, String persistentStateFilePath, boolean highQuality, long videoCapturer, boolean screencast, boolean noiseSupression);
+    private static native long makeNativeInstance(String version, NativeInstance instance, Instance.Config config, String persistentStateFilePath, Instance.Endpoint[] endpoints, Instance.Proxy proxy, int networkType, Instance.EncryptionKey encryptionKey, VideoSink remoteSink, long videoCapturer, float aspectRatio);
+    public static native long createVideoCapturer(VideoSink localSink, int type);
+    public static native void setVideoStateCapturer(long videoCapturer, int videoState);
+    public static native void switchCameraCapturer(long videoCapturer, boolean front);
+    public static native void destroyVideoCapturer(long videoCapturer);
+
+    public native void onMediaDescriptionAvailable(long taskPtr, int[] ssrcs);
+    public native void setNoiseSuppressionEnabled(boolean value);
+    public native void activateVideoCapturer(long videoCapturer);
+    public native void clearVideoCapturer();
+    public native long addIncomingVideoOutput(int quality, String endpointId, SsrcGroup[] ssrcGroups, VideoSink remoteSink);
+    public native void removeIncomingVideoOutput(long nativeRemoteSink);
+    public native void setVideoEndpointQuality(String endpointId, int quality);
+    public native void setGlobalServerConfig(String serverConfigJson);
+    public native void setBufferSize(int size);
+    public native String getVersion();
+    public native void setNetworkType(int networkType);
+    public native void setMuteMicrophone(boolean muteMicrophone);
+    public native void setVolume(int ssrc, double volume);
+    public native void setAudioOutputGainControlEnabled(boolean enabled);
+    public native void setEchoCancellationStrength(int strength);
+    public native String getLastError();
+    public native String getDebugInfo();
+    public native long getPreferredRelayId();
+    public native Instance.TrafficStats getTrafficStats();
+    public native byte[] getPersistentState();
+    private native void stopNative();
+    private native void stopGroupNative();
+    public native void setupOutgoingVideo(VideoSink localSink, int type);
+    public native void setupOutgoingVideoCreated(long videoCapturer);
+    public native void switchCamera(boolean front);
+    public native void setVideoState(int videoState);
+    public native void onSignalingDataReceive(byte[] data);
+    public native void onStreamPartAvailable(long ts, ByteBuffer buffer, int size, long timestamp, int videoChannel, int quality);
+    public native boolean hasVideoCapturer();
+    public native void onRequestTimeComplete(long taskPtr, long time);
 }

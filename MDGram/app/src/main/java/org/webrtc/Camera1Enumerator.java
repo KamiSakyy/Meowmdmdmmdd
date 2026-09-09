@@ -1,177 +1,185 @@
+/*
+ *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
 
-import android.hardware.Camera;
 import android.os.SystemClock;
+import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import org.webrtc.CameraEnumerationAndroid;
-import org.webrtc.CameraVideoCapturer;
-/* loaded from: classes3.dex */
+import org.webrtc.CameraEnumerationAndroid.CaptureFormat;
+
+@SuppressWarnings("deprecation")
 public class Camera1Enumerator implements CameraEnumerator {
-    private static final String TAG = "Camera1Enumerator";
-    private static List<List<CameraEnumerationAndroid.CaptureFormat>> cachedSupportedFormats;
-    private final boolean captureToTexture;
+  private final static String TAG = "Camera1Enumerator";
+  // Each entry contains the supported formats for corresponding camera index. The formats for all
+  // cameras are enumerated on the first call to getSupportedFormats(), and cached for future
+  // reference.
+  private static List<List<CaptureFormat>> cachedSupportedFormats;
 
-    public Camera1Enumerator() {
-        this(true);
+  private final boolean captureToTexture;
+
+  public Camera1Enumerator() {
+    this(true /* captureToTexture */);
+  }
+
+  public Camera1Enumerator(boolean captureToTexture) {
+    this.captureToTexture = captureToTexture;
+  }
+
+  // Returns device names that can be used to create a new VideoCapturerAndroid.
+  @Override
+  public String[] getDeviceNames() {
+    ArrayList<String> namesList = new ArrayList<>();
+    for (int i = 0; i < android.hardware.Camera.getNumberOfCameras(); ++i) {
+      String name = getDeviceName(i);
+      if (name != null) {
+        namesList.add(name);
+        Logging.d(TAG, "Index: " + i + ". " + name);
+      } else {
+        Logging.e(TAG, "Index: " + i + ". Failed to query camera name.");
+      }
+    }
+    String[] namesArray = new String[namesList.size()];
+    return namesList.toArray(namesArray);
+  }
+
+  @Override
+  public boolean isFrontFacing(String deviceName) {
+    android.hardware.Camera.CameraInfo info = getCameraInfo(getCameraIndex(deviceName));
+    return info != null && info.facing == android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT;
+  }
+
+  @Override
+  public boolean isBackFacing(String deviceName) {
+    android.hardware.Camera.CameraInfo info = getCameraInfo(getCameraIndex(deviceName));
+    return info != null && info.facing == android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK;
+  }
+
+  @Override
+  public List<CaptureFormat> getSupportedFormats(String deviceName) {
+    return getSupportedFormats(getCameraIndex(deviceName));
+  }
+
+  @Override
+  public CameraVideoCapturer createCapturer(
+      String deviceName, CameraVideoCapturer.CameraEventsHandler eventsHandler) {
+    return new Camera1Capturer(deviceName, eventsHandler, captureToTexture);
+  }
+
+  private static @Nullable android.hardware.Camera.CameraInfo getCameraInfo(int index) {
+    android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
+    try {
+      android.hardware.Camera.getCameraInfo(index, info);
+    } catch (Exception e) {
+      Logging.e(TAG, "getCameraInfo failed on index " + index, e);
+      return null;
+    }
+    return info;
+  }
+
+  static synchronized List<CaptureFormat> getSupportedFormats(int cameraId) {
+    if (cachedSupportedFormats == null) {
+      cachedSupportedFormats = new ArrayList<List<CaptureFormat>>();
+      for (int i = 0; i < android.hardware.Camera.getNumberOfCameras(); ++i) {
+        cachedSupportedFormats.add(enumerateFormats(i));
+      }
+    }
+    return cachedSupportedFormats.get(cameraId);
+  }
+
+  private static List<CaptureFormat> enumerateFormats(int cameraId) {
+    Logging.d(TAG, "Get supported formats for camera index " + cameraId + ".");
+    final long startTimeMs = SystemClock.elapsedRealtime();
+    final android.hardware.Camera.Parameters parameters;
+    android.hardware.Camera camera = null;
+    try {
+      Logging.d(TAG, "Opening camera with index " + cameraId);
+      camera = android.hardware.Camera.open(cameraId);
+      parameters = camera.getParameters();
+    } catch (RuntimeException e) {
+      Logging.e(TAG, "Open camera failed on camera index " + cameraId, e);
+      return new ArrayList<CaptureFormat>();
+    } finally {
+      if (camera != null) {
+        camera.release();
+      }
     }
 
-    public static List<CameraEnumerationAndroid.CaptureFormat.FramerateRange> convertFramerates(List<int[]> list) {
-        ArrayList arrayList = new ArrayList();
-        for (int[] iArr : list) {
-            arrayList.add(new CameraEnumerationAndroid.CaptureFormat.FramerateRange(iArr[0], iArr[1]));
-        }
-        return arrayList;
+    final List<CaptureFormat> formatList = new ArrayList<CaptureFormat>();
+    try {
+      int minFps = 0;
+      int maxFps = 0;
+      final List<int[]> listFpsRange = parameters.getSupportedPreviewFpsRange();
+      if (listFpsRange != null) {
+        // getSupportedPreviewFpsRange() returns a sorted list. Take the fps range
+        // corresponding to the highest fps.
+        final int[] range = listFpsRange.get(listFpsRange.size() - 1);
+        minFps = range[android.hardware.Camera.Parameters.PREVIEW_FPS_MIN_INDEX];
+        maxFps = range[android.hardware.Camera.Parameters.PREVIEW_FPS_MAX_INDEX];
+      }
+      for (android.hardware.Camera.Size size : parameters.getSupportedPreviewSizes()) {
+        formatList.add(new CaptureFormat(size.width, size.height, minFps, maxFps));
+      }
+    } catch (Exception e) {
+      Logging.e(TAG, "getSupportedFormats() failed on camera index " + cameraId, e);
     }
 
-    public static List<Size> convertSizes(List<Camera.Size> list) {
-        ArrayList arrayList = new ArrayList();
-        for (Camera.Size size : list) {
-            arrayList.add(new Size(size.width, size.height));
-        }
-        return arrayList;
+    final long endTimeMs = SystemClock.elapsedRealtime();
+    Logging.d(TAG, "Get supported formats for camera index " + cameraId + " done."
+            + " Time spent: " + (endTimeMs - startTimeMs) + " ms.");
+    return formatList;
+  }
+
+  // Convert from android.hardware.Camera.Size to Size.
+  static List<Size> convertSizes(List<android.hardware.Camera.Size> cameraSizes) {
+    final List<Size> sizes = new ArrayList<Size>();
+    for (android.hardware.Camera.Size size : cameraSizes) {
+      sizes.add(new Size(size.width, size.height));
+    }
+    return sizes;
+  }
+
+  // Convert from int[2] to CaptureFormat.FramerateRange.
+  static List<CaptureFormat.FramerateRange> convertFramerates(List<int[]> arrayRanges) {
+    final List<CaptureFormat.FramerateRange> ranges = new ArrayList<CaptureFormat.FramerateRange>();
+    for (int[] range : arrayRanges) {
+      ranges.add(new CaptureFormat.FramerateRange(
+          range[android.hardware.Camera.Parameters.PREVIEW_FPS_MIN_INDEX],
+          range[android.hardware.Camera.Parameters.PREVIEW_FPS_MAX_INDEX]));
+    }
+    return ranges;
+  }
+
+  // Returns the camera index for camera with name |deviceName|, or throws IllegalArgumentException
+  // if no such camera can be found.
+  static int getCameraIndex(String deviceName) {
+    Logging.d(TAG, "getCameraIndex: " + deviceName);
+    for (int i = 0; i < android.hardware.Camera.getNumberOfCameras(); ++i) {
+      if (deviceName.equals(getDeviceName(i))) {
+        return i;
+      }
+    }
+    throw new IllegalArgumentException("No such camera: " + deviceName);
+  }
+
+  // Returns the name of the camera with camera index. Returns null if the
+  // camera can not be used.
+  static @Nullable String getDeviceName(int index) {
+    android.hardware.Camera.CameraInfo info = getCameraInfo(index);
+    if (info == null) {
+      return null;
     }
 
-    private static List<CameraEnumerationAndroid.CaptureFormat> enumerateFormats(int i) {
-        int i2;
-        Logging.d(TAG, "Get supported formats for camera index " + i + ".");
-        long elapsedRealtime = SystemClock.elapsedRealtime();
-        Camera camera = null;
-        try {
-            try {
-                Logging.d(TAG, "Opening camera with index " + i);
-                camera = Camera.open(i);
-                Camera.Parameters parameters = camera.getParameters();
-                camera.release();
-                ArrayList arrayList = new ArrayList();
-                try {
-                    List<int[]> supportedPreviewFpsRange = parameters.getSupportedPreviewFpsRange();
-                    int i3 = 0;
-                    if (supportedPreviewFpsRange != null) {
-                        int[] iArr = supportedPreviewFpsRange.get(supportedPreviewFpsRange.size() - 1);
-                        i3 = iArr[0];
-                        i2 = iArr[1];
-                    } else {
-                        i2 = 0;
-                    }
-                    for (Camera.Size size : parameters.getSupportedPreviewSizes()) {
-                        arrayList.add(new CameraEnumerationAndroid.CaptureFormat(size.width, size.height, i3, i2));
-                    }
-                } catch (Exception e) {
-                    Logging.e(TAG, "getSupportedFormats() failed on camera index " + i, e);
-                }
-                long elapsedRealtime2 = SystemClock.elapsedRealtime();
-                Logging.d(TAG, "Get supported formats for camera index " + i + " done. Time spent: " + (elapsedRealtime2 - elapsedRealtime) + " ms.");
-                return arrayList;
-            } catch (RuntimeException e2) {
-                Logging.e(TAG, "Open camera failed on camera index " + i, e2);
-                ArrayList arrayList2 = new ArrayList();
-                if (camera != null) {
-                    camera.release();
-                }
-                return arrayList2;
-            }
-        } catch (Throwable th) {
-            if (camera != null) {
-                camera.release();
-            }
-            throw th;
-        }
-    }
-
-    public static int getCameraIndex(String str) {
-        Logging.d(TAG, "getCameraIndex: " + str);
-        for (int i = 0; i < Camera.getNumberOfCameras(); i++) {
-            if (str.equals(getDeviceName(i))) {
-                return i;
-            }
-        }
-        throw new IllegalArgumentException("No such camera: " + str);
-    }
-
-    private static Camera.CameraInfo getCameraInfo(int i) {
-        Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
-        try {
-            Camera.getCameraInfo(i, cameraInfo);
-            return cameraInfo;
-        } catch (Exception e) {
-            Logging.e(TAG, "getCameraInfo failed on index " + i, e);
-            return null;
-        }
-    }
-
-    public static String getDeviceName(int i) {
-        String str;
-        Camera.CameraInfo cameraInfo = getCameraInfo(i);
-        if (cameraInfo == null) {
-            return null;
-        }
-        if (cameraInfo.facing == 1) {
-            str = "front";
-        } else {
-            str = "back";
-        }
-        return "Camera " + i + ", Facing " + str + ", Orientation " + cameraInfo.orientation;
-    }
-
-    @Override // org.webrtc.CameraEnumerator
-    public CameraVideoCapturer createCapturer(String str, CameraVideoCapturer.CameraEventsHandler cameraEventsHandler) {
-        return new Camera1Capturer(str, cameraEventsHandler, this.captureToTexture);
-    }
-
-    @Override // org.webrtc.CameraEnumerator
-    public String[] getDeviceNames() {
-        ArrayList arrayList = new ArrayList();
-        for (int i = 0; i < Camera.getNumberOfCameras(); i++) {
-            String deviceName = getDeviceName(i);
-            if (deviceName != null) {
-                arrayList.add(deviceName);
-                Logging.d(TAG, "Index: " + i + ". " + deviceName);
-            } else {
-                Logging.e(TAG, "Index: " + i + ". Failed to query camera name.");
-            }
-        }
-        return (String[]) arrayList.toArray(new String[arrayList.size()]);
-    }
-
-    @Override // org.webrtc.CameraEnumerator
-    public List<CameraEnumerationAndroid.CaptureFormat> getSupportedFormats(String str) {
-        return getSupportedFormats(getCameraIndex(str));
-    }
-
-    @Override // org.webrtc.CameraEnumerator
-    public boolean isBackFacing(String str) {
-        Camera.CameraInfo cameraInfo = getCameraInfo(getCameraIndex(str));
-        if (cameraInfo != null && cameraInfo.facing == 0) {
-            return true;
-        }
-        return false;
-    }
-
-    @Override // org.webrtc.CameraEnumerator
-    public boolean isFrontFacing(String str) {
-        Camera.CameraInfo cameraInfo = getCameraInfo(getCameraIndex(str));
-        if (cameraInfo != null && cameraInfo.facing == 1) {
-            return true;
-        }
-        return false;
-    }
-
-    public Camera1Enumerator(boolean z) {
-        this.captureToTexture = z;
-    }
-
-    public static synchronized List<CameraEnumerationAndroid.CaptureFormat> getSupportedFormats(int i) {
-        List<CameraEnumerationAndroid.CaptureFormat> list;
-        synchronized (Camera1Enumerator.class) {
-            if (cachedSupportedFormats == null) {
-                cachedSupportedFormats = new ArrayList();
-                for (int i2 = 0; i2 < Camera.getNumberOfCameras(); i2++) {
-                    cachedSupportedFormats.add(enumerateFormats(i2));
-                }
-            }
-            list = cachedSupportedFormats.get(i);
-        }
-        return list;
-    }
+    String facing =
+        (info.facing == android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT) ? "front" : "back";
+    return "Camera " + index + ", Facing " + facing + ", Orientation " + info.orientation;
+  }
 }

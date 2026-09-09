@@ -1,84 +1,140 @@
+/*
+ * Copyright (C) 2018 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.google.android.exoplayer2.ext.flac;
 
-import com.google.android.exoplayer2.ext.flac.FlacDecoderJni;
+import com.google.android.exoplayer2.extractor.BinarySearchSeeker;
+import com.google.android.exoplayer2.extractor.ExtractorInput;
+import com.google.android.exoplayer2.extractor.SeekMap;
+import com.google.android.exoplayer2.util.Assertions;
+import com.google.android.exoplayer2.util.FlacConstants;
 import com.google.android.exoplayer2.util.FlacStreamMetadata;
-import defpackage.g00;
+import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Objects;
-/* loaded from: classes.dex */
-final class FlacBinarySearchSeeker extends g00 {
+
+/**
+ * A {@link SeekMap} implementation for FLAC stream using binary search.
+ *
+ * <p>This seeker performs seeking by using binary search within the stream, until it finds the
+ * frame that contains the target sample.
+ */
+/* package */ final class FlacBinarySearchSeeker extends BinarySearchSeeker {
+
+  /**
+   * Holds a frame extracted from a stream, together with the time stamp of the frame in
+   * microseconds.
+   */
+  public static final class OutputFrameHolder {
+
+    public final ByteBuffer byteBuffer;
+    public long timeUs;
+
+    /** Constructs an instance, wrapping the given byte buffer. */
+    public OutputFrameHolder(ByteBuffer outputByteBuffer) {
+      this.timeUs = 0;
+      this.byteBuffer = outputByteBuffer;
+    }
+  }
+
+  private final FlacDecoderJni decoderJni;
+
+  /**
+   * Creates a {@link FlacBinarySearchSeeker}.
+   *
+   * @param streamMetadata The stream metadata.
+   * @param firstFramePosition The byte offset of the first frame in the stream.
+   * @param inputLength The length of the stream in bytes.
+   * @param decoderJni The FLAC JNI decoder.
+   * @param outputFrameHolder A holder used to retrieve the frame found by a seeking operation.
+   */
+  public FlacBinarySearchSeeker(
+      FlacStreamMetadata streamMetadata,
+      long firstFramePosition,
+      long inputLength,
+      FlacDecoderJni decoderJni,
+      OutputFrameHolder outputFrameHolder) {
+    super(
+        /* seekTimestampConverter= */ streamMetadata::getSampleNumber,
+        new FlacTimestampSeeker(decoderJni, outputFrameHolder),
+        streamMetadata.getDurationUs(),
+        /* floorTimePosition= */ 0,
+        /* ceilingTimePosition= */ streamMetadata.totalSamples,
+        /* floorBytePosition= */ firstFramePosition,
+        /* ceilingBytePosition= */ inputLength,
+        /* approxBytesPerFrame= */ streamMetadata.getApproxBytesPerFrame(),
+        /* minimumSearchRange= */ Math.max(
+            FlacConstants.MIN_FRAME_HEADER_SIZE, streamMetadata.minFrameSize));
+    this.decoderJni = Assertions.checkNotNull(decoderJni);
+  }
+
+  @Override
+  protected void onSeekOperationFinished(boolean foundTargetFrame, long resultPosition) {
+    if (!foundTargetFrame) {
+      // If we can't find the target frame (sample), we need to reset the decoder jni so that
+      // it can continue from the result position.
+      decoderJni.reset(resultPosition);
+    }
+  }
+
+  private static final class FlacTimestampSeeker implements TimestampSeeker {
+
     private final FlacDecoderJni decoderJni;
+    private final OutputFrameHolder outputFrameHolder;
 
-    /* loaded from: classes.dex */
-    public static final class FlacTimestampSeeker implements g00.f {
-        private final FlacDecoderJni decoderJni;
-        private final OutputFrameHolder outputFrameHolder;
-
-        private FlacTimestampSeeker(FlacDecoderJni flacDecoderJni, OutputFrameHolder outputFrameHolder) {
-            this.decoderJni = flacDecoderJni;
-            this.outputFrameHolder = outputFrameHolder;
-        }
-
-        @Override // defpackage.g00.f
-        public /* bridge */ /* synthetic */ void onSeekFinished() {
-            h00.a(this);
-        }
-
-        @Override // defpackage.g00.f
-        public g00.e searchForTimestamp(az2 az2Var, long j) {
-            boolean z;
-            ByteBuffer byteBuffer = this.outputFrameHolder.byteBuffer;
-            long a = az2Var.a();
-            this.decoderJni.reset(a);
-            try {
-                this.decoderJni.decodeSampleWithBacktrackPosition(byteBuffer, a);
-                if (byteBuffer.limit() == 0) {
-                    return g00.e.a;
-                }
-                long lastFrameFirstSampleIndex = this.decoderJni.getLastFrameFirstSampleIndex();
-                long nextFrameFirstSampleIndex = this.decoderJni.getNextFrameFirstSampleIndex();
-                long decodePosition = this.decoderJni.getDecodePosition();
-                if (lastFrameFirstSampleIndex <= j && nextFrameFirstSampleIndex > j) {
-                    z = true;
-                } else {
-                    z = false;
-                }
-                if (z) {
-                    this.outputFrameHolder.timeUs = this.decoderJni.getLastFrameTimestamp();
-                    return g00.e.e(az2Var.a());
-                } else if (nextFrameFirstSampleIndex <= j) {
-                    return g00.e.f(nextFrameFirstSampleIndex, decodePosition);
-                } else {
-                    return g00.e.d(lastFrameFirstSampleIndex, a);
-                }
-            } catch (FlacDecoderJni.FlacFrameDecodeException unused) {
-                return g00.e.a;
-            }
-        }
+    private FlacTimestampSeeker(FlacDecoderJni decoderJni, OutputFrameHolder outputFrameHolder) {
+      this.decoderJni = decoderJni;
+      this.outputFrameHolder = outputFrameHolder;
     }
 
-    /* loaded from: classes.dex */
-    public static final class OutputFrameHolder {
-        public final ByteBuffer byteBuffer;
-        public long timeUs = 0;
+    @Override
+    public TimestampSearchResult searchForTimestamp(ExtractorInput input, long targetSampleIndex)
+        throws IOException, InterruptedException {
+      ByteBuffer outputBuffer = outputFrameHolder.byteBuffer;
+      long searchPosition = input.getPosition();
+      decoderJni.reset(searchPosition);
+      try {
+        decoderJni.decodeSampleWithBacktrackPosition(
+            outputBuffer, /* retryPosition= */ searchPosition);
+      } catch (FlacDecoderJni.FlacFrameDecodeException e) {
+        // For some reasons, the extractor can't find a frame mid-stream.
+        // Stop the seeking and let it re-try playing at the last search position.
+        return TimestampSearchResult.NO_TIMESTAMP_IN_RANGE_RESULT;
+      }
+      if (outputBuffer.limit() == 0) {
+        return TimestampSearchResult.NO_TIMESTAMP_IN_RANGE_RESULT;
+      }
 
-        public OutputFrameHolder(ByteBuffer byteBuffer) {
-            this.byteBuffer = byteBuffer;
-        }
-    }
+      long lastFrameSampleIndex = decoderJni.getLastFrameFirstSampleIndex();
+      long nextFrameSampleIndex = decoderJni.getNextFrameFirstSampleIndex();
+      long nextFrameSamplePosition = decoderJni.getDecodePosition();
 
-    /* JADX WARN: 'super' call moved to the top of the method (can break code semantics) */
-    public FlacBinarySearchSeeker(FlacStreamMetadata flacStreamMetadata, long j, long j2, FlacDecoderJni flacDecoderJni, OutputFrameHolder outputFrameHolder) {
-        super(new ya3(flacStreamMetadata), new FlacTimestampSeeker(flacDecoderJni, outputFrameHolder), flacStreamMetadata.getDurationUs(), 0L, flacStreamMetadata.totalSamples, j, j2, flacStreamMetadata.getApproxBytesPerFrame(), Math.max(6, flacStreamMetadata.minFrameSize));
-        Objects.requireNonNull(flacStreamMetadata);
-        this.decoderJni = (FlacDecoderJni) tn.e(flacDecoderJni);
-    }
+      boolean targetSampleInLastFrame =
+          lastFrameSampleIndex <= targetSampleIndex && nextFrameSampleIndex > targetSampleIndex;
 
-    @Override // defpackage.g00
-    public void onSeekOperationFinished(boolean z, long j) {
-        if (z) {
-            return;
-        }
-        this.decoderJni.reset(j);
+      if (targetSampleInLastFrame) {
+        // We are holding the target frame in outputFrameHolder. Set its presentation time now.
+        outputFrameHolder.timeUs = decoderJni.getLastFrameTimestamp();
+        // The input position is passed even though it does not indicate the frame containing the
+        // target sample because the extractor must continue to read from this position.
+        return TimestampSearchResult.targetFoundResult(input.getPosition());
+      } else if (nextFrameSampleIndex <= targetSampleIndex) {
+        return TimestampSearchResult.underestimatedResult(
+            nextFrameSampleIndex, nextFrameSamplePosition);
+      } else {
+        return TimestampSearchResult.overestimatedResult(lastFrameSampleIndex, searchPosition);
+      }
     }
+  }
 }

@@ -1,176 +1,216 @@
+/*
+ *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
 
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
+
+import androidx.annotation.Nullable;
+
+import org.telegram.messenger.BuildVars;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-/* loaded from: classes3.dex */
+
 public class ThreadUtils {
+  /**
+   * Utility class to be used for checking that a method is called on the correct thread.
+   */
+  public static class ThreadChecker {
+    @Nullable private Thread thread = Thread.currentThread();
 
-    /* renamed from: org.webrtc.ThreadUtils$1CaughtException  reason: invalid class name */
-    /* loaded from: classes3.dex */
-    public class C1CaughtException {
-        public Exception e;
+    public void checkIsOnValidThread() {
+      if (thread == null) {
+        thread = Thread.currentThread();
+      }
+      if (Thread.currentThread() != thread) {
+        throw new IllegalStateException("Wrong thread");
+      }
     }
 
-    /* renamed from: org.webrtc.ThreadUtils$1Result  reason: invalid class name */
-    /* loaded from: classes3.dex */
-    public class C1Result {
-        public V value;
+    public void detachThread() {
+      thread = null;
     }
+  }
 
-    /* loaded from: classes3.dex */
-    public interface BlockingOperation {
-        void run();
+  /**
+   * Throws exception if called from other than main thread.
+   */
+  public static void checkIsOnMainThread() {
+    if (BuildVars.DEBUG_PRIVATE_VERSION && Thread.currentThread() != Looper.getMainLooper().getThread()) {
+      throw new IllegalStateException("Not on main thread!");
     }
+  }
 
-    /* loaded from: classes3.dex */
-    public static class ThreadChecker {
-        private Thread thread = Thread.currentThread();
+  /**
+   * Utility interface to be used with executeUninterruptibly() to wait for blocking operations
+   * to complete without getting interrupted..
+   */
+  public interface BlockingOperation { void run() throws InterruptedException; }
 
-        public void checkIsOnValidThread() {
-            if (this.thread == null) {
-                this.thread = Thread.currentThread();
-            }
-            if (Thread.currentThread() == this.thread) {
-                return;
-            }
-            throw new IllegalStateException("Wrong thread");
+  /**
+   * Utility method to make sure a blocking operation is executed to completion without getting
+   * interrupted. This should be used in cases where the operation is waiting for some critical
+   * work, e.g. cleanup, that must complete before returning. If the thread is interrupted during
+   * the blocking operation, this function will re-run the operation until completion, and only then
+   * re-interrupt the thread.
+   */
+  public static void executeUninterruptibly(BlockingOperation operation) {
+    boolean wasInterrupted = false;
+    while (true) {
+      try {
+        operation.run();
+        break;
+      } catch (InterruptedException e) {
+        // Someone is asking us to return early at our convenience. We can't cancel this operation,
+        // but we should preserve the information and pass it along.
+        wasInterrupted = true;
+      }
+    }
+    // Pass interruption information along.
+    if (wasInterrupted) {
+      Thread.currentThread().interrupt();
+    }
+  }
+
+  public static boolean joinUninterruptibly(final Thread thread, long timeoutMs) {
+    final long startTimeMs = SystemClock.elapsedRealtime();
+    long timeRemainingMs = timeoutMs;
+    boolean wasInterrupted = false;
+    while (timeRemainingMs > 0) {
+      try {
+        thread.join(timeRemainingMs);
+        break;
+      } catch (InterruptedException e) {
+        // Someone is asking us to return early at our convenience. We can't cancel this operation,
+        // but we should preserve the information and pass it along.
+        wasInterrupted = true;
+        final long elapsedTimeMs = SystemClock.elapsedRealtime() - startTimeMs;
+        timeRemainingMs = timeoutMs - elapsedTimeMs;
+      }
+    }
+    // Pass interruption information along.
+    if (wasInterrupted) {
+      Thread.currentThread().interrupt();
+    }
+    return !thread.isAlive();
+  }
+
+  public static void joinUninterruptibly(final Thread thread) {
+    executeUninterruptibly(new BlockingOperation() {
+      @Override
+      public void run() throws InterruptedException {
+        thread.join();
+      }
+    });
+  }
+
+  public static void awaitUninterruptibly(final CountDownLatch latch) {
+    executeUninterruptibly(new BlockingOperation() {
+      @Override
+      public void run() throws InterruptedException {
+        latch.await();
+      }
+    });
+  }
+
+  public static boolean awaitUninterruptibly(CountDownLatch barrier, long timeoutMs) {
+    final long startTimeMs = SystemClock.elapsedRealtime();
+    long timeRemainingMs = timeoutMs;
+    boolean wasInterrupted = false;
+    boolean result = false;
+    do {
+      try {
+        result = barrier.await(timeRemainingMs, TimeUnit.MILLISECONDS);
+        break;
+      } catch (InterruptedException e) {
+        // Someone is asking us to return early at our convenience. We can't cancel this operation,
+        // but we should preserve the information and pass it along.
+        wasInterrupted = true;
+        final long elapsedTimeMs = SystemClock.elapsedRealtime() - startTimeMs;
+        timeRemainingMs = timeoutMs - elapsedTimeMs;
+      }
+    } while (timeRemainingMs > 0);
+    // Pass interruption information along.
+    if (wasInterrupted) {
+      Thread.currentThread().interrupt();
+    }
+    return result;
+  }
+
+  /**
+   * Post |callable| to |handler| and wait for the result.
+   */
+  public static <V> V invokeAtFrontUninterruptibly(
+      final Handler handler, final Callable<V> callable) {
+    if (handler.getLooper().getThread() == Thread.currentThread()) {
+      try {
+        return callable.call();
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+    // Place-holder classes that are assignable inside nested class.
+    class CaughtException {
+      Exception e;
+    }
+    class Result {
+      public V value;
+    }
+    final Result result = new Result();
+    final CaughtException caughtException = new CaughtException();
+    final CountDownLatch barrier = new CountDownLatch(1);
+    handler.post(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          result.value = callable.call();
+        } catch (Exception e) {
+          caughtException.e = e;
         }
-
-        public void detachThread() {
-            this.thread = null;
-        }
+        barrier.countDown();
+      }
+    });
+    awaitUninterruptibly(barrier);
+    // Re-throw any runtime exception caught inside the other thread. Since this is an invoke, add
+    // stack trace for the waiting thread as well.
+    if (caughtException.e != null) {
+      final RuntimeException runtimeException = new RuntimeException(caughtException.e);
+      runtimeException.setStackTrace(
+          concatStackTraces(caughtException.e.getStackTrace(), runtimeException.getStackTrace()));
+      throw runtimeException;
     }
+    return result.value;
+  }
 
-    public static void awaitUninterruptibly(final CountDownLatch countDownLatch) {
-        executeUninterruptibly(new BlockingOperation() { // from class: org.webrtc.ThreadUtils.2
-            @Override // org.webrtc.ThreadUtils.BlockingOperation
-            public void run() {
-                countDownLatch.await();
-            }
-        });
-    }
+  /**
+   * Post |runner| to |handler|, at the front, and wait for completion.
+   */
+  public static void invokeAtFrontUninterruptibly(final Handler handler, final Runnable runner) {
+    invokeAtFrontUninterruptibly(handler, new Callable<Void>() {
+      @Override
+      public Void call() {
+        runner.run();
+        return null;
+      }
+    });
+  }
 
-    public static void checkIsOnMainThread() {
-        if (s60.f18614c && Thread.currentThread() != Looper.getMainLooper().getThread()) {
-            throw new IllegalStateException("Not on main thread!");
-        }
-    }
-
-    public static StackTraceElement[] concatStackTraces(StackTraceElement[] stackTraceElementArr, StackTraceElement[] stackTraceElementArr2) {
-        StackTraceElement[] stackTraceElementArr3 = new StackTraceElement[stackTraceElementArr.length + stackTraceElementArr2.length];
-        System.arraycopy(stackTraceElementArr, 0, stackTraceElementArr3, 0, stackTraceElementArr.length);
-        System.arraycopy(stackTraceElementArr2, 0, stackTraceElementArr3, stackTraceElementArr.length, stackTraceElementArr2.length);
-        return stackTraceElementArr3;
-    }
-
-    public static void executeUninterruptibly(BlockingOperation blockingOperation) {
-        boolean z = false;
-        while (true) {
-            try {
-                blockingOperation.run();
-                break;
-            } catch (InterruptedException unused) {
-                z = true;
-            }
-        }
-        if (z) {
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    public static <V> V invokeAtFrontUninterruptibly(Handler handler, final Callable<V> callable) {
-        if (handler.getLooper().getThread() == Thread.currentThread()) {
-            try {
-                return callable.call();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-        final C1Result c1Result = new C1Result();
-        final C1CaughtException c1CaughtException = new C1CaughtException();
-        final CountDownLatch countDownLatch = new CountDownLatch(1);
-        handler.post(new Runnable() { // from class: org.webrtc.ThreadUtils.3
-            /* JADX WARN: Type inference failed for: r1v2, types: [V, java.lang.Object] */
-            @Override // java.lang.Runnable
-            public void run() {
-                try {
-                    C1Result.this.value = callable.call();
-                } catch (Exception e2) {
-                    c1CaughtException.e = e2;
-                }
-                countDownLatch.countDown();
-            }
-        });
-        awaitUninterruptibly(countDownLatch);
-        if (c1CaughtException.e == null) {
-            return c1Result.value;
-        }
-        RuntimeException runtimeException = new RuntimeException(c1CaughtException.e);
-        runtimeException.setStackTrace(concatStackTraces(c1CaughtException.e.getStackTrace(), runtimeException.getStackTrace()));
-        throw runtimeException;
-    }
-
-    public static boolean joinUninterruptibly(Thread thread, long j) {
-        long elapsedRealtime = SystemClock.elapsedRealtime();
-        boolean z = false;
-        long j2 = j;
-        while (j2 > 0) {
-            try {
-                thread.join(j2);
-                break;
-            } catch (InterruptedException unused) {
-                j2 = j - (SystemClock.elapsedRealtime() - elapsedRealtime);
-                z = true;
-            }
-        }
-        if (z) {
-            Thread.currentThread().interrupt();
-        }
-        return !thread.isAlive();
-    }
-
-    public static boolean awaitUninterruptibly(CountDownLatch countDownLatch, long j) {
-        long elapsedRealtime = SystemClock.elapsedRealtime();
-        boolean z = false;
-        long j2 = j;
-        boolean z2 = false;
-        do {
-            try {
-                z = countDownLatch.await(j2, TimeUnit.MILLISECONDS);
-                break;
-            } catch (InterruptedException unused) {
-                z2 = true;
-                j2 = j - (SystemClock.elapsedRealtime() - elapsedRealtime);
-                if (j2 <= 0) {
-                }
-            }
-        } while (j2 <= 0);
-        if (z2) {
-            Thread.currentThread().interrupt();
-        }
-        return z;
-    }
-
-    public static void joinUninterruptibly(final Thread thread) {
-        executeUninterruptibly(new BlockingOperation() { // from class: org.webrtc.ThreadUtils.1
-            @Override // org.webrtc.ThreadUtils.BlockingOperation
-            public void run() {
-                thread.join();
-            }
-        });
-    }
-
-    public static void invokeAtFrontUninterruptibly(Handler handler, final Runnable runnable) {
-        invokeAtFrontUninterruptibly(handler, new Callable<Void>() { // from class: org.webrtc.ThreadUtils.4
-            @Override // java.util.concurrent.Callable
-            public Void call() {
-                runnable.run();
-                return null;
-            }
-        });
-    }
+  static StackTraceElement[] concatStackTraces(
+      StackTraceElement[] inner, StackTraceElement[] outer) {
+    final StackTraceElement[] combined = new StackTraceElement[inner.length + outer.length];
+    System.arraycopy(inner, 0, combined, 0, inner.length);
+    System.arraycopy(outer, 0, combined, inner.length, outer.length);
+    return combined;
+  }
 }

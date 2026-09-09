@@ -1,23 +1,36 @@
+/*
+ *  Copyright 2017 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
-/* loaded from: classes3.dex */
+
+/**
+ * A combined video encoder that falls back on a secondary encoder if the primary encoder fails.
+ */
 public class VideoEncoderFallback extends WrappedNativeVideoEncoder {
-    private final VideoEncoder fallback;
-    private final VideoEncoder primary;
+  private final VideoEncoder fallback;
+  private final VideoEncoder primary;
 
-    public VideoEncoderFallback(VideoEncoder videoEncoder, VideoEncoder videoEncoder2) {
-        this.fallback = videoEncoder;
-        this.primary = videoEncoder2;
-    }
+  public VideoEncoderFallback(VideoEncoder fallback, VideoEncoder primary) {
+    this.fallback = fallback;
+    this.primary = primary;
+  }
 
-    private static native long nativeCreateEncoder(VideoEncoder videoEncoder, VideoEncoder videoEncoder2);
+  @Override
+  public long createNativeVideoEncoder() {
+    return nativeCreateEncoder(fallback, primary);
+  }
 
-    @Override // org.webrtc.WrappedNativeVideoEncoder, org.webrtc.VideoEncoder
-    public long createNativeVideoEncoder() {
-        return nativeCreateEncoder(this.fallback, this.primary);
-    }
+  @Override
+  public boolean isHardwareEncoder() {
+    return primary.isHardwareEncoder();
+  }
 
-    @Override // org.webrtc.WrappedNativeVideoEncoder, org.webrtc.VideoEncoder
-    public boolean isHardwareEncoder() {
-        return this.primary.isHardwareEncoder();
-    }
+  private static native long nativeCreateEncoder(VideoEncoder fallback, VideoEncoder primary);
 }

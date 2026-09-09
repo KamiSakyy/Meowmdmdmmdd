@@ -1,59 +1,69 @@
+/*
+ * Copyright 2017 The WebRTC project authors. All Rights Reserved.
+ *
+ * Use of this source code is governed by a BSD-style license
+ * that can be found in the LICENSE file in the root of the source
+ * tree. An additional intellectual property rights grant can be found
+ * in the file PATENTS.  All contributing project authors may
+ * be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
 
+import androidx.annotation.Nullable;
 import java.nio.ByteBuffer;
-import org.webrtc.VideoFrame;
-/* loaded from: classes3.dex */
+
 public class NV21Buffer implements VideoFrame.Buffer {
-    private final byte[] data;
-    private final int height;
-    private final RefCountDelegate refCountDelegate;
-    private final int width;
+  private final byte[] data;
+  private final int width;
+  private final int height;
+  private final RefCountDelegate refCountDelegate;
 
-    public NV21Buffer(byte[] bArr, int i, int i2, Runnable runnable) {
-        this.data = bArr;
-        this.width = i;
-        this.height = i2;
-        this.refCountDelegate = new RefCountDelegate(runnable);
-    }
+  public NV21Buffer(byte[] data, int width, int height, @Nullable Runnable releaseCallback) {
+    this.data = data;
+    this.width = width;
+    this.height = height;
+    this.refCountDelegate = new RefCountDelegate(releaseCallback);
+  }
 
-    private static native void nativeCropAndScale(int i, int i2, int i3, int i4, int i5, int i6, byte[] bArr, int i7, int i8, ByteBuffer byteBuffer, int i9, ByteBuffer byteBuffer2, int i10, ByteBuffer byteBuffer3, int i11);
+  @Override
+  public int getWidth() {
+    return width;
+  }
 
-    @Override // org.webrtc.VideoFrame.Buffer
-    public VideoFrame.Buffer cropAndScale(int i, int i2, int i3, int i4, int i5, int i6) {
-        JavaI420Buffer allocate = JavaI420Buffer.allocate(i5, i6);
-        nativeCropAndScale(i, i2, i3, i4, i5, i6, this.data, this.width, this.height, allocate.getDataY(), allocate.getStrideY(), allocate.getDataU(), allocate.getStrideU(), allocate.getDataV(), allocate.getStrideV());
-        return allocate;
-    }
+  @Override
+  public int getHeight() {
+    return height;
+  }
 
-    @Override // org.webrtc.VideoFrame.Buffer
-    public /* synthetic */ int getBufferType() {
-        return qoa.a(this);
-    }
+  @Override
+  public VideoFrame.I420Buffer toI420() {
+    // Cropping converts the frame to I420. Just crop and scale to the whole image.
+    return (VideoFrame.I420Buffer) cropAndScale(0 /* cropX */, 0 /* cropY */, width /* cropWidth */,
+        height /* cropHeight */, width /* scaleWidth */, height /* scaleHeight */);
+  }
 
-    @Override // org.webrtc.VideoFrame.Buffer
-    public int getHeight() {
-        return this.height;
-    }
+  @Override
+  public void retain() {
+    refCountDelegate.retain();
+  }
 
-    @Override // org.webrtc.VideoFrame.Buffer
-    public int getWidth() {
-        return this.width;
-    }
+  @Override
+  public void release() {
+    refCountDelegate.release();
+  }
 
-    @Override // org.webrtc.VideoFrame.Buffer, org.webrtc.RefCounted
-    public void release() {
-        this.refCountDelegate.release();
-    }
+  @Override
+  public VideoFrame.Buffer cropAndScale(
+      int cropX, int cropY, int cropWidth, int cropHeight, int scaleWidth, int scaleHeight) {
+    JavaI420Buffer newBuffer = JavaI420Buffer.allocate(scaleWidth, scaleHeight);
+    nativeCropAndScale(cropX, cropY, cropWidth, cropHeight, scaleWidth, scaleHeight, data, width,
+        height, newBuffer.getDataY(), newBuffer.getStrideY(), newBuffer.getDataU(),
+        newBuffer.getStrideU(), newBuffer.getDataV(), newBuffer.getStrideV());
+    return newBuffer;
+  }
 
-    @Override // org.webrtc.VideoFrame.Buffer, org.webrtc.RefCounted
-    public void retain() {
-        this.refCountDelegate.retain();
-    }
-
-    @Override // org.webrtc.VideoFrame.Buffer
-    public VideoFrame.I420Buffer toI420() {
-        int i = this.width;
-        int i2 = this.height;
-        return (VideoFrame.I420Buffer) cropAndScale(0, 0, i, i2, i, i2);
-    }
+  private static native void nativeCropAndScale(int cropX, int cropY, int cropWidth, int cropHeight,
+      int scaleWidth, int scaleHeight, byte[] src, int srcWidth, int srcHeight, ByteBuffer dstY,
+      int dstStrideY, ByteBuffer dstU, int dstStrideU, ByteBuffer dstV, int dstStrideV);
 }

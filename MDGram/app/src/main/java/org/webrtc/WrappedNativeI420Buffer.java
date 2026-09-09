@@ -1,96 +1,110 @@
+/*
+ *  Copyright 2017 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
 
 import java.nio.ByteBuffer;
-import org.webrtc.VideoFrame;
-/* loaded from: classes3.dex */
+
+/**
+ * This class wraps a webrtc::I420BufferInterface into a VideoFrame.I420Buffer.
+ */
 class WrappedNativeI420Buffer implements VideoFrame.I420Buffer {
-    private final ByteBuffer dataU;
-    private final ByteBuffer dataV;
-    private final ByteBuffer dataY;
-    private final int height;
-    private final long nativeBuffer;
-    private final int strideU;
-    private final int strideV;
-    private final int strideY;
-    private final int width;
+  private final int width;
+  private final int height;
+  private final ByteBuffer dataY;
+  private final int strideY;
+  private final ByteBuffer dataU;
+  private final int strideU;
+  private final ByteBuffer dataV;
+  private final int strideV;
+  private final long nativeBuffer;
 
-    @CalledByNative
-    public WrappedNativeI420Buffer(int i, int i2, ByteBuffer byteBuffer, int i3, ByteBuffer byteBuffer2, int i4, ByteBuffer byteBuffer3, int i5, long j) {
-        this.width = i;
-        this.height = i2;
-        this.dataY = byteBuffer;
-        this.strideY = i3;
-        this.dataU = byteBuffer2;
-        this.strideU = i4;
-        this.dataV = byteBuffer3;
-        this.strideV = i5;
-        this.nativeBuffer = j;
-        retain();
-    }
+  @CalledByNative
+  WrappedNativeI420Buffer(int width, int height, ByteBuffer dataY, int strideY, ByteBuffer dataU,
+      int strideU, ByteBuffer dataV, int strideV, long nativeBuffer) {
+    this.width = width;
+    this.height = height;
+    this.dataY = dataY;
+    this.strideY = strideY;
+    this.dataU = dataU;
+    this.strideU = strideU;
+    this.dataV = dataV;
+    this.strideV = strideV;
+    this.nativeBuffer = nativeBuffer;
 
-    @Override // org.webrtc.VideoFrame.Buffer
-    public VideoFrame.Buffer cropAndScale(int i, int i2, int i3, int i4, int i5, int i6) {
-        return JavaI420Buffer.cropAndScaleI420(this, i, i2, i3, i4, i5, i6);
-    }
+    retain();
+  }
 
-    @Override // org.webrtc.VideoFrame.I420Buffer, org.webrtc.VideoFrame.Buffer
-    public /* synthetic */ int getBufferType() {
-        return roa.a(this);
-    }
+  @Override
+  public int getWidth() {
+    return width;
+  }
 
-    @Override // org.webrtc.VideoFrame.I420Buffer
-    public ByteBuffer getDataU() {
-        return this.dataU.slice();
-    }
+  @Override
+  public int getHeight() {
+    return height;
+  }
 
-    @Override // org.webrtc.VideoFrame.I420Buffer
-    public ByteBuffer getDataV() {
-        return this.dataV.slice();
-    }
+  @Override
+  public ByteBuffer getDataY() {
+    // Return a slice to prevent relative reads from changing the position.
+    return dataY.slice();
+  }
 
-    @Override // org.webrtc.VideoFrame.I420Buffer
-    public ByteBuffer getDataY() {
-        return this.dataY.slice();
-    }
+  @Override
+  public ByteBuffer getDataU() {
+    // Return a slice to prevent relative reads from changing the position.
+    return dataU.slice();
+  }
 
-    @Override // org.webrtc.VideoFrame.Buffer
-    public int getHeight() {
-        return this.height;
-    }
+  @Override
+  public ByteBuffer getDataV() {
+    // Return a slice to prevent relative reads from changing the position.
+    return dataV.slice();
+  }
 
-    @Override // org.webrtc.VideoFrame.I420Buffer
-    public int getStrideU() {
-        return this.strideU;
-    }
+  @Override
+  public int getStrideY() {
+    return strideY;
+  }
 
-    @Override // org.webrtc.VideoFrame.I420Buffer
-    public int getStrideV() {
-        return this.strideV;
-    }
+  @Override
+  public int getStrideU() {
+    return strideU;
+  }
 
-    @Override // org.webrtc.VideoFrame.I420Buffer
-    public int getStrideY() {
-        return this.strideY;
-    }
+  @Override
+  public int getStrideV() {
+    return strideV;
+  }
 
-    @Override // org.webrtc.VideoFrame.Buffer
-    public int getWidth() {
-        return this.width;
-    }
+  @Override
+  public VideoFrame.I420Buffer toI420() {
+    retain();
+    return this;
+  }
 
-    @Override // org.webrtc.VideoFrame.Buffer, org.webrtc.RefCounted
-    public void release() {
-        JniCommon.nativeReleaseRef(this.nativeBuffer);
-    }
+  @Override
+  public void retain() {
+    JniCommon.nativeAddRef(nativeBuffer);
+  }
 
-    @Override // org.webrtc.VideoFrame.Buffer, org.webrtc.RefCounted
-    public void retain() {
-        JniCommon.nativeAddRef(this.nativeBuffer);
-    }
+  @Override
+  public void release() {
+    JniCommon.nativeReleaseRef(nativeBuffer);
+  }
 
-    @Override // org.webrtc.VideoFrame.Buffer
-    public VideoFrame.I420Buffer toI420() {
-        retain();
-        return this;
-    }
+  @Override
+  public VideoFrame.Buffer cropAndScale(
+      int cropX, int cropY, int cropWidth, int cropHeight, int scaleWidth, int scaleHeight) {
+    return JavaI420Buffer.cropAndScaleI420(
+        this, cropX, cropY, cropWidth, cropHeight, scaleWidth, scaleHeight);
+  }
 }

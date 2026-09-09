@@ -1,241 +1,300 @@
+/*
+ *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
 
 import android.content.Context;
-import android.content.res.Resources;
+import android.content.res.Resources.NotFoundException;
 import android.graphics.Point;
 import android.os.Looper;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import org.webrtc.EglBase;
-import org.webrtc.EglRenderer;
-import org.webrtc.RendererCommon;
-import org.webrtc.SurfaceViewRenderer;
-/* loaded from: classes3.dex */
-public class SurfaceViewRenderer extends SurfaceView implements SurfaceHolder.Callback, VideoSink, RendererCommon.RendererEvents {
-    private static final String TAG = "SurfaceViewRenderer";
-    private final SurfaceEglRenderer eglRenderer;
-    private boolean enableFixedSize;
-    private RendererCommon.RendererEvents rendererEvents;
-    private final String resourceName;
-    private int rotatedFrameHeight;
-    private int rotatedFrameWidth;
-    private int surfaceHeight;
-    private int surfaceWidth;
-    private final RendererCommon.VideoLayoutMeasure videoLayoutMeasure;
 
-    public SurfaceViewRenderer(Context context) {
-        super(context);
-        this.videoLayoutMeasure = new RendererCommon.VideoLayoutMeasure();
-        String resourceName = getResourceName();
-        this.resourceName = resourceName;
-        SurfaceEglRenderer surfaceEglRenderer = new SurfaceEglRenderer(resourceName);
-        this.eglRenderer = surfaceEglRenderer;
-        getHolder().addCallback(this);
-        getHolder().addCallback(surfaceEglRenderer);
-    }
+/**
+ * Display the video stream on a SurfaceView.
+ */
+public class SurfaceViewRenderer extends SurfaceView
+    implements SurfaceHolder.Callback, VideoSink, RendererCommon.RendererEvents {
+  private static final String TAG = "SurfaceViewRenderer";
 
-    private String getResourceName() {
-        try {
-            return getResources().getResourceEntryName(getId());
-        } catch (Resources.NotFoundException unused) {
-            return "";
-        }
-    }
+  // Cached resource name.
+  private final String resourceName;
+  private final RendererCommon.VideoLayoutMeasure videoLayoutMeasure =
+      new RendererCommon.VideoLayoutMeasure();
+  private final SurfaceEglRenderer eglRenderer;
 
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void lambda$onFrameResolutionChanged$0(int i, int i2) {
-        this.rotatedFrameWidth = i;
-        this.rotatedFrameHeight = i2;
-        updateSurfaceSize();
-        requestLayout();
-    }
+  // Callback for reporting renderer events. Read-only after initialization so no lock required.
+  private RendererCommon.RendererEvents rendererEvents;
 
-    private void logD(String str) {
-        Logging.d(TAG, this.resourceName + ": " + str);
-    }
+  // Accessed only on the main thread.
+  private int rotatedFrameWidth;
+  private int rotatedFrameHeight;
+  private boolean enableFixedSize;
+  private int surfaceWidth;
+  private int surfaceHeight;
 
-    private void postOrRun(Runnable runnable) {
-        if (Thread.currentThread() == Looper.getMainLooper().getThread()) {
-            runnable.run();
-        } else {
-            post(runnable);
-        }
-    }
+  /**
+   * Standard View constructor. In order to render something, you must first call init().
+   */
+  public SurfaceViewRenderer(Context context) {
+    super(context);
+    this.resourceName = getResourceName();
+    eglRenderer = new SurfaceEglRenderer(resourceName);
+    getHolder().addCallback(this);
+    getHolder().addCallback(eglRenderer);
+  }
 
-    private void updateSurfaceSize() {
-        ThreadUtils.checkIsOnMainThread();
-        if (this.enableFixedSize && this.rotatedFrameWidth != 0 && this.rotatedFrameHeight != 0 && getWidth() != 0 && getHeight() != 0) {
-            float width = getWidth() / getHeight();
-            int i = this.rotatedFrameWidth;
-            int i2 = this.rotatedFrameHeight;
-            if (i / i2 > width) {
-                i = (int) (i2 * width);
-            } else {
-                i2 = (int) (i / width);
-            }
-            int min = Math.min(getWidth(), i);
-            int min2 = Math.min(getHeight(), i2);
-            logD("updateSurfaceSize. Layout size: " + getWidth() + "x" + getHeight() + ", frame size: " + this.rotatedFrameWidth + "x" + this.rotatedFrameHeight + ", requested surface size: " + min + "x" + min2 + ", old surface size: " + this.surfaceWidth + "x" + this.surfaceHeight);
-            if (min != this.surfaceWidth || min2 != this.surfaceHeight) {
-                this.surfaceWidth = min;
-                this.surfaceHeight = min2;
-                getHolder().setFixedSize(min, min2);
-                return;
-            }
-            return;
-        }
-        this.surfaceHeight = 0;
-        this.surfaceWidth = 0;
-        getHolder().setSizeFromLayout();
-    }
+  /**
+   * Standard View constructor. In order to render something, you must first call init().
+   */
+  public SurfaceViewRenderer(Context context, AttributeSet attrs) {
+    super(context, attrs);
+    this.resourceName = getResourceName();
+    eglRenderer = new SurfaceEglRenderer(resourceName);
+    getHolder().addCallback(this);
+    getHolder().addCallback(eglRenderer);
+  }
 
-    public void addFrameListener(EglRenderer.FrameListener frameListener, float f, RendererCommon.GlDrawer glDrawer) {
-        this.eglRenderer.addFrameListener(frameListener, f, glDrawer);
-    }
+  /**
+   * Initialize this class, sharing resources with |sharedContext|. It is allowed to call init() to
+   * reinitialize the renderer after a previous init()/release() cycle.
+   */
+  public void init(EglBase.Context sharedContext, RendererCommon.RendererEvents rendererEvents) {
+    init(sharedContext, rendererEvents, EglBase.CONFIG_PLAIN, new GlRectDrawer());
+  }
 
-    public void clearImage() {
-        this.eglRenderer.clearImage();
-    }
+  /**
+   * Initialize this class, sharing resources with |sharedContext|. The custom |drawer| will be used
+   * for drawing frames on the EGLSurface. This class is responsible for calling release() on
+   * |drawer|. It is allowed to call init() to reinitialize the renderer after a previous
+   * init()/release() cycle.
+   */
+  public void init(final EglBase.Context sharedContext,
+      RendererCommon.RendererEvents rendererEvents, final int[] configAttributes,
+      RendererCommon.GlDrawer drawer) {
+    ThreadUtils.checkIsOnMainThread();
+    this.rendererEvents = rendererEvents;
+    rotatedFrameWidth = 0;
+    rotatedFrameHeight = 0;
+    eglRenderer.init(sharedContext, this /* rendererEvents */, configAttributes, drawer);
+  }
 
-    public void disableFpsReduction() {
-        this.eglRenderer.disableFpsReduction();
-    }
+  /**
+   * Block until any pending frame is returned and all GL resources released, even if an interrupt
+   * occurs. If an interrupt occurs during release(), the interrupt flag will be set. This function
+   * should be called before the Activity is destroyed and the EGLContext is still valid. If you
+   * don't call this function, the GL resources might leak.
+   */
+  public void release() {
+    eglRenderer.release();
+  }
 
-    public void init(EglBase.Context context, RendererCommon.RendererEvents rendererEvents) {
-        init(context, rendererEvents, EglBase.CONFIG_PLAIN, new GlRectDrawer());
-    }
+  /**
+   * Register a callback to be invoked when a new video frame has been received.
+   *
+   * @param listener The callback to be invoked. The callback will be invoked on the render thread.
+   *                 It should be lightweight and must not call removeFrameListener.
+   * @param scale    The scale of the Bitmap passed to the callback, or 0 if no Bitmap is
+   *                 required.
+   * @param drawer   Custom drawer to use for this frame listener.
+   */
+  public void addFrameListener(
+      EglRenderer.FrameListener listener, float scale, RendererCommon.GlDrawer drawerParam) {
+    eglRenderer.addFrameListener(listener, scale, drawerParam);
+  }
 
-    @Override // org.webrtc.RendererCommon.RendererEvents
-    public void onFirstFrameRendered() {
-        RendererCommon.RendererEvents rendererEvents = this.rendererEvents;
-        if (rendererEvents != null) {
-            rendererEvents.onFirstFrameRendered();
-        }
-    }
+  /**
+   * Register a callback to be invoked when a new video frame has been received. This version uses
+   * the drawer of the EglRenderer that was passed in init.
+   *
+   * @param listener The callback to be invoked. The callback will be invoked on the render thread.
+   *                 It should be lightweight and must not call removeFrameListener.
+   * @param scale    The scale of the Bitmap passed to the callback, or 0 if no Bitmap is
+   *                 required.
+   */
+  public void addFrameListener(EglRenderer.FrameListener listener, float scale) {
+    eglRenderer.addFrameListener(listener, scale);
+  }
 
-    @Override // org.webrtc.VideoSink
-    public void onFrame(VideoFrame videoFrame) {
-        this.eglRenderer.onFrame(videoFrame);
-    }
+  public void removeFrameListener(EglRenderer.FrameListener listener) {
+    eglRenderer.removeFrameListener(listener);
+  }
 
-    @Override // org.webrtc.RendererCommon.RendererEvents
-    public void onFrameResolutionChanged(final int i, int i2, int i3) {
-        final int i4;
-        RendererCommon.RendererEvents rendererEvents = this.rendererEvents;
-        if (rendererEvents != null) {
-            rendererEvents.onFrameResolutionChanged(i, i2, i3);
-        }
-        if (i3 != 0 && i3 != 180) {
-            i4 = i2;
-        } else {
-            i4 = i;
-        }
-        if (i3 == 0 || i3 == 180) {
-            i = i2;
-        }
-        postOrRun(new Runnable() { // from class: uk9
-            @Override // java.lang.Runnable
-            public final void run() {
-                SurfaceViewRenderer.this.lambda$onFrameResolutionChanged$0(i4, i);
-            }
-        });
-    }
+  /**
+   * Enables fixed size for the surface. This provides better performance but might be buggy on some
+   * devices. By default this is turned off.
+   */
+  public void setEnableHardwareScaler(boolean enabled) {
+    ThreadUtils.checkIsOnMainThread();
+    enableFixedSize = enabled;
+    updateSurfaceSize();
+  }
 
-    @Override // android.view.View
-    public void onLayout(boolean z, int i, int i2, int i3, int i4) {
-        ThreadUtils.checkIsOnMainThread();
-        this.eglRenderer.setLayoutAspectRatio((i3 - i) / (i4 - i2));
-        updateSurfaceSize();
-    }
+  /**
+   * Set if the video stream should be mirrored or not.
+   */
+  public void setMirror(final boolean mirror) {
+    eglRenderer.setMirror(mirror);
+  }
 
-    @Override // android.view.SurfaceView, android.view.View
-    public void onMeasure(int i, int i2) {
-        ThreadUtils.checkIsOnMainThread();
-        Point measure = this.videoLayoutMeasure.measure(true, i, i2, this.rotatedFrameWidth, this.rotatedFrameHeight);
-        setMeasuredDimension(measure.x, measure.y);
-        logD("onMeasure(). New size: " + measure.x + "x" + measure.y);
-    }
+  /**
+   * Set how the video will fill the allowed layout area.
+   */
+  public void setScalingType(RendererCommon.ScalingType scalingType) {
+    ThreadUtils.checkIsOnMainThread();
+    videoLayoutMeasure.setScalingType(scalingType);
+    requestLayout();
+  }
 
-    public void pauseVideo() {
-        this.eglRenderer.pauseVideo();
-    }
+  public void setScalingType(RendererCommon.ScalingType scalingTypeMatchOrientation,
+      RendererCommon.ScalingType scalingTypeMismatchOrientation) {
+    ThreadUtils.checkIsOnMainThread();
+    videoLayoutMeasure.setScalingType(scalingTypeMatchOrientation, scalingTypeMismatchOrientation);
+    requestLayout();
+  }
 
-    public void release() {
-        this.eglRenderer.release();
-    }
+  /**
+   * Limit render framerate.
+   *
+   * @param fps Limit render framerate to this value, or use Float.POSITIVE_INFINITY to disable fps
+   *            reduction.
+   */
+  public void setFpsReduction(float fps) {
+    eglRenderer.setFpsReduction(fps);
+  }
 
-    public void removeFrameListener(EglRenderer.FrameListener frameListener) {
-        this.eglRenderer.removeFrameListener(frameListener);
-    }
+  public void disableFpsReduction() {
+    eglRenderer.disableFpsReduction();
+  }
 
-    public void setEnableHardwareScaler(boolean z) {
-        ThreadUtils.checkIsOnMainThread();
-        this.enableFixedSize = z;
-        updateSurfaceSize();
-    }
+  public void pauseVideo() {
+    eglRenderer.pauseVideo();
+  }
 
-    public void setFpsReduction(float f) {
-        this.eglRenderer.setFpsReduction(f);
-    }
+  // VideoSink interface.
+  @Override
+  public void onFrame(VideoFrame frame) {
+    eglRenderer.onFrame(frame);
+  }
 
-    public void setMirror(boolean z) {
-        this.eglRenderer.setMirror(z);
-    }
+  // View layout interface.
+  @Override
+  protected void onMeasure(int widthSpec, int heightSpec) {
+    ThreadUtils.checkIsOnMainThread();
+    Point size =
+        videoLayoutMeasure.measure(true, widthSpec, heightSpec, rotatedFrameWidth, rotatedFrameHeight);
+    setMeasuredDimension(size.x, size.y);
+    logD("onMeasure(). New size: " + size.x + "x" + size.y);
+  }
 
-    @Override // org.webrtc.VideoSink
-    public /* synthetic */ void setParentSink(VideoSink videoSink) {
-        zpa.a(this, videoSink);
-    }
+  @Override
+  protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+    ThreadUtils.checkIsOnMainThread();
+    eglRenderer.setLayoutAspectRatio((right - left) / (float) (bottom - top));
+    updateSurfaceSize();
+  }
 
-    public void setScalingType(RendererCommon.ScalingType scalingType) {
-        ThreadUtils.checkIsOnMainThread();
-        this.videoLayoutMeasure.setScalingType(scalingType);
-        requestLayout();
+  private void updateSurfaceSize() {
+    ThreadUtils.checkIsOnMainThread();
+    if (enableFixedSize && rotatedFrameWidth != 0 && rotatedFrameHeight != 0 && getWidth() != 0
+        && getHeight() != 0) {
+      final float layoutAspectRatio = getWidth() / (float) getHeight();
+      final float frameAspectRatio = rotatedFrameWidth / (float) rotatedFrameHeight;
+      final int drawnFrameWidth;
+      final int drawnFrameHeight;
+      if (frameAspectRatio > layoutAspectRatio) {
+        drawnFrameWidth = (int) (rotatedFrameHeight * layoutAspectRatio);
+        drawnFrameHeight = rotatedFrameHeight;
+      } else {
+        drawnFrameWidth = rotatedFrameWidth;
+        drawnFrameHeight = (int) (rotatedFrameWidth / layoutAspectRatio);
+      }
+      // Aspect ratio of the drawn frame and the view is the same.
+      final int width = Math.min(getWidth(), drawnFrameWidth);
+      final int height = Math.min(getHeight(), drawnFrameHeight);
+      logD("updateSurfaceSize. Layout size: " + getWidth() + "x" + getHeight() + ", frame size: "
+          + rotatedFrameWidth + "x" + rotatedFrameHeight + ", requested surface size: " + width
+          + "x" + height + ", old surface size: " + surfaceWidth + "x" + surfaceHeight);
+      if (width != surfaceWidth || height != surfaceHeight) {
+        surfaceWidth = width;
+        surfaceHeight = height;
+        getHolder().setFixedSize(width, height);
+      }
+    } else {
+      surfaceWidth = surfaceHeight = 0;
+      getHolder().setSizeFromLayout();
     }
+  }
 
-    @Override // android.view.SurfaceHolder.Callback
-    public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i2, int i3) {
-    }
+  // SurfaceHolder.Callback interface.
+  @Override
+  public void surfaceCreated(final SurfaceHolder holder) {
+    ThreadUtils.checkIsOnMainThread();
+    surfaceWidth = surfaceHeight = 0;
+    updateSurfaceSize();
+  }
 
-    @Override // android.view.SurfaceHolder.Callback
-    public void surfaceCreated(SurfaceHolder surfaceHolder) {
-        ThreadUtils.checkIsOnMainThread();
-        this.surfaceHeight = 0;
-        this.surfaceWidth = 0;
-        updateSurfaceSize();
-    }
+  @Override
+  public void surfaceDestroyed(SurfaceHolder holder) {}
 
-    @Override // android.view.SurfaceHolder.Callback
-    public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-    }
+  @Override
+  public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
 
-    public void addFrameListener(EglRenderer.FrameListener frameListener, float f) {
-        this.eglRenderer.addFrameListener(frameListener, f);
+  private String getResourceName() {
+    try {
+      return getResources().getResourceEntryName(getId());
+    } catch (NotFoundException e) {
+      return "";
     }
+  }
 
-    public void init(EglBase.Context context, RendererCommon.RendererEvents rendererEvents, int[] iArr, RendererCommon.GlDrawer glDrawer) {
-        ThreadUtils.checkIsOnMainThread();
-        this.rendererEvents = rendererEvents;
-        this.rotatedFrameWidth = 0;
-        this.rotatedFrameHeight = 0;
-        this.eglRenderer.init(context, this, iArr, glDrawer);
-    }
+  /**
+   * Post a task to clear the SurfaceView to a transparent uniform color.
+   */
+  public void clearImage() {
+    eglRenderer.clearImage();
+  }
 
-    public void setScalingType(RendererCommon.ScalingType scalingType, RendererCommon.ScalingType scalingType2) {
-        ThreadUtils.checkIsOnMainThread();
-        this.videoLayoutMeasure.setScalingType(scalingType, scalingType2);
-        requestLayout();
+  @Override
+  public void onFirstFrameRendered() {
+    if (rendererEvents != null) {
+      rendererEvents.onFirstFrameRendered();
     }
+  }
 
-    public SurfaceViewRenderer(Context context, AttributeSet attributeSet) {
-        super(context, attributeSet);
-        this.videoLayoutMeasure = new RendererCommon.VideoLayoutMeasure();
-        String resourceName = getResourceName();
-        this.resourceName = resourceName;
-        SurfaceEglRenderer surfaceEglRenderer = new SurfaceEglRenderer(resourceName);
-        this.eglRenderer = surfaceEglRenderer;
-        getHolder().addCallback(this);
-        getHolder().addCallback(surfaceEglRenderer);
+  @Override
+  public void onFrameResolutionChanged(int videoWidth, int videoHeight, int rotation) {
+    if (rendererEvents != null) {
+      rendererEvents.onFrameResolutionChanged(videoWidth, videoHeight, rotation);
     }
+    int rotatedWidth = rotation == 0 || rotation == 180 ? videoWidth : videoHeight;
+    int rotatedHeight = rotation == 0 || rotation == 180 ? videoHeight : videoWidth;
+    // run immediately if possible for ui thread tests
+    postOrRun(() -> {
+      rotatedFrameWidth = rotatedWidth;
+      rotatedFrameHeight = rotatedHeight;
+      updateSurfaceSize();
+      requestLayout();
+    });
+  }
+
+  private void postOrRun(Runnable r) {
+    if (Thread.currentThread() == Looper.getMainLooper().getThread()) {
+      r.run();
+    } else {
+      post(r);
+    }
+  }
+
+  private void logD(String string) {
+    Logging.d(TAG, resourceName + ": " + string);
+  }
 }

@@ -1,3 +1,11 @@
+/*
+ * This is the source code of Telegram for Android v. 5.x.x.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Nikolai Kudashov, 2013-2018.
+ */
+
 package org.telegram.ui.Components;
 
 import android.content.Context;
@@ -8,194 +16,234 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+
 import androidx.annotation.Keep;
-import org.telegram.ui.ActionBar.l;
-/* loaded from: classes3.dex */
+
+import org.telegram.messenger.AndroidUtilities;
+import org.telegram.ui.ActionBar.Theme;
+
 public class RadialProgressView extends View {
-    private AccelerateInterpolator accelerateInterpolator;
-    private float animatedProgress;
-    private RectF cicleRect;
-    private float currentCircleLength;
-    private float currentProgress;
-    private float currentProgressTime;
-    private DecelerateInterpolator decelerateInterpolator;
-    private float drawingCircleLenght;
+
     private long lastUpdateTime;
-    private boolean noProgress;
-    private float progressAnimationStart;
-    private int progressColor;
-    private Paint progressPaint;
-    private int progressTime;
     private float radOffset;
-    private final l.r resourcesProvider;
+    private float currentCircleLength;
     private boolean risingCircleLength;
+    private float currentProgressTime;
+    private RectF cicleRect = new RectF();
+    private boolean useSelfAlpha;
+    private float drawingCircleLenght;
+
+    private int progressColor;
+
+    private DecelerateInterpolator decelerateInterpolator;
+    private AccelerateInterpolator accelerateInterpolator;
+    private Paint progressPaint;
+    private static final float rotationTime = 2000;
+    private static final float risingTime = 500;
     private int size;
+
+    private float currentProgress;
+    private float progressAnimationStart;
+    private int progressTime;
+    private float animatedProgress;
     private boolean toCircle;
     private float toCircleProgress;
-    private boolean useSelfAlpha;
+
+    private boolean noProgress = true;
+    private final Theme.ResourcesProvider resourcesProvider;
 
     public RadialProgressView(Context context) {
         this(context, null);
     }
 
-    public void a(Canvas canvas, float f, float f2) {
-        RectF rectF = this.cicleRect;
-        int i = this.size;
-        rectF.set(f - (i / 2.0f), f2 - (i / 2.0f), f + (i / 2.0f), f2 + (i / 2.0f));
-        RectF rectF2 = this.cicleRect;
-        float f3 = this.radOffset;
-        float f4 = this.currentCircleLength;
-        this.drawingCircleLenght = f4;
-        canvas.drawArc(rectF2, f3, f4, false, this.progressPaint);
-        f();
+    public RadialProgressView(Context context, Theme.ResourcesProvider resourcesProvider) {
+        super(context);
+        this.resourcesProvider = resourcesProvider;
+
+        size = AndroidUtilities.dp(40);
+
+        progressColor = getThemedColor(Theme.key_progressCircle);
+        decelerateInterpolator = new DecelerateInterpolator();
+        accelerateInterpolator = new AccelerateInterpolator();
+        progressPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        progressPaint.setStyle(Paint.Style.STROKE);
+        progressPaint.setStrokeCap(Paint.Cap.ROUND);
+        progressPaint.setStrokeWidth(AndroidUtilities.dp(3));
+        progressPaint.setColor(progressColor);
     }
 
-    public final int b(String str) {
-        Integer num;
-        l.r rVar = this.resourcesProvider;
-        if (rVar != null) {
-            num = rVar.i(str);
-        } else {
-            num = null;
-        }
-        if (num != null) {
-            return num.intValue();
-        }
-        return org.telegram.ui.ActionBar.l.B1(str);
+    public void setUseSelfAlpha(boolean value) {
+        useSelfAlpha = value;
     }
 
-    public boolean c() {
-        return Math.abs(this.drawingCircleLenght) >= 360.0f;
-    }
-
-    public void d(RadialProgressView radialProgressView) {
-        this.lastUpdateTime = radialProgressView.lastUpdateTime;
-        this.radOffset = radialProgressView.radOffset;
-        this.toCircle = radialProgressView.toCircle;
-        this.toCircleProgress = radialProgressView.toCircleProgress;
-        this.noProgress = radialProgressView.noProgress;
-        this.currentCircleLength = radialProgressView.currentCircleLength;
-        this.drawingCircleLenght = radialProgressView.drawingCircleLenght;
-        this.currentProgressTime = radialProgressView.currentProgressTime;
-        this.currentProgress = radialProgressView.currentProgress;
-        this.progressTime = radialProgressView.progressTime;
-        this.animatedProgress = radialProgressView.animatedProgress;
-        this.risingCircleLength = radialProgressView.risingCircleLength;
-        this.progressAnimationStart = radialProgressView.progressAnimationStart;
-        g(85L);
-    }
-
-    public void e(boolean z, boolean z2) {
-        float f;
-        this.toCircle = z;
-        if (!z2) {
-            if (z) {
-                f = 1.0f;
-            } else {
-                f = 0.0f;
-            }
-            this.toCircleProgress = f;
-        }
-    }
-
-    public final void f() {
-        long currentTimeMillis = System.currentTimeMillis();
-        long j = currentTimeMillis - this.lastUpdateTime;
-        if (j > 17) {
-            j = 17;
-        }
-        this.lastUpdateTime = currentTimeMillis;
-        g(j);
-    }
-
-    /* JADX WARN: Removed duplicated region for block: B:17:0x004a  */
-    /* JADX WARN: Removed duplicated region for block: B:40:0x00ea  */
-    /*
-        Code decompiled incorrectly, please refer to instructions dump.
-        To view partially-correct add '--show-bad-code' argument
-    */
-    public final void g(long r9) {
-        /*
-            Method dump skipped, instructions count: 293
-            To view this dump add '--comments-level debug' option
-        */
-        throw new UnsupportedOperationException("Method not decompiled: org.telegram.ui.Components.RadialProgressView.g(long):void");
-    }
-
-    @Override // android.view.View
-    public void onDraw(Canvas canvas) {
-        int measuredWidth = (getMeasuredWidth() - this.size) / 2;
-        int measuredHeight = getMeasuredHeight();
-        int i = this.size;
-        int i2 = (measuredHeight - i) / 2;
-        this.cicleRect.set(measuredWidth, i2, measuredWidth + i, i2 + i);
-        RectF rectF = this.cicleRect;
-        float f = this.radOffset;
-        float f2 = this.currentCircleLength;
-        this.drawingCircleLenght = f2;
-        canvas.drawArc(rectF, f, f2, false, this.progressPaint);
-        f();
-    }
-
-    @Override // android.view.View
     @Keep
-    public void setAlpha(float f) {
-        super.setAlpha(f);
-        if (this.useSelfAlpha) {
+    @Override
+    public void setAlpha(float alpha) {
+        super.setAlpha(alpha);
+        if (useSelfAlpha) {
             Drawable background = getBackground();
-            int i = (int) (f * 255.0f);
+            int a = (int) (alpha * 255);
             if (background != null) {
-                background.setAlpha(i);
+                background.setAlpha(a);
             }
-            this.progressPaint.setAlpha(i);
+            progressPaint.setAlpha(a);
         }
     }
 
-    public void setNoProgress(boolean z) {
-        this.noProgress = z;
+    public void setNoProgress(boolean value) {
+        noProgress = value;
     }
 
-    public void setProgress(float f) {
-        this.currentProgress = f;
-        if (this.animatedProgress > f) {
-            this.animatedProgress = f;
+    public void setProgress(float value) {
+        currentProgress = value;
+        if (animatedProgress > value) {
+            animatedProgress = value;
         }
-        this.progressAnimationStart = this.animatedProgress;
-        this.progressTime = 0;
+        progressAnimationStart = animatedProgress;
+        progressTime = 0;
     }
 
-    public void setProgressColor(int i) {
-        this.progressColor = i;
-        this.progressPaint.setColor(i);
+    public void sync(RadialProgressView from) {
+        lastUpdateTime = from.lastUpdateTime;
+        radOffset = from.radOffset;
+        toCircle = from.toCircle;
+        toCircleProgress = from.toCircleProgress;
+        noProgress = from.noProgress;
+        currentCircleLength = from.currentCircleLength;
+        drawingCircleLenght = from.drawingCircleLenght;
+        currentProgressTime = from.currentProgressTime;
+        currentProgress = from.currentProgress;
+        progressTime = from.progressTime;
+        animatedProgress = from.animatedProgress;
+        risingCircleLength = from.risingCircleLength;
+        progressAnimationStart = from.progressAnimationStart;
+        updateAnimation(17 * 5);
     }
 
-    public void setSize(int i) {
-        this.size = i;
+    private void updateAnimation() {
+        long newTime = System.currentTimeMillis();
+        long dt = newTime - lastUpdateTime;
+        if (dt > 17) {
+            dt = 17;
+        }
+        lastUpdateTime = newTime;
+        updateAnimation(dt);
+    }
+
+    private void updateAnimation(long dt) {
+        radOffset += 360 * dt / rotationTime;
+        int count = (int) (radOffset / 360);
+        radOffset -= count * 360;
+
+        if (toCircle && toCircleProgress != 1f) {
+            toCircleProgress += 16 / 220f;
+            if (toCircleProgress > 1f) {
+                toCircleProgress = 1f;
+            }
+        } else if (!toCircle && toCircleProgress != 0f) {
+            toCircleProgress -= 16 / 400f;
+            if (toCircleProgress < 0) {
+                toCircleProgress = 0f;
+            }
+        }
+
+        if (noProgress) {
+            if (toCircleProgress == 0) {
+                currentProgressTime += dt;
+                if (currentProgressTime >= risingTime) {
+                    currentProgressTime = risingTime;
+                }
+                if (risingCircleLength) {
+                    currentCircleLength = 4 + 266 * accelerateInterpolator.getInterpolation(currentProgressTime / risingTime);
+                } else {
+                    currentCircleLength = 4 - 270 * (1.0f - decelerateInterpolator.getInterpolation(currentProgressTime / risingTime));
+                }
+
+                if (currentProgressTime == risingTime) {
+                    if (risingCircleLength) {
+                        radOffset += 270;
+                        currentCircleLength = -266;
+                    }
+                    risingCircleLength = !risingCircleLength;
+                    currentProgressTime = 0;
+                }
+            } else {
+                if (risingCircleLength) {
+                    float old = currentCircleLength;
+                    currentCircleLength = 4 + 266 * accelerateInterpolator.getInterpolation(currentProgressTime / risingTime);
+                    currentCircleLength += 360 * toCircleProgress;
+                    float dx = old - currentCircleLength;
+                    if (dx > 0) {
+                        radOffset += old - currentCircleLength;
+                    }
+                } else {
+                    float old = currentCircleLength;
+                    currentCircleLength = 4 - 270 * (1.0f - decelerateInterpolator.getInterpolation(currentProgressTime / risingTime));
+                    currentCircleLength -= 364 * toCircleProgress;
+                    float dx = old - currentCircleLength;
+                    if (dx > 0) {
+                        radOffset += old - currentCircleLength;
+                    }
+                }
+            }
+        } else {
+            float progressDiff = currentProgress - progressAnimationStart;
+            if (progressDiff > 0) {
+                progressTime += dt;
+                if (progressTime >= 200.0f) {
+                    animatedProgress = progressAnimationStart = currentProgress;
+                    progressTime = 0;
+                } else {
+                    animatedProgress = progressAnimationStart + progressDiff * AndroidUtilities.decelerateInterpolator.getInterpolation(progressTime / 200.0f);
+                }
+            }
+            currentCircleLength = Math.max(4, 360 * animatedProgress);
+        }
         invalidate();
     }
 
-    public void setStrokeWidth(float f) {
-        this.progressPaint.setStrokeWidth(org.telegram.messenger.a.e0(f));
+    public void setSize(int value) {
+        size = value;
+        invalidate();
     }
 
-    public void setUseSelfAlpha(boolean z) {
-        this.useSelfAlpha = z;
+    public void setStrokeWidth(float value) {
+        progressPaint.setStrokeWidth(AndroidUtilities.dp(value));
     }
 
-    public RadialProgressView(Context context, l.r rVar) {
-        super(context);
-        this.cicleRect = new RectF();
-        this.noProgress = true;
-        this.resourcesProvider = rVar;
-        this.size = org.telegram.messenger.a.e0(40.0f);
-        this.progressColor = b("progressCircle");
-        this.decelerateInterpolator = new DecelerateInterpolator();
-        this.accelerateInterpolator = new AccelerateInterpolator();
-        Paint paint = new Paint(1);
-        this.progressPaint = paint;
-        paint.setStyle(Paint.Style.STROKE);
-        this.progressPaint.setStrokeCap(Paint.Cap.ROUND);
-        this.progressPaint.setStrokeWidth(org.telegram.messenger.a.e0(3.0f));
-        this.progressPaint.setColor(this.progressColor);
+    public void setProgressColor(int color) {
+        progressColor = color;
+        progressPaint.setColor(progressColor);
+    }
+
+    public void toCircle(boolean toCircle, boolean animated) {
+        this.toCircle = toCircle;
+        if (!animated) {
+            toCircleProgress = toCircle ? 1f : 0f;
+        }
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        int x = (getMeasuredWidth() - size) / 2;
+        int y = (getMeasuredHeight() - size) / 2;
+        cicleRect.set(x, y, x + size, y + size);
+        canvas.drawArc(cicleRect, radOffset, drawingCircleLenght = currentCircleLength, false, progressPaint);
+        updateAnimation();
+    }
+
+    public void draw(Canvas canvas, float cx, float cy) {
+        cicleRect.set(cx - size / 2f, cy - size / 2f, cx + size / 2f, cy +  size / 2f);
+        canvas.drawArc(cicleRect, radOffset, drawingCircleLenght = currentCircleLength, false, progressPaint);
+        updateAnimation();
+    }
+
+    public boolean isCircle() {
+        return Math.abs(drawingCircleLenght) >= 360;
+    }
+
+    private int getThemedColor(String key) {
+        Integer color = resourcesProvider != null ? resourcesProvider.getColor(key) : null;
+        return color != null ? color : Theme.getColor(key);
     }
 }

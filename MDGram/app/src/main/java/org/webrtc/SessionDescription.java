@@ -1,36 +1,56 @@
+/*
+ *  Copyright 2013 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
 
 import java.util.Locale;
-/* loaded from: classes3.dex */
+
+/**
+ * Description of an RFC 4566 Session.
+ * SDPs are passed as serialized Strings in Java-land and are materialized
+ * to SessionDescriptionInterface as appropriate in the JNI layer.
+ */
 public class SessionDescription {
-    public final String description;
-    public final Type type;
+  /** Java-land enum version of SessionDescriptionInterface's type() string. */
+  public static enum Type {
+    OFFER,
+    PRANSWER,
+    ANSWER,
+    ROLLBACK;
 
-    /* loaded from: classes3.dex */
-    public enum Type {
-        OFFER,
-        PRANSWER,
-        ANSWER,
-        ROLLBACK;
-
-        public String canonicalForm() {
-            return name().toLowerCase(Locale.US);
-        }
+    public String canonicalForm() {
+      return name().toLowerCase(Locale.US);
     }
 
-    @CalledByNative
-    public SessionDescription(Type type, String str) {
-        this.type = type;
-        this.description = str;
+    @CalledByNative("Type")
+    public static Type fromCanonicalForm(String canonical) {
+      return Type.valueOf(Type.class, canonical.toUpperCase(Locale.US));
     }
+  }
 
-    @CalledByNative
-    public String getDescription() {
-        return this.description;
-    }
+  public final Type type;
+  public final String description;
 
-    @CalledByNative
-    public String getTypeInCanonicalForm() {
-        return this.type.canonicalForm();
-    }
+  @CalledByNative
+  public SessionDescription(Type type, String description) {
+    this.type = type;
+    this.description = description;
+  }
+
+  @CalledByNative
+  String getDescription() {
+    return description;
+  }
+
+  @CalledByNative
+  String getTypeInCanonicalForm() {
+    return type.canonicalForm();
+  }
 }

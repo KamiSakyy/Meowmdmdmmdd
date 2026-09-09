@@ -1,34 +1,32 @@
 package org.telegram.messenger.voip;
 
 import android.text.TextUtils;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
-/* loaded from: classes2.dex */
+
 class VLog {
-    public static native void d(String str);
+	public native static void v(String msg);
+	public native static void d(String msg);
+	public native static void i(String msg);
+	public native static void w(String msg);
+	public native static void e(String msg);
 
-    public static native void e(String str);
+	public static void e(Throwable x) {
+		e(null, x);
+	}
 
-    public static void e(Throwable th) {
-        e(null, th);
-    }
-
-    public static native void i(String str);
-
-    public static native void v(String str);
-
-    public static native void w(String str);
-
-    public static void e(String str, Throwable th) {
-        StringWriter stringWriter = new StringWriter();
-        if (!TextUtils.isEmpty(str)) {
-            stringWriter.append((CharSequence) str);
-            stringWriter.append((CharSequence) ": ");
-        }
-        th.printStackTrace(new PrintWriter(stringWriter));
-        String[] split = stringWriter.toString().split("\n");
-        for (String str2 : split) {
-            e(str2);
-        }
-    }
+	public static void e(String msg, Throwable x) {
+		StringWriter sw = new StringWriter();
+		if (!TextUtils.isEmpty(msg)) {
+			sw.append(msg);
+			sw.append(": ");
+		}
+		PrintWriter pw = new PrintWriter(sw);
+		x.printStackTrace(pw);
+		String[] lines = sw.toString().split("\n");
+		for (String line : lines) {
+			e(line);
+		}
+	}
 }

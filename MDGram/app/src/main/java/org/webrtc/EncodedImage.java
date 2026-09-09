@@ -1,167 +1,183 @@
+/*
+ *  Copyright 2017 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
 
+import androidx.annotation.Nullable;
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
-/* loaded from: classes3.dex */
+
+/**
+ * An encoded frame from a video stream. Used as an input for decoders and as an output for
+ * encoders.
+ */
 public class EncodedImage implements RefCounted {
-    public final ByteBuffer buffer;
-    public final long captureTimeMs;
-    public final long captureTimeNs;
-    public final int encodedHeight;
-    public final int encodedWidth;
-    public final FrameType frameType;
-    public final Integer qp;
-    private final RefCountDelegate refCountDelegate;
-    public final int rotation;
+  // Must be kept in sync with common_types.h FrameType.
+  public enum FrameType {
+    EmptyFrame(0),
+    VideoFrameKey(3),
+    VideoFrameDelta(4);
 
-    /* loaded from: classes3.dex */
-    public static class Builder {
-        private ByteBuffer buffer;
-        private long captureTimeNs;
-        private int encodedHeight;
-        private int encodedWidth;
-        private FrameType frameType;
-        private Integer qp;
-        private Runnable releaseCallback;
-        private int rotation;
+    private final int nativeIndex;
 
-        private Builder() {
-        }
-
-        public EncodedImage createEncodedImage() {
-            return new EncodedImage(this.buffer, this.releaseCallback, this.encodedWidth, this.encodedHeight, this.captureTimeNs, this.frameType, this.rotation, this.qp);
-        }
-
-        public Builder setBuffer(ByteBuffer byteBuffer, Runnable runnable) {
-            this.buffer = byteBuffer;
-            this.releaseCallback = runnable;
-            return this;
-        }
-
-        @Deprecated
-        public Builder setCaptureTimeMs(long j) {
-            this.captureTimeNs = TimeUnit.MILLISECONDS.toNanos(j);
-            return this;
-        }
-
-        public Builder setCaptureTimeNs(long j) {
-            this.captureTimeNs = j;
-            return this;
-        }
-
-        public Builder setEncodedHeight(int i) {
-            this.encodedHeight = i;
-            return this;
-        }
-
-        public Builder setEncodedWidth(int i) {
-            this.encodedWidth = i;
-            return this;
-        }
-
-        public Builder setFrameType(FrameType frameType) {
-            this.frameType = frameType;
-            return this;
-        }
-
-        public Builder setQp(Integer num) {
-            this.qp = num;
-            return this;
-        }
-
-        public Builder setRotation(int i) {
-            this.rotation = i;
-            return this;
-        }
+    private FrameType(int nativeIndex) {
+      this.nativeIndex = nativeIndex;
     }
 
-    /* loaded from: classes3.dex */
-    public enum FrameType {
-        EmptyFrame(0),
-        VideoFrameKey(3),
-        VideoFrameDelta(4);
-        
-        private final int nativeIndex;
+    public int getNative() {
+      return nativeIndex;
+    }
 
-        FrameType(int i) {
-            this.nativeIndex = i;
+    @CalledByNative("FrameType")
+    static FrameType fromNativeIndex(int nativeIndex) {
+      for (FrameType type : FrameType.values()) {
+        if (type.getNative() == nativeIndex) {
+          return type;
         }
+      }
+      throw new IllegalArgumentException("Unknown native frame type: " + nativeIndex);
+    }
+  }
 
-        @CalledByNative("FrameType")
-        public static FrameType fromNativeIndex(int i) {
-            FrameType[] values;
-            for (FrameType frameType : values()) {
-                if (frameType.getNative() == i) {
-                    return frameType;
-                }
-            }
-            throw new IllegalArgumentException("Unknown native frame type: " + i);
-        }
+  private final RefCountDelegate refCountDelegate;
+  public final ByteBuffer buffer;
+  public final int encodedWidth;
+  public final int encodedHeight;
+  public final long captureTimeMs; // Deprecated
+  public final long captureTimeNs;
+  public final FrameType frameType;
+  public final int rotation;
+  public final @Nullable Integer qp;
 
-        public int getNative() {
-            return this.nativeIndex;
-        }
+  // TODO(bugs.webrtc.org/9378): Use retain and release from jni code.
+  @Override
+  public void retain() {
+    refCountDelegate.retain();
+  }
+
+  @Override
+  public void release() {
+    refCountDelegate.release();
+  }
+
+  @CalledByNative
+  private EncodedImage(ByteBuffer buffer, @Nullable Runnable releaseCallback, int encodedWidth,
+      int encodedHeight, long captureTimeNs, FrameType frameType, int rotation,
+      @Nullable Integer qp) {
+    this.buffer = buffer;
+    this.encodedWidth = encodedWidth;
+    this.encodedHeight = encodedHeight;
+    this.captureTimeMs = TimeUnit.NANOSECONDS.toMillis(captureTimeNs);
+    this.captureTimeNs = captureTimeNs;
+    this.frameType = frameType;
+    this.rotation = rotation;
+    this.qp = qp;
+    this.refCountDelegate = new RefCountDelegate(releaseCallback);
+  }
+
+  @CalledByNative
+  private ByteBuffer getBuffer() {
+    return buffer;
+  }
+
+  @CalledByNative
+  private int getEncodedWidth() {
+    return encodedWidth;
+  }
+
+  @CalledByNative
+  private int getEncodedHeight() {
+    return encodedHeight;
+  }
+
+  @CalledByNative
+  private long getCaptureTimeNs() {
+    return captureTimeNs;
+  }
+
+  @CalledByNative
+  private int getFrameType() {
+    return frameType.getNative();
+  }
+
+  @CalledByNative
+  private int getRotation() {
+    return rotation;
+  }
+
+  @CalledByNative
+  private @Nullable Integer getQp() {
+    return qp;
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  public static class Builder {
+    private ByteBuffer buffer;
+    private @Nullable Runnable releaseCallback;
+    private int encodedWidth;
+    private int encodedHeight;
+    private long captureTimeNs;
+    private EncodedImage.FrameType frameType;
+    private int rotation;
+    private @Nullable Integer qp;
+
+    private Builder() {}
+
+    public Builder setBuffer(ByteBuffer buffer, @Nullable Runnable releaseCallback) {
+      this.buffer = buffer;
+      this.releaseCallback = releaseCallback;
+      return this;
     }
 
-    @CalledByNative
-    private EncodedImage(ByteBuffer byteBuffer, Runnable runnable, int i, int i2, long j, FrameType frameType, int i3, Integer num) {
-        this.buffer = byteBuffer;
-        this.encodedWidth = i;
-        this.encodedHeight = i2;
-        this.captureTimeMs = TimeUnit.NANOSECONDS.toMillis(j);
-        this.captureTimeNs = j;
-        this.frameType = frameType;
-        this.rotation = i3;
-        this.qp = num;
-        this.refCountDelegate = new RefCountDelegate(runnable);
+    public Builder setEncodedWidth(int encodedWidth) {
+      this.encodedWidth = encodedWidth;
+      return this;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public Builder setEncodedHeight(int encodedHeight) {
+      this.encodedHeight = encodedHeight;
+      return this;
     }
 
-    @CalledByNative
-    private ByteBuffer getBuffer() {
-        return this.buffer;
+    @Deprecated
+    public Builder setCaptureTimeMs(long captureTimeMs) {
+      this.captureTimeNs = TimeUnit.MILLISECONDS.toNanos(captureTimeMs);
+      return this;
     }
 
-    @CalledByNative
-    private long getCaptureTimeNs() {
-        return this.captureTimeNs;
+    public Builder setCaptureTimeNs(long captureTimeNs) {
+      this.captureTimeNs = captureTimeNs;
+      return this;
     }
 
-    @CalledByNative
-    private int getEncodedHeight() {
-        return this.encodedHeight;
+    public Builder setFrameType(EncodedImage.FrameType frameType) {
+      this.frameType = frameType;
+      return this;
     }
 
-    @CalledByNative
-    private int getEncodedWidth() {
-        return this.encodedWidth;
+    public Builder setRotation(int rotation) {
+      this.rotation = rotation;
+      return this;
     }
 
-    @CalledByNative
-    private int getFrameType() {
-        return this.frameType.getNative();
+    public Builder setQp(@Nullable Integer qp) {
+      this.qp = qp;
+      return this;
     }
 
-    @CalledByNative
-    private Integer getQp() {
-        return this.qp;
+    public EncodedImage createEncodedImage() {
+      return new EncodedImage(buffer, releaseCallback, encodedWidth, encodedHeight, captureTimeNs,
+          frameType, rotation, qp);
     }
-
-    @CalledByNative
-    private int getRotation() {
-        return this.rotation;
-    }
-
-    @Override // org.webrtc.RefCounted
-    public void release() {
-        this.refCountDelegate.release();
-    }
-
-    @Override // org.webrtc.RefCounted
-    public void retain() {
-        this.refCountDelegate.retain();
-    }
+  }
 }

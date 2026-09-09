@@ -1,8 +1,15 @@
+/*
+ * This is the source code of Telegram for Android v. 5.x.x.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Nikolai Kudashov, 2013-2018.
+ */
+
 package org.telegram.ui;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -10,88 +17,90 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+
+import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.ApplicationLoader;
+import org.telegram.messenger.FileLog;
+import org.telegram.messenger.MessageObject;
+import org.telegram.messenger.R;
+import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.Utilities;
-import org.telegram.ui.Components.h2;
-import org.telegram.ui.ShareActivity;
-/* loaded from: classes2.dex */
+import org.telegram.tgnet.SerializedData;
+import org.telegram.tgnet.TLRPC;
+import org.telegram.ui.Components.ShareAlert;
+
 public class ShareActivity extends Activity {
+
     private Dialog visibleDialog;
 
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void b(DialogInterface dialogInterface) {
-        if (!isFinishing()) {
-            finish();
-        }
-        this.visibleDialog = null;
-    }
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        ApplicationLoader.postInitApplication();
+        AndroidUtilities.checkDisplaySize(this, getResources().getConfiguration());
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setTheme(R.style.Theme_TMessages_Transparent);
+        super.onCreate(savedInstanceState);
+        setContentView(new View(this), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-    @Override // android.app.Activity
-    public void onCreate(Bundle bundle) {
-        org.telegram.messenger.b.C();
-        org.telegram.messenger.a.N(this, getResources().getConfiguration());
-        requestWindowFeature(1);
-        setTheme(org.telegram.mdgram.R.style.Theme.TMessages.Transparent);
-        super.onCreate(bundle);
-        setContentView(new View(this), new ViewGroup.LayoutParams(-1, -1));
         Intent intent = getIntent();
-        if (intent != null && "android.intent.action.VIEW".equals(intent.getAction()) && intent.getData() != null) {
-            Uri data = intent.getData();
-            String scheme = data.getScheme();
-            String uri = data.toString();
-            String queryParameter = data.getQueryParameter("hash");
-            if ("tgb".equals(scheme) && uri.toLowerCase().startsWith("tgb://share_game_score") && !TextUtils.isEmpty(queryParameter)) {
-                SharedPreferences sharedPreferences = org.telegram.messenger.b.f12514a.getSharedPreferences("botshare", 0);
-                String string = sharedPreferences.getString(queryParameter + "_m", null);
-                if (TextUtils.isEmpty(string)) {
-                    finish();
-                    return;
-                }
-                jx8 jx8Var = new jx8(Utilities.x(string));
-                lo9 f = lo9.f(jx8Var, jx8Var.readInt32(false), false);
-                if (f == null) {
-                    finish();
-                    return;
-                }
-                f.g(jx8Var, 0L);
-                jx8Var.a();
-                String string2 = sharedPreferences.getString(queryParameter + "_link", null);
-                org.telegram.messenger.x xVar = new org.telegram.messenger.x(tla.o, f, false, true);
-                xVar.f13365a.f9719m = true;
-                try {
-                    h2 u4 = h2.u4(this, xVar, null, false, string2, false);
-                    this.visibleDialog = u4;
-                    u4.setCanceledOnTouchOutside(true);
-                    this.visibleDialog.setOnDismissListener(new DialogInterface.OnDismissListener() { // from class: f09
-                        @Override // android.content.DialogInterface.OnDismissListener
-                        public final void onDismiss(DialogInterface dialogInterface) {
-                            ShareActivity.this.b(dialogInterface);
-                        }
-                    });
-                    this.visibleDialog.show();
-                    return;
-                } catch (Exception e) {
-                    org.telegram.messenger.l.p(e);
-                    finish();
-                    return;
-                }
-            }
+        if (intent == null || !Intent.ACTION_VIEW.equals(intent.getAction()) || intent.getData() == null) {
             finish();
             return;
         }
-        finish();
+        Uri data = intent.getData();
+        String scheme = data.getScheme();
+        String url = data.toString();
+        String hash = data.getQueryParameter("hash");
+        if (!"tgb".equals(scheme) || !url.toLowerCase().startsWith("tgb://share_game_score") || TextUtils.isEmpty(hash)) {
+            finish();
+            return;
+        }
+
+        SharedPreferences sharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("botshare", Activity.MODE_PRIVATE);
+        String message = sharedPreferences.getString(hash + "_m", null);
+        if (TextUtils.isEmpty(message)) {
+            finish();
+            return;
+        }
+        SerializedData serializedData = new SerializedData(Utilities.hexToBytes(message));
+        TLRPC.Message mess = TLRPC.Message.TLdeserialize(serializedData, serializedData.readInt32(false), false);
+        if (mess == null) {
+            finish();
+            return;
+        }
+        mess.readAttachPath(serializedData, 0);
+        serializedData.cleanup();
+        String link = sharedPreferences.getString(hash + "_link", null);
+        MessageObject messageObject = new MessageObject(UserConfig.selectedAccount, mess, false, true);
+        messageObject.messageOwner.with_my_score = true;
+
+        try {
+            visibleDialog = ShareAlert.createShareAlert(this, messageObject, null, false, link, false);
+            visibleDialog.setCanceledOnTouchOutside(true);
+            visibleDialog.setOnDismissListener(dialog -> {
+                if (!isFinishing()) {
+                    finish();
+                }
+                visibleDialog = null;
+            });
+            visibleDialog.show();
+        } catch (Exception e) {
+            FileLog.e(e);
+            finish();
+        }
     }
 
-    @Override // android.app.Activity
+    @Override
     public void onPause() {
         super.onPause();
         try {
-            Dialog dialog = this.visibleDialog;
-            if (dialog != null && dialog.isShowing()) {
-                this.visibleDialog.dismiss();
-                this.visibleDialog = null;
+            if (visibleDialog != null && visibleDialog.isShowing()) {
+                visibleDialog.dismiss();
+                visibleDialog = null;
             }
         } catch (Exception e) {
-            org.telegram.messenger.l.p(e);
+            FileLog.e(e);
         }
     }
 }

@@ -1,63 +1,86 @@
+/*
+ *  Copyright 2013 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
 
+import androidx.annotation.Nullable;
 import java.util.Arrays;
-import org.dizitart.no2.Constants;
 import org.webrtc.PeerConnection;
-/* loaded from: classes3.dex */
+
+/**
+ * Representation of a single ICE Candidate, mirroring
+ * {@code IceCandidateInterface} in the C++ API.
+ */
 public class IceCandidate {
-    public final PeerConnection.AdapterType adapterType;
-    public final String sdp;
-    public final int sdpMLineIndex;
-    public final String sdpMid;
-    public final String serverUrl;
+  public final String sdpMid;
+  public final int sdpMLineIndex;
+  public final String sdp;
+  public final String serverUrl;
+  public final PeerConnection.AdapterType adapterType;
 
-    public IceCandidate(String str, int i, String str2) {
-        this.sdpMid = str;
-        this.sdpMLineIndex = i;
-        this.sdp = str2;
-        this.serverUrl = "";
-        this.adapterType = PeerConnection.AdapterType.UNKNOWN;
+  public IceCandidate(String sdpMid, int sdpMLineIndex, String sdp) {
+    this.sdpMid = sdpMid;
+    this.sdpMLineIndex = sdpMLineIndex;
+    this.sdp = sdp;
+    this.serverUrl = "";
+    this.adapterType = PeerConnection.AdapterType.UNKNOWN;
+  }
+
+  @CalledByNative
+  IceCandidate(String sdpMid, int sdpMLineIndex, String sdp, String serverUrl,
+      PeerConnection.AdapterType adapterType) {
+    this.sdpMid = sdpMid;
+    this.sdpMLineIndex = sdpMLineIndex;
+    this.sdp = sdp;
+    this.serverUrl = serverUrl;
+    this.adapterType = adapterType;
+  }
+
+  @Override
+  public String toString() {
+    return sdpMid + ":" + sdpMLineIndex + ":" + sdp + ":" + serverUrl + ":"
+        + adapterType.toString();
+  }
+
+  @CalledByNative
+  String getSdpMid() {
+    return sdpMid;
+  }
+
+  @CalledByNative
+  String getSdp() {
+    return sdp;
+  }
+
+  /** equals() checks sdpMid, sdpMLineIndex, and sdp for equality. */
+  @Override
+  public boolean equals(@Nullable Object object) {
+    if (!(object instanceof IceCandidate)) {
+      return false;
     }
 
-    private static boolean objectEquals(Object obj, Object obj2) {
-        return obj == null ? obj2 == null : obj.equals(obj2);
-    }
+    IceCandidate that = (IceCandidate) object;
+    return objectEquals(this.sdpMid, that.sdpMid) && this.sdpMLineIndex == that.sdpMLineIndex
+        && objectEquals(this.sdp, that.sdp);
+  }
 
-    public boolean equals(Object obj) {
-        if (!(obj instanceof IceCandidate)) {
-            return false;
-        }
-        IceCandidate iceCandidate = (IceCandidate) obj;
-        if (!objectEquals(this.sdpMid, iceCandidate.sdpMid) || this.sdpMLineIndex != iceCandidate.sdpMLineIndex || !objectEquals(this.sdp, iceCandidate.sdp)) {
-            return false;
-        }
-        return true;
-    }
+  @Override
+  public int hashCode() {
+    Object[] values = {sdpMid, sdpMLineIndex, sdp};
+    return Arrays.hashCode(values);
+  }
 
-    @CalledByNative
-    public String getSdp() {
-        return this.sdp;
+  private static boolean objectEquals(Object o1, Object o2) {
+    if (o1 == null) {
+      return o2 == null;
     }
-
-    @CalledByNative
-    public String getSdpMid() {
-        return this.sdpMid;
-    }
-
-    public int hashCode() {
-        return Arrays.hashCode(new Object[]{this.sdpMid, Integer.valueOf(this.sdpMLineIndex), this.sdp});
-    }
-
-    public String toString() {
-        return this.sdpMid + Constants.OBJECT_STORE_NAME_SEPARATOR + this.sdpMLineIndex + Constants.OBJECT_STORE_NAME_SEPARATOR + this.sdp + Constants.OBJECT_STORE_NAME_SEPARATOR + this.serverUrl + Constants.OBJECT_STORE_NAME_SEPARATOR + this.adapterType.toString();
-    }
-
-    @CalledByNative
-    public IceCandidate(String str, int i, String str2, String str3, PeerConnection.AdapterType adapterType) {
-        this.sdpMid = str;
-        this.sdpMLineIndex = i;
-        this.sdp = str2;
-        this.serverUrl = str3;
-        this.adapterType = adapterType;
-    }
+    return o1.equals(o2);
+  }
 }

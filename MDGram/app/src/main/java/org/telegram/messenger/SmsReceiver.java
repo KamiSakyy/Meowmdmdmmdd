@@ -1,57 +1,60 @@
+/*
+ * This is the source code of Telegram for Android v. 5.x.x.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Nikolai Kudashov, 2013-2018.
+ */
+
 package org.telegram.messenger;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.text.TextUtils;
+
+import com.google.android.gms.auth.api.phone.SmsRetriever;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.dizitart.no2.Constants;
-import org.telegram.messenger.SmsReceiver;
-/* loaded from: classes2.dex */
-public class SmsReceiver extends BroadcastReceiver {
-    public static /* synthetic */ void b(String str) {
-        a0.j().s(a0.q2, str);
-    }
 
-    @Override // android.content.BroadcastReceiver
+public class SmsReceiver extends BroadcastReceiver {
+
+    @Override
     public void onReceive(Context context, Intent intent) {
-        String str;
         if (intent == null) {
             return;
         }
         try {
-            SharedPreferences sharedPreferences = b.f12514a.getSharedPreferences("mainconfig", 0);
-            String string = sharedPreferences.getString("sms_hash", null);
-            if (!"com.google.android.gms.auth.api.phone.SMS_RETRIEVED".equals(intent.getAction())) {
-                str = "";
-            } else if (!a.c2()) {
-                return;
-            } else {
-                str = (String) intent.getExtras().get("com.google.android.gms.auth.api.phone.EXTRA_SMS_MESSAGE");
+            String message = "";
+            SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+            String hash = preferences.getString("sms_hash", null);
+            if (SmsRetriever.SMS_RETRIEVED_ACTION.equals(intent.getAction())) {
+                if (!AndroidUtilities.isWaitingForSms()) {
+                    return;
+                }
+                Bundle bundle = intent.getExtras();
+                message = (String) bundle.get(SmsRetriever.EXTRA_SMS_MESSAGE);
             }
-            if (TextUtils.isEmpty(str)) {
+            if (TextUtils.isEmpty(message)) {
                 return;
             }
-            Matcher matcher = Pattern.compile("[0-9\\-]+").matcher(str);
+            Pattern pattern = Pattern.compile("[0-9\\-]+");
+            final Matcher matcher = pattern.matcher(message);
             if (matcher.find()) {
-                final String replace = matcher.group(0).replace("-", "");
-                if (replace.length() >= 3) {
-                    if (string != null) {
-                        SharedPreferences.Editor edit = sharedPreferences.edit();
-                        edit.putString("sms_hash_code", string + Constants.INTERNAL_NAME_SEPARATOR + replace).commit();
+                String code = matcher.group(0).replace("-", "");
+                if (code.length() >= 3) {
+                    if (hash != null) {
+                        preferences.edit().putString("sms_hash_code", hash + "|" + code).commit();
                     }
-                    a.m3(new Runnable() { // from class: b89
-                        @Override // java.lang.Runnable
-                        public final void run() {
-                            SmsReceiver.b(replace);
-                        }
-                    });
+                    AndroidUtilities.runOnUIThread(() -> NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.didReceiveSmsCode, code));
                 }
             }
-        } catch (Throwable th) {
-            l.p(th);
+        } catch (Throwable e) {
+            FileLog.e(e);
         }
     }
 }

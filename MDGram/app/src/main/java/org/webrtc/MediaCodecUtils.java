@@ -1,163 +1,165 @@
+/*
+ *  Copyright 2017 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
 
 import android.annotation.TargetApi;
 import android.media.MediaCodecInfo;
+import android.media.MediaCodecInfo.CodecCapabilities;
 import android.media.MediaCodecList;
 import android.os.Build;
+
+import org.telegram.messenger.FileLog;
+import org.telegram.messenger.voip.VoIPService;
+
+import androidx.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-import org.telegram.messenger.l;
-/* loaded from: classes3.dex */
+
+/** Container class for static constants and helpers used with MediaCodec. */
+// We are forced to use the old API because we want to support API level < 21.
+@SuppressWarnings("deprecation")
 class MediaCodecUtils {
-    public static final String EXYNOS_PREFIX = "OMX.Exynos.";
-    public static final String HISI_PREFIX = "OMX.hisi.";
-    public static final String INTEL_PREFIX = "OMX.Intel.";
-    public static final String NVIDIA_PREFIX = "OMX.Nvidia.";
-    public static final String QCOM_PREFIX = "OMX.qcom.";
-    private static final String TAG = "MediaCodecUtils";
-    public static final String[] SOFTWARE_IMPLEMENTATION_PREFIXES = {"OMX.google.", "OMX.SEC.", "c2.android"};
-    public static final int COLOR_QCOM_FORMATYVU420PackedSemiPlanar32m4ka = 2141391873;
-    public static final int COLOR_QCOM_FORMATYVU420PackedSemiPlanar16m4ka = 2141391874;
-    public static final int COLOR_QCOM_FORMATYVU420PackedSemiPlanar64x32Tile2m8ka = 2141391875;
-    public static final int COLOR_QCOM_FORMATYUV420PackedSemiPlanar32m = 2141391876;
-    public static final int[] DECODER_COLOR_FORMATS = {19, 21, 2141391872, COLOR_QCOM_FORMATYVU420PackedSemiPlanar32m4ka, COLOR_QCOM_FORMATYVU420PackedSemiPlanar16m4ka, COLOR_QCOM_FORMATYVU420PackedSemiPlanar64x32Tile2m8ka, COLOR_QCOM_FORMATYUV420PackedSemiPlanar32m};
-    public static final int[] ENCODER_COLOR_FORMATS = {19, 21, 2141391872, COLOR_QCOM_FORMATYUV420PackedSemiPlanar32m};
-    public static final int[] TEXTURE_COLOR_FORMATS = getTextureColorFormats();
+  private static final String TAG = "MediaCodecUtils";
 
-    /* renamed from: org.webrtc.MediaCodecUtils$1  reason: invalid class name */
-    /* loaded from: classes3.dex */
-    public static /* synthetic */ class AnonymousClass1 {
-        public static final /* synthetic */ int[] $SwitchMap$org$webrtc$VideoCodecMimeType;
+  // Prefixes for supported hardware encoder/decoder component names.
+  static final String EXYNOS_PREFIX = "OMX.Exynos.";
+  static final String INTEL_PREFIX = "OMX.Intel.";
+  static final String NVIDIA_PREFIX = "OMX.Nvidia.";
+  static final String QCOM_PREFIX = "OMX.qcom.";
+  static final String HISI_PREFIX = "OMX.hisi.";
+  static final String[] SOFTWARE_IMPLEMENTATION_PREFIXES = {
+      "OMX.google.", "OMX.SEC.", "c2.android"};
 
-        static {
-            int[] iArr = new int[VideoCodecMimeType.values().length];
-            $SwitchMap$org$webrtc$VideoCodecMimeType = iArr;
-            try {
-                iArr[VideoCodecMimeType.VP8.ordinal()] = 1;
-            } catch (NoSuchFieldError unused) {
-            }
-            try {
-                $SwitchMap$org$webrtc$VideoCodecMimeType[VideoCodecMimeType.VP9.ordinal()] = 2;
-            } catch (NoSuchFieldError unused2) {
-            }
-            try {
-                $SwitchMap$org$webrtc$VideoCodecMimeType[VideoCodecMimeType.H265.ordinal()] = 3;
-            } catch (NoSuchFieldError unused3) {
-            }
-            try {
-                $SwitchMap$org$webrtc$VideoCodecMimeType[VideoCodecMimeType.AV1.ordinal()] = 4;
-            } catch (NoSuchFieldError unused4) {
-            }
-            try {
-                $SwitchMap$org$webrtc$VideoCodecMimeType[VideoCodecMimeType.H264.ordinal()] = 5;
-            } catch (NoSuchFieldError unused5) {
-            }
-        }
+  // NV12 color format supported by QCOM codec, but not declared in MediaCodec -
+  // see /hardware/qcom/media/mm-core/inc/OMX_QCOMExtns.h
+  static final int COLOR_QCOM_FORMATYVU420PackedSemiPlanar32m4ka = 0x7FA30C01;
+  static final int COLOR_QCOM_FORMATYVU420PackedSemiPlanar16m4ka = 0x7FA30C02;
+  static final int COLOR_QCOM_FORMATYVU420PackedSemiPlanar64x32Tile2m8ka = 0x7FA30C03;
+  static final int COLOR_QCOM_FORMATYUV420PackedSemiPlanar32m = 0x7FA30C04;
+
+  // Color formats supported by hardware decoder - in order of preference.
+  static final int[] DECODER_COLOR_FORMATS = new int[] {CodecCapabilities.COLOR_FormatYUV420Planar,
+      CodecCapabilities.COLOR_FormatYUV420SemiPlanar,
+      CodecCapabilities.COLOR_QCOM_FormatYUV420SemiPlanar,
+      MediaCodecUtils.COLOR_QCOM_FORMATYVU420PackedSemiPlanar32m4ka,
+      MediaCodecUtils.COLOR_QCOM_FORMATYVU420PackedSemiPlanar16m4ka,
+      MediaCodecUtils.COLOR_QCOM_FORMATYVU420PackedSemiPlanar64x32Tile2m8ka,
+      MediaCodecUtils.COLOR_QCOM_FORMATYUV420PackedSemiPlanar32m};
+
+  // Color formats supported by hardware encoder - in order of preference.
+  static final int[] ENCODER_COLOR_FORMATS = {
+      MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Planar,
+      MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420SemiPlanar,
+      MediaCodecInfo.CodecCapabilities.COLOR_QCOM_FormatYUV420SemiPlanar,
+      MediaCodecUtils.COLOR_QCOM_FORMATYUV420PackedSemiPlanar32m};
+
+  // Color formats supported by texture mode encoding - in order of preference.
+  static final int[] TEXTURE_COLOR_FORMATS = getTextureColorFormats();
+
+  private static int[] getTextureColorFormats() {
+    if (Build.VERSION.SDK_INT >= 18) {
+      return new int[] {MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface};
+    } else {
+      return new int[] {};
     }
+  }
 
-    private MediaCodecUtils() {
-    }
-
-    public static boolean codecSupportsType(MediaCodecInfo mediaCodecInfo, VideoCodecMimeType videoCodecMimeType) {
-        for (String str : mediaCodecInfo.getSupportedTypes()) {
-            if (videoCodecMimeType.mimeType().equals(str)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static Map<String, String> getCodecProperties(VideoCodecMimeType videoCodecMimeType, boolean z) {
-        int i = AnonymousClass1.$SwitchMap$org$webrtc$VideoCodecMimeType[videoCodecMimeType.ordinal()];
-        if (i != 1 && i != 2 && i != 3 && i != 4) {
-            if (i == 5) {
-                return H264Utils.getDefaultH264Params(z);
-            }
-            throw new IllegalArgumentException("Unsupported codec: " + videoCodecMimeType);
-        }
-        return new HashMap();
-    }
-
-    public static ArrayList<MediaCodecInfo> getSortedCodecsList() {
-        ArrayList<MediaCodecInfo> arrayList = new ArrayList<>();
+  public static ArrayList<MediaCodecInfo> getSortedCodecsList() {
+    ArrayList<MediaCodecInfo> result = new ArrayList<>();
+    try {
+      int numberOfCodecs = MediaCodecList.getCodecCount();
+      for (int a = 0; a < numberOfCodecs; a++) {
         try {
-            int codecCount = MediaCodecList.getCodecCount();
-            for (int i = 0; i < codecCount; i++) {
-                try {
-                    arrayList.add(MediaCodecList.getCodecInfoAt(i));
-                } catch (IllegalArgumentException e) {
-                    Logging.e(TAG, "Cannot retrieve codec info", e);
-                }
-            }
-            Collections.sort(arrayList, new Comparator() { // from class: org.webrtc.g
-                @Override // java.util.Comparator
-                public final int compare(Object obj, Object obj2) {
-                    int lambda$getSortedCodecsList$0;
-                    lambda$getSortedCodecsList$0 = MediaCodecUtils.lambda$getSortedCodecsList$0((MediaCodecInfo) obj, (MediaCodecInfo) obj2);
-                    return lambda$getSortedCodecsList$0;
-                }
-            });
-        } catch (Exception e2) {
-            l.p(e2);
+          result.add(MediaCodecList.getCodecInfoAt(a));
+        } catch (IllegalArgumentException e) {
+          Logging.e(TAG, "Cannot retrieve codec info", e);
         }
-        return arrayList;
+      }
+      Collections.sort(result, (o1, o2) -> o1.getName().compareTo(o2.getName()));
+    } catch (Exception e) {
+      FileLog.e(e);
     }
+    return result;
+  }
 
-    private static int[] getTextureColorFormats() {
-        return new int[]{2130708361};
-    }
-
-    public static boolean isHardwareAccelerated(MediaCodecInfo mediaCodecInfo) {
-        if (Build.VERSION.SDK_INT >= 29) {
-            return isHardwareAcceleratedQOrHigher(mediaCodecInfo);
+  static @Nullable Integer selectColorFormat(
+      int[] supportedColorFormats, CodecCapabilities capabilities) {
+    for (int supportedColorFormat : supportedColorFormats) {
+      for (int codecColorFormat : capabilities.colorFormats) {
+        if (codecColorFormat == supportedColorFormat) {
+          return codecColorFormat;
         }
-        return !isSoftwareOnly(mediaCodecInfo);
+      }
     }
+    return null;
+  }
 
-    @TargetApi(29)
-    private static boolean isHardwareAcceleratedQOrHigher(MediaCodecInfo mediaCodecInfo) {
-        boolean isHardwareAccelerated;
-        isHardwareAccelerated = mediaCodecInfo.isHardwareAccelerated();
-        return isHardwareAccelerated;
+  static boolean codecSupportsType(MediaCodecInfo info, VideoCodecMimeType type) {
+    for (String mimeType : info.getSupportedTypes()) {
+      if (type.mimeType().equals(mimeType)) {
+        return true;
+      }
     }
+    return false;
+  }
 
-    public static boolean isSoftwareOnly(MediaCodecInfo mediaCodecInfo) {
-        if (Build.VERSION.SDK_INT >= 29) {
-            return isSoftwareOnlyQOrHigher(mediaCodecInfo);
-        }
-        String name = mediaCodecInfo.getName();
-        for (String str : SOFTWARE_IMPLEMENTATION_PREFIXES) {
-            if (name.startsWith(str)) {
-                return true;
-            }
-        }
-        return false;
+  static Map<String, String> getCodecProperties(VideoCodecMimeType type, boolean highProfile) {
+    switch (type) {
+      case VP8:
+      case VP9:
+      case H265:
+      case AV1:
+        return new HashMap<String, String>();
+      case H264:
+        return H264Utils.getDefaultH264Params(highProfile);
+      default:
+        throw new IllegalArgumentException("Unsupported codec: " + type);
     }
+  }
 
-    @TargetApi(29)
-    private static boolean isSoftwareOnlyQOrHigher(MediaCodecInfo mediaCodecInfo) {
-        boolean isSoftwareOnly;
-        isSoftwareOnly = mediaCodecInfo.isSoftwareOnly();
-        return isSoftwareOnly;
+  static boolean isHardwareAccelerated(MediaCodecInfo info) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      return isHardwareAcceleratedQOrHigher(info);
     }
+    return !isSoftwareOnly(info);
+  }
 
-    /* JADX INFO: Access modifiers changed from: private */
-    public static /* synthetic */ int lambda$getSortedCodecsList$0(MediaCodecInfo mediaCodecInfo, MediaCodecInfo mediaCodecInfo2) {
-        return mediaCodecInfo.getName().compareTo(mediaCodecInfo2.getName());
-    }
+  @TargetApi(29)
+  private static boolean isHardwareAcceleratedQOrHigher(android.media.MediaCodecInfo codecInfo) {
+    return codecInfo.isHardwareAccelerated();
+  }
 
-    public static Integer selectColorFormat(int[] iArr, MediaCodecInfo.CodecCapabilities codecCapabilities) {
-        int[] iArr2;
-        for (int i : iArr) {
-            for (int i2 : codecCapabilities.colorFormats) {
-                if (i2 == i) {
-                    return Integer.valueOf(i2);
-                }
-            }
-        }
-        return null;
+  static boolean isSoftwareOnly(android.media.MediaCodecInfo codecInfo) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      return isSoftwareOnlyQOrHigher(codecInfo);
     }
+    String name = codecInfo.getName();
+    for (String prefix : SOFTWARE_IMPLEMENTATION_PREFIXES) {
+      if (name.startsWith(prefix)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @TargetApi(29)
+  private static boolean isSoftwareOnlyQOrHigher(android.media.MediaCodecInfo codecInfo) {
+    return codecInfo.isSoftwareOnly();
+  }
+
+  private MediaCodecUtils() {
+    // This class should not be instantiated.
+  }
 }

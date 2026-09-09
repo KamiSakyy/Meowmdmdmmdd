@@ -1,54 +1,69 @@
+/*
+ *  Copyright 2017 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
 
+import androidx.annotation.Nullable;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
-import org.webrtc.EglBase;
-/* loaded from: classes3.dex */
+
+/**
+ * Helper class that combines HW and SW decoders.
+ */
 public class DefaultVideoDecoderFactory implements VideoDecoderFactory {
-    private final VideoDecoderFactory hardwareVideoDecoderFactory;
-    private final VideoDecoderFactory platformSoftwareVideoDecoderFactory;
-    private final VideoDecoderFactory softwareVideoDecoderFactory;
+  private final VideoDecoderFactory hardwareVideoDecoderFactory;
+  private final VideoDecoderFactory softwareVideoDecoderFactory = new SoftwareVideoDecoderFactory();
+  private final @Nullable VideoDecoderFactory platformSoftwareVideoDecoderFactory;
 
-    public DefaultVideoDecoderFactory(EglBase.Context context) {
-        this.softwareVideoDecoderFactory = new SoftwareVideoDecoderFactory();
-        this.hardwareVideoDecoderFactory = new HardwareVideoDecoderFactory(context);
-        this.platformSoftwareVideoDecoderFactory = new PlatformSoftwareVideoDecoderFactory(context);
+  /**
+   * Create decoder factory using default hardware decoder factory.
+   */
+  public DefaultVideoDecoderFactory(@Nullable EglBase.Context eglContext) {
+    this.hardwareVideoDecoderFactory = new HardwareVideoDecoderFactory(eglContext);
+    this.platformSoftwareVideoDecoderFactory = new PlatformSoftwareVideoDecoderFactory(eglContext);
+  }
+
+  /**
+   * Create decoder factory using explicit hardware decoder factory.
+   */
+  DefaultVideoDecoderFactory(VideoDecoderFactory hardwareVideoDecoderFactory) {
+    this.hardwareVideoDecoderFactory = hardwareVideoDecoderFactory;
+    this.platformSoftwareVideoDecoderFactory = null;
+  }
+
+  @Override
+  public @Nullable VideoDecoder createDecoder(VideoCodecInfo codecType) {
+    VideoDecoder softwareDecoder = softwareVideoDecoderFactory.createDecoder(codecType);
+    final VideoDecoder hardwareDecoder = hardwareVideoDecoderFactory.createDecoder(codecType);
+    if (softwareDecoder == null && platformSoftwareVideoDecoderFactory != null) {
+      softwareDecoder = platformSoftwareVideoDecoderFactory.createDecoder(codecType);
+    }
+    if (hardwareDecoder != null && softwareDecoder != null) {
+      // Both hardware and software supported, wrap it in a software fallback
+      return new VideoDecoderFallback(
+          /* fallback= */ softwareDecoder, /* primary= */ hardwareDecoder);
+    }
+    return hardwareDecoder != null ? hardwareDecoder : softwareDecoder;
+  }
+
+  @Override
+  public VideoCodecInfo[] getSupportedCodecs() {
+    LinkedHashSet<VideoCodecInfo> supportedCodecInfos = new LinkedHashSet<VideoCodecInfo>();
+
+    supportedCodecInfos.addAll(Arrays.asList(softwareVideoDecoderFactory.getSupportedCodecs()));
+    supportedCodecInfos.addAll(Arrays.asList(hardwareVideoDecoderFactory.getSupportedCodecs()));
+    if (platformSoftwareVideoDecoderFactory != null) {
+      supportedCodecInfos.addAll(
+          Arrays.asList(platformSoftwareVideoDecoderFactory.getSupportedCodecs()));
     }
 
-    @Override // org.webrtc.VideoDecoderFactory
-    public /* synthetic */ VideoDecoder createDecoder(String str) {
-        return foa.a(this, str);
-    }
-
-    @Override // org.webrtc.VideoDecoderFactory
-    public VideoDecoder createDecoder(VideoCodecInfo videoCodecInfo) {
-        VideoDecoderFactory videoDecoderFactory;
-        VideoDecoder createDecoder = this.softwareVideoDecoderFactory.createDecoder(videoCodecInfo);
-        VideoDecoder createDecoder2 = this.hardwareVideoDecoderFactory.createDecoder(videoCodecInfo);
-        if (createDecoder == null && (videoDecoderFactory = this.platformSoftwareVideoDecoderFactory) != null) {
-            createDecoder = videoDecoderFactory.createDecoder(videoCodecInfo);
-        }
-        if (createDecoder2 == null || createDecoder == null) {
-            return createDecoder2 != null ? createDecoder2 : createDecoder;
-        }
-        return new VideoDecoderFallback(createDecoder, createDecoder2);
-    }
-
-    @Override // org.webrtc.VideoDecoderFactory
-    public VideoCodecInfo[] getSupportedCodecs() {
-        LinkedHashSet linkedHashSet = new LinkedHashSet();
-        linkedHashSet.addAll(Arrays.asList(this.softwareVideoDecoderFactory.getSupportedCodecs()));
-        linkedHashSet.addAll(Arrays.asList(this.hardwareVideoDecoderFactory.getSupportedCodecs()));
-        VideoDecoderFactory videoDecoderFactory = this.platformSoftwareVideoDecoderFactory;
-        if (videoDecoderFactory != null) {
-            linkedHashSet.addAll(Arrays.asList(videoDecoderFactory.getSupportedCodecs()));
-        }
-        return (VideoCodecInfo[]) linkedHashSet.toArray(new VideoCodecInfo[linkedHashSet.size()]);
-    }
-
-    public DefaultVideoDecoderFactory(VideoDecoderFactory videoDecoderFactory) {
-        this.softwareVideoDecoderFactory = new SoftwareVideoDecoderFactory();
-        this.hardwareVideoDecoderFactory = videoDecoderFactory;
-        this.platformSoftwareVideoDecoderFactory = null;
-    }
+    return supportedCodecInfos.toArray(new VideoCodecInfo[supportedCodecInfos.size()]);
+  }
 }

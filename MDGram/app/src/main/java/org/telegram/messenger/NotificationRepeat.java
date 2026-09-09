@@ -1,32 +1,31 @@
+/*
+ * This is the source code of Telegram for Android v. 5.x.x.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Nikolai Kudashov, 2013-2018.
+ */
+
 package org.telegram.messenger;
 
 import android.app.IntentService;
 import android.content.Intent;
-import org.telegram.messenger.NotificationRepeat;
-/* loaded from: classes2.dex */
+
 public class NotificationRepeat extends IntentService {
+
     public NotificationRepeat() {
         super("NotificationRepeat");
     }
 
-    public static /* synthetic */ void b(int i) {
-        rn6.k0(i).E1();
-    }
-
-    @Override // android.app.IntentService
-    public void onHandleIntent(Intent intent) {
+    @Override
+    protected void onHandleIntent(Intent intent) {
         if (intent == null) {
             return;
         }
-        final int intExtra = intent.getIntExtra("currentAccount", tla.o);
-        if (!tla.y(intExtra)) {
+        final int currentAccount = intent.getIntExtra("currentAccount", UserConfig.selectedAccount);
+        if (!UserConfig.isValidAccount(currentAccount)) {
             return;
         }
-        a.m3(new Runnable() { // from class: rl6
-            @Override // java.lang.Runnable
-            public final void run() {
-                NotificationRepeat.b(intExtra);
-            }
-        });
+        AndroidUtilities.runOnUIThread(() -> NotificationsController.getInstance(currentAccount).repeatNotificationMaybe());
     }
 }

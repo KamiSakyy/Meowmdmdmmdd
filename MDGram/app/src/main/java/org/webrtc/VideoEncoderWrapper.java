@@ -1,34 +1,46 @@
+/*
+ *  Copyright 2017 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
 
+// Explicit imports necessary for JNI generation.
+import androidx.annotation.Nullable;
 import org.webrtc.VideoEncoder;
-/* JADX INFO: Access modifiers changed from: package-private */
-/* loaded from: classes3.dex */
-public class VideoEncoderWrapper {
-    @CalledByNative
-    public static VideoEncoder.Callback createEncoderCallback(final long j) {
-        return new VideoEncoder.Callback() { // from class: org.webrtc.k
-            @Override // org.webrtc.VideoEncoder.Callback
-            public final void onEncodedFrame(EncodedImage encodedImage, VideoEncoder.CodecSpecificInfo codecSpecificInfo) {
-                VideoEncoderWrapper.nativeOnEncodedFrame(j, encodedImage);
-            }
-        };
-    }
 
-    @CalledByNative
-    public static Integer getScalingSettingsHigh(VideoEncoder.ScalingSettings scalingSettings) {
-        return scalingSettings.high;
-    }
+/**
+ * This class contains the Java glue code for JNI generation of VideoEncoder.
+ */
+class VideoEncoderWrapper {
+  @CalledByNative
+  static boolean getScalingSettingsOn(VideoEncoder.ScalingSettings scalingSettings) {
+    return scalingSettings.on;
+  }
 
-    @CalledByNative
-    public static Integer getScalingSettingsLow(VideoEncoder.ScalingSettings scalingSettings) {
-        return scalingSettings.low;
-    }
+  @Nullable
+  @CalledByNative
+  static Integer getScalingSettingsLow(VideoEncoder.ScalingSettings scalingSettings) {
+    return scalingSettings.low;
+  }
 
-    @CalledByNative
-    public static boolean getScalingSettingsOn(VideoEncoder.ScalingSettings scalingSettings) {
-        return scalingSettings.on;
-    }
+  @Nullable
+  @CalledByNative
+  static Integer getScalingSettingsHigh(VideoEncoder.ScalingSettings scalingSettings) {
+    return scalingSettings.high;
+  }
 
-    /* JADX INFO: Access modifiers changed from: private */
-    public static native void nativeOnEncodedFrame(long j, EncodedImage encodedImage);
+  @CalledByNative
+  static VideoEncoder.Callback createEncoderCallback(final long nativeEncoder) {
+    return (EncodedImage frame,
+               VideoEncoder.CodecSpecificInfo info) -> nativeOnEncodedFrame(nativeEncoder, frame);
+  }
+
+  private static native void nativeOnEncodedFrame(
+      long nativeVideoEncoderWrapper, EncodedImage frame);
 }

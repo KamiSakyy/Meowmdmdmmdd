@@ -3,12 +3,16 @@ package org.telegram.messenger.voip;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-/* loaded from: classes2.dex */
+
+/**
+ * Created by grishka on 28.07.17.
+ */
+
 public class VoIPActionsReceiver extends BroadcastReceiver {
-    @Override // android.content.BroadcastReceiver
-    public void onReceive(Context context, Intent intent) {
-        if (VoIPService.getSharedInstance() != null) {
-            VoIPService.getSharedInstance().handleNotificationAction(intent);
-        }
-    }
+	@Override
+	public void onReceive(Context context, Intent intent) {
+		if (VoIPService.getSharedInstance() != null) {
+			VoIPService.getSharedInstance().handleNotificationAction(intent);
+		}
+	}
 }

@@ -1,79 +1,99 @@
+/*
+ *  Copyright 2013 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
 
+import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import org.dizitart.no2.Constants;
-/* loaded from: classes3.dex */
+
+/**
+ * Description of media constraints for {@code MediaStream} and
+ * {@code PeerConnection}.
+ */
 public class MediaConstraints {
-    public final List<KeyValuePair> mandatory = new ArrayList();
-    public final List<KeyValuePair> optional = new ArrayList();
+  /** Simple String key/value pair. */
+  public static class KeyValuePair {
+    private final String key;
+    private final String value;
 
-    /* loaded from: classes3.dex */
-    public static class KeyValuePair {
-        private final String key;
-        private final String value;
-
-        public KeyValuePair(String str, String str2) {
-            this.key = str;
-            this.value = str2;
-        }
-
-        public boolean equals(Object obj) {
-            if (this == obj) {
-                return true;
-            }
-            if (obj == null || getClass() != obj.getClass()) {
-                return false;
-            }
-            KeyValuePair keyValuePair = (KeyValuePair) obj;
-            if (this.key.equals(keyValuePair.key) && this.value.equals(keyValuePair.value)) {
-                return true;
-            }
-            return false;
-        }
-
-        @CalledByNative("KeyValuePair")
-        public String getKey() {
-            return this.key;
-        }
-
-        @CalledByNative("KeyValuePair")
-        public String getValue() {
-            return this.value;
-        }
-
-        public int hashCode() {
-            return this.key.hashCode() + this.value.hashCode();
-        }
-
-        public String toString() {
-            return this.key + ": " + this.value;
-        }
+    public KeyValuePair(String key, String value) {
+      this.key = key;
+      this.value = value;
     }
 
-    private static String stringifyKeyValuePairList(List<KeyValuePair> list) {
-        StringBuilder sb = new StringBuilder(Constants.ID_PREFIX);
-        for (KeyValuePair keyValuePair : list) {
-            if (sb.length() > 1) {
-                sb.append(", ");
-            }
-            sb.append(keyValuePair.toString());
-        }
-        sb.append("]");
-        return sb.toString();
+    @CalledByNative("KeyValuePair")
+    public String getKey() {
+      return key;
     }
 
-    @CalledByNative
-    public List<KeyValuePair> getMandatory() {
-        return this.mandatory;
+    @CalledByNative("KeyValuePair")
+    public String getValue() {
+      return value;
     }
 
-    @CalledByNative
-    public List<KeyValuePair> getOptional() {
-        return this.optional;
-    }
-
+    @Override
     public String toString() {
-        return "mandatory: " + stringifyKeyValuePairList(this.mandatory) + ", optional: " + stringifyKeyValuePairList(this.optional);
+      return key + ": " + value;
     }
+
+    @Override
+    public boolean equals(@Nullable Object other) {
+      if (this == other) {
+        return true;
+      }
+      if (other == null || getClass() != other.getClass()) {
+        return false;
+      }
+      KeyValuePair that = (KeyValuePair) other;
+      return key.equals(that.key) && value.equals(that.value);
+    }
+
+    @Override
+    public int hashCode() {
+      return key.hashCode() + value.hashCode();
+    }
+  }
+
+  public final List<KeyValuePair> mandatory;
+  public final List<KeyValuePair> optional;
+
+  public MediaConstraints() {
+    mandatory = new ArrayList<KeyValuePair>();
+    optional = new ArrayList<KeyValuePair>();
+  }
+
+  private static String stringifyKeyValuePairList(List<KeyValuePair> list) {
+    StringBuilder builder = new StringBuilder("[");
+    for (KeyValuePair pair : list) {
+      if (builder.length() > 1) {
+        builder.append(", ");
+      }
+      builder.append(pair.toString());
+    }
+    return builder.append("]").toString();
+  }
+
+  @Override
+  public String toString() {
+    return "mandatory: " + stringifyKeyValuePairList(mandatory) + ", optional: "
+        + stringifyKeyValuePairList(optional);
+  }
+
+  @CalledByNative
+  List<KeyValuePair> getMandatory() {
+    return mandatory;
+  }
+
+  @CalledByNative
+  List<KeyValuePair> getOptional() {
+    return optional;
+  }
 }

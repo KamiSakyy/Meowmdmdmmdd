@@ -1,6 +1,10 @@
 package org.telegram.ui.Components.Paint.Views;
 
+import android.animation.Animator;
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -14,282 +18,316 @@ import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+
+import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.LocaleController;
+import org.telegram.messenger.R;
+import org.telegram.ui.Components.LayoutHelper;
+import org.telegram.ui.Components.Paint.Swatch;
+
 import androidx.annotation.Keep;
-/* loaded from: classes3.dex */
+
 public class ColorPicker extends FrameLayout {
 
-    /* renamed from: a  reason: collision with other field name */
-    public float f16144a;
-
-    /* renamed from: a  reason: collision with other field name */
-    public Paint f16145a;
-
-    /* renamed from: a  reason: collision with other field name */
-    public RectF f16146a;
-
-    /* renamed from: a  reason: collision with other field name */
-    public Drawable f16147a;
-
-    /* renamed from: a  reason: collision with other field name */
-    public OvershootInterpolator f16148a;
-
-    /* renamed from: a  reason: collision with other field name */
-    public ImageView f16149a;
-
-    /* renamed from: a  reason: collision with other field name */
-    public a f16150a;
-
-    /* renamed from: a  reason: collision with other field name */
-    public boolean f16151a;
-    public float b;
-
-    /* renamed from: b  reason: collision with other field name */
-    public Paint f16152b;
-
-    /* renamed from: b  reason: collision with other field name */
-    public ImageView f16153b;
-
-    /* renamed from: b  reason: collision with other field name */
-    public boolean f16154b;
-    public float c;
-
-    /* renamed from: c  reason: collision with other field name */
-    public Paint f16155c;
-
-    /* renamed from: c  reason: collision with other field name */
-    public boolean f16156c;
-    public Paint d;
-
-    /* renamed from: d  reason: collision with other field name */
-    public boolean f16157d;
-
-    /* renamed from: a  reason: collision with other field name */
-    public static final int[] f16143a = {-1431751, -2409774, -13610525, -11942419, -8337308, -205211, -223667, -16777216, -1};
-    public static final float[] a = {0.0f, 0.14f, 0.24f, 0.39f, 0.49f, 0.62f, 0.73f, 0.85f, 1.0f};
-
-    /* loaded from: classes3.dex */
-    public interface a {
-        void a();
-
-        void b();
-
-        void c();
+    public interface ColorPickerDelegate {
+        void onBeganColorPicking();
+        void onColorValueChanged();
+        void onFinishedColorPicking();
+        void onSettingsPressed();
+        void onUndoPressed();
     }
 
-    @Keep
-    private void setDraggingFactor(float f) {
-        this.c = f;
-        invalidate();
-    }
+    private ColorPickerDelegate delegate;
+    private boolean interacting;
+    private boolean changingWeight;
+    private boolean wasChangingWeight;
+    private OvershootInterpolator interpolator = new OvershootInterpolator(1.02f);
 
-    public int a(float f) {
-        float[] fArr;
-        int i;
-        if (f <= 0.0f) {
-            return f16143a[0];
-        }
-        int i2 = 1;
-        if (f >= 1.0f) {
-            int[] iArr = f16143a;
-            return iArr[iArr.length - 1];
-        }
-        while (true) {
-            fArr = a;
-            i = -1;
-            if (i2 < fArr.length) {
-                if (fArr[i2] >= f) {
-                    i = i2 - 1;
-                    break;
-                }
-                i2++;
-            } else {
-                i2 = -1;
-                break;
+    private static final int[] COLORS = new int[]{
+            0xffea2739,
+            0xffdb3ad2,
+            0xff3051e3,
+            0xff49c5ed,
+            0xff80c864,
+            0xfffcde65,
+            0xfffc964d,
+            0xff000000,
+            0xffffffff
+    };
+
+    private static final float[] LOCATIONS = new float[]{
+            0.0f,
+            0.14f,
+            0.24f,
+            0.39f,
+            0.49f,
+            0.62f,
+            0.73f,
+            0.85f,
+            1.0f
+    };
+
+    public ImageView settingsButton;
+    private ImageView undoButton;
+    private Drawable shadowDrawable;
+
+    private Paint gradientPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint swatchPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint swatchStrokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private RectF rectF = new RectF();
+
+    private float location;
+    private float weight = 0.016773745f;
+    private float draggingFactor;
+    private boolean dragging;
+
+    public ColorPicker(Context context) {
+        super(context);
+        setWillNotDraw(false);
+        shadowDrawable = getResources().getDrawable(R.drawable.knob_shadow);
+        backgroundPaint.setColor(0xffffffff);
+        swatchStrokePaint.setStyle(Paint.Style.STROKE);
+        swatchStrokePaint.setStrokeWidth(AndroidUtilities.dp(1));
+
+        settingsButton = new ImageView(context);
+        settingsButton.setContentDescription(LocaleController.getString("AccDescrBrushType", R.string.AccDescrBrushType));
+        settingsButton.setScaleType(ImageView.ScaleType.CENTER);
+        settingsButton.setImageResource(R.drawable.photo_paint_brush);
+        addView(settingsButton, LayoutHelper.createFrame(46, 52));
+        settingsButton.setOnClickListener(v -> {
+            if (delegate != null) {
+                delegate.onSettingsPressed();
             }
-        }
-        float f2 = fArr[i];
-        int[] iArr2 = f16143a;
-        return b(iArr2[i], iArr2[i2], (f - f2) / (fArr[i2] - f2));
-    }
+        });
 
-    public final int b(int i, int i2, float f) {
-        float min = Math.min(Math.max(f, 0.0f), 1.0f);
-        int red = Color.red(i);
-        int red2 = Color.red(i2);
-        int green = Color.green(i);
-        int green2 = Color.green(i2);
-        int blue = Color.blue(i);
-        return Color.argb(255, Math.min(255, (int) (red + ((red2 - red) * min))), Math.min(255, (int) (green + ((green2 - green) * min))), Math.min(255, (int) (blue + ((Color.blue(i2) - blue) * min))));
-    }
-
-    public final void c(boolean z, boolean z2) {
-        float f;
-        if (this.f16157d == z) {
-            return;
-        }
-        this.f16157d = z;
-        if (z) {
-            f = 1.0f;
-        } else {
-            f = 0.0f;
-        }
-        if (z2) {
-            ObjectAnimator ofFloat = ObjectAnimator.ofFloat(this, "draggingFactor", this.c, f);
-            ofFloat.setInterpolator(this.f16148a);
-            int i = 300;
-            if (this.f16156c) {
-                i = (int) (300 + (this.b * 75.0f));
+        undoButton = new ImageView(context);
+        undoButton.setContentDescription(LocaleController.getString("Undo", R.string.Undo));
+        undoButton.setScaleType(ImageView.ScaleType.CENTER);
+        undoButton.setImageResource(R.drawable.photo_undo);
+        addView(undoButton, LayoutHelper.createFrame(46, 52));
+        undoButton.setOnClickListener(v -> {
+            if (delegate != null) {
+                delegate.onUndoPressed();
             }
-            ofFloat.setDuration(i);
-            ofFloat.start();
-            return;
-        }
-        setDraggingFactor(f);
+        });
+
+        SharedPreferences preferences = context.getSharedPreferences("paint", Activity.MODE_PRIVATE);
+        location = preferences.getFloat("last_color_location", 1.0f);
+        setWeight(preferences.getFloat("last_color_weight", 0.016773745f));
+        setLocation(location);
     }
 
-    @Keep
-    public float getDraggingFactor() {
-        return this.c;
+    public void setUndoEnabled(boolean enabled) {
+        undoButton.setAlpha(enabled ? 1.0f : 0.3f);
+        undoButton.setEnabled(enabled);
+    }
+
+    public void setDelegate(ColorPickerDelegate colorPickerDelegate) {
+        delegate = colorPickerDelegate;
     }
 
     public View getSettingsButton() {
-        return this.f16149a;
+        return settingsButton;
     }
 
-    public zk9 getSwatch() {
-        return new zk9(a(this.f16144a), this.f16144a, this.b);
+    public void setSettingsButtonImage(int resId) {
+        settingsButton.setImageResource(resId);
     }
 
-    @Override // android.view.View
-    public void onDraw(Canvas canvas) {
-        float f;
-        canvas.drawRoundRect(this.f16146a, org.telegram.messenger.a.e0(6.0f), org.telegram.messenger.a.e0(6.0f), this.f16145a);
-        RectF rectF = this.f16146a;
-        int width = (int) (rectF.left + (rectF.width() * this.f16144a));
-        float centerY = this.f16146a.centerY() + (this.c * (-org.telegram.messenger.a.e0(70.0f)));
-        if (this.f16154b) {
-            f = this.b * org.telegram.messenger.a.e0(190.0f);
-        } else {
-            f = 0.0f;
+    public Swatch getSwatch() {
+        return new Swatch(colorForLocation(location), location, weight);
+    }
+
+    public void setSwatch(Swatch swatch) {
+        setLocation(swatch.colorLocation);
+        setWeight(swatch.brushWeight);
+    }
+
+    public int colorForLocation(float location) {
+        if (location <= 0) {
+            return COLORS[0];
+        } else if (location >= 1) {
+            return COLORS[COLORS.length - 1];
         }
-        int i = (int) (centerY - f);
-        int e0 = (int) (org.telegram.messenger.a.e0(24.0f) * (this.c + 1.0f) * 0.5f);
-        this.f16147a.setBounds(width - e0, i - e0, width + e0, e0 + i);
-        this.f16147a.draw(canvas);
-        float floor = (((int) Math.floor(org.telegram.messenger.a.e0(4.0f) + ((org.telegram.messenger.a.e0(19.0f) - org.telegram.messenger.a.e0(4.0f)) * this.b))) * (this.c + 1.0f)) / 2.0f;
-        float f2 = width;
-        float f3 = i;
-        canvas.drawCircle(f2, f3, (org.telegram.messenger.a.e0(22.0f) / 2) * (this.c + 1.0f), this.f16152b);
-        canvas.drawCircle(f2, f3, floor, this.f16155c);
-        canvas.drawCircle(f2, f3, floor - org.telegram.messenger.a.e0(0.5f), this.d);
+
+        int leftIndex = -1;
+        int rightIndex = -1;
+
+        for (int i = 1; i < LOCATIONS.length; i++) {
+            float value = LOCATIONS[i];
+            if (value >= location) {
+                leftIndex = i - 1;
+                rightIndex = i;
+                break;
+            }
+        }
+
+        float leftLocation = LOCATIONS[leftIndex];
+        int leftColor = COLORS[leftIndex];
+
+        float rightLocation = LOCATIONS[rightIndex];
+        int rightColor = COLORS[rightIndex];
+
+        float factor = (location - leftLocation) / (rightLocation - leftLocation);
+        return interpolateColors(leftColor, rightColor, factor);
     }
 
-    @Override // android.widget.FrameLayout, android.view.ViewGroup, android.view.View
-    public void onLayout(boolean z, int i, int i2, int i3, int i4) {
-        int i5 = i3 - i;
-        int i6 = i4 - i2;
-        this.f16145a.setShader(new LinearGradient(org.telegram.messenger.a.e0(56.0f), 0.0f, i5 - org.telegram.messenger.a.e0(56.0f), 0.0f, f16143a, a, Shader.TileMode.REPEAT));
-        int e0 = i6 - org.telegram.messenger.a.e0(32.0f);
-        this.f16146a.set(org.telegram.messenger.a.e0(56.0f), e0, i5 - org.telegram.messenger.a.e0(56.0f), e0 + org.telegram.messenger.a.e0(12.0f));
-        ImageView imageView = this.f16149a;
-        imageView.layout(i5 - imageView.getMeasuredWidth(), i6 - org.telegram.messenger.a.e0(52.0f), i5, i6);
-        this.f16153b.layout(0, i6 - org.telegram.messenger.a.e0(52.0f), this.f16149a.getMeasuredWidth(), i6);
+    private int interpolateColors(int leftColor, int rightColor, float factor) {
+        factor = Math.min(Math.max(factor, 0.0f), 1.0f);
+
+        int r1 = Color.red(leftColor);
+        int r2 = Color.red(rightColor);
+
+        int g1 = Color.green(leftColor);
+        int g2 = Color.green(rightColor);
+
+        int b1 = Color.blue(leftColor);
+        int b2 = Color.blue(rightColor);
+
+        int r = Math.min(255, (int) (r1 + (r2 - r1) * factor));
+        int g = Math.min(255, (int) (g1 + (g2 - g1) * factor));
+        int b = Math.min(255, (int) (b1 + (b2 - b1) * factor));
+
+        return Color.argb(255, r, g, b);
     }
 
-    @Override // android.view.View
-    public boolean onTouchEvent(MotionEvent motionEvent) {
-        a aVar;
-        if (motionEvent.getPointerCount() > 1) {
+    public void setLocation(float value) {
+        int color = colorForLocation(location = value);
+        swatchPaint.setColor(color);
+
+        float[] hsv = new float[3];
+        Color.colorToHSV(color, hsv);
+
+        if (hsv[0] < 0.001 && hsv[1] < 0.001 && hsv[2] > 0.92f) {
+            int c = (int) ((1.0f - (hsv[2] - 0.92f) / 0.08f * 0.22f) * 255);
+            swatchStrokePaint.setColor(Color.rgb(c, c, c));
+        } else {
+            swatchStrokePaint.setColor(color);
+        }
+
+        invalidate();
+    }
+
+    public void setWeight(float value) {
+        weight = value;
+        invalidate();
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getPointerCount() > 1) {
             return false;
         }
-        float x = motionEvent.getX() - this.f16146a.left;
-        float y = motionEvent.getY() - this.f16146a.top;
-        if (!this.f16151a && y < (-org.telegram.messenger.a.e0(10.0f))) {
+
+        float x = event.getX() - rectF.left;
+        float y = event.getY() - rectF.top;
+
+        if (!interacting && y < -AndroidUtilities.dp(10)) {
             return false;
         }
-        int actionMasked = motionEvent.getActionMasked();
-        if (actionMasked != 3 && actionMasked != 1 && actionMasked != 6) {
-            if (actionMasked == 0 || actionMasked == 2) {
-                if (!this.f16151a) {
-                    this.f16151a = true;
-                    a aVar2 = this.f16150a;
-                    if (aVar2 != null) {
-                        aVar2.b();
-                    }
-                }
-                setLocation(Math.max(0.0f, Math.min(1.0f, x / this.f16146a.width())));
-                c(true, true);
-                if (y < (-org.telegram.messenger.a.e0(10.0f))) {
-                    this.f16154b = true;
-                    setWeight(Math.max(0.0f, Math.min(1.0f, ((-y) - org.telegram.messenger.a.e0(10.0f)) / org.telegram.messenger.a.e0(190.0f))));
-                }
-                a aVar3 = this.f16150a;
-                if (aVar3 != null) {
-                    aVar3.a();
-                }
-                return true;
+
+        int action = event.getActionMasked();
+        if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP) {
+            if (interacting && delegate != null) {
+                delegate.onFinishedColorPicking();
+                SharedPreferences.Editor editor = getContext().getSharedPreferences("paint", Activity.MODE_PRIVATE).edit();
+                editor.putFloat("last_color_location", location);
+                editor.putFloat("last_color_weight", weight);
+                editor.commit();
             }
-        } else {
-            if (this.f16151a && (aVar = this.f16150a) != null) {
-                aVar.c();
-                SharedPreferences.Editor edit = getContext().getSharedPreferences("paint", 0).edit();
-                edit.putFloat("last_color_location", this.f16144a);
-                edit.putFloat("last_color_weight", this.b);
-                edit.commit();
+            interacting = false;
+            wasChangingWeight = changingWeight;
+            changingWeight = false;
+            setDragging(false, true);
+        } else if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE) {
+            if (!interacting) {
+                interacting = true;
+                if (delegate != null) {
+                    delegate.onBeganColorPicking();
+                }
             }
-            this.f16151a = false;
-            this.f16156c = this.f16154b;
-            this.f16154b = false;
-            c(false, true);
+
+            float colorLocation = Math.max(0.0f, Math.min(1.0f, x / rectF.width()));
+            setLocation(colorLocation);
+
+            setDragging(true, true);
+
+            if (y < -AndroidUtilities.dp(10)) {
+                changingWeight = true;
+                float weightLocation = (-y - AndroidUtilities.dp(10)) / AndroidUtilities.dp(190);
+                weightLocation = Math.max(0.0f, Math.min(1.0f, weightLocation));
+                setWeight(weightLocation);
+            }
+
+            if (delegate != null) {
+                delegate.onColorValueChanged();
+            }
+            return true;
         }
         return false;
     }
 
-    public void setDelegate(a aVar) {
-        this.f16150a = aVar;
+    @SuppressLint("DrawAllocation")
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        int width = right - left;
+        int height = bottom - top;
+
+        gradientPaint.setShader(new LinearGradient(AndroidUtilities.dp(56), 0, width - AndroidUtilities.dp(56), 0, COLORS, LOCATIONS, Shader.TileMode.REPEAT));
+        int y = height - AndroidUtilities.dp(32);
+        rectF.set(AndroidUtilities.dp(56), y, width - AndroidUtilities.dp(56), y + AndroidUtilities.dp(12));
+
+        settingsButton.layout(width - settingsButton.getMeasuredWidth(), height - AndroidUtilities.dp(52), width, height);
+        undoButton.layout(0, height - AndroidUtilities.dp(52), settingsButton.getMeasuredWidth(), height);
     }
 
-    public void setLocation(float f) {
-        this.f16144a = f;
-        int a2 = a(f);
-        this.f16155c.setColor(a2);
-        float[] fArr = new float[3];
-        Color.colorToHSV(a2, fArr);
-        if (fArr[0] < 0.001d && fArr[1] < 0.001d) {
-            float f2 = fArr[2];
-            if (f2 > 0.92f) {
-                int i = (int) ((1.0f - (((f2 - 0.92f) / 0.08f) * 0.22f)) * 255.0f);
-                this.d.setColor(Color.rgb(i, i, i));
-                invalidate();
+    @Override
+    protected void onDraw(Canvas canvas) {
+        canvas.drawRoundRect(rectF, AndroidUtilities.dp(6), AndroidUtilities.dp(6), gradientPaint);
+
+        int cx = (int) (rectF.left + rectF.width() * location);
+        int cy = (int) (rectF.centerY() + draggingFactor * -AndroidUtilities.dp(70) - (changingWeight ? weight * AndroidUtilities.dp(190) : 0.0f));
+
+        int side = (int) (AndroidUtilities.dp(24) * (0.5f * (1 + draggingFactor)));
+        shadowDrawable.setBounds(cx - side, cy - side, cx + side, cy + side);
+        shadowDrawable.draw(canvas);
+
+        float swatchRadius = (int) Math.floor(AndroidUtilities.dp(4) + (AndroidUtilities.dp(19) - AndroidUtilities.dp(4)) * weight) * (1 + draggingFactor) / 2;
+
+        canvas.drawCircle(cx, cy, AndroidUtilities.dp(22) / 2 * (draggingFactor + 1), backgroundPaint);
+        canvas.drawCircle(cx, cy, swatchRadius, swatchPaint);
+        canvas.drawCircle(cx, cy, swatchRadius - AndroidUtilities.dp(0.5f), swatchStrokePaint);
+    }
+
+    @Keep
+    private void setDraggingFactor(float factor) {
+        draggingFactor = factor;
+        invalidate();
+    }
+
+    @Keep
+    public float getDraggingFactor() {
+        return draggingFactor;
+    }
+
+    private void setDragging(boolean value, boolean animated) {
+        if (dragging == value) {
+            return;
+        }
+        dragging = value;
+        float target = dragging ? 1.0f : 0.0f;
+        if (animated) {
+            Animator a = ObjectAnimator.ofFloat(this, "draggingFactor", draggingFactor, target);
+            a.setInterpolator(interpolator);
+            int duration = 300;
+            if (wasChangingWeight) {
+                duration += weight * 75;
             }
-        }
-        this.d.setColor(a2);
-        invalidate();
-    }
-
-    public void setSettingsButtonImage(int i) {
-        this.f16149a.setImageResource(i);
-    }
-
-    public void setSwatch(zk9 zk9Var) {
-        setLocation(zk9Var.a);
-        setWeight(zk9Var.b);
-    }
-
-    public void setUndoEnabled(boolean z) {
-        float f;
-        ImageView imageView = this.f16153b;
-        if (z) {
-            f = 1.0f;
+            a.setDuration(duration);
+            a.start();
         } else {
-            f = 0.3f;
+            setDraggingFactor(target);
         }
-        imageView.setAlpha(f);
-        this.f16153b.setEnabled(z);
-    }
-
-    public void setWeight(float f) {
-        this.b = f;
-        invalidate();
     }
 }

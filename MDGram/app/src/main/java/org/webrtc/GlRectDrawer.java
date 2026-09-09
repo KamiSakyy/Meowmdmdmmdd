@@ -1,25 +1,31 @@
+/*
+ *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
 
-import org.webrtc.GlGenericDrawer;
-/* loaded from: classes3.dex */
+/** Simplest possible GL shader that just draws frames as opaque quads. */
 public class GlRectDrawer extends GlGenericDrawer {
-    private static final String FRAGMENT_SHADER = "void main() {\n  gl_FragColor = sample(tc);\n}\n";
+  private static final String FRAGMENT_SHADER = "void main() {\n"
+      + "  gl_FragColor = sample(tc);\n"
+      + "}\n";
 
-    /* loaded from: classes3.dex */
-    public static class ShaderCallbacks implements GlGenericDrawer.ShaderCallbacks {
-        private ShaderCallbacks() {
-        }
+  private static class ShaderCallbacks implements GlGenericDrawer.ShaderCallbacks {
+    @Override
+    public void onNewShader(GlShader shader) {}
 
-        @Override // org.webrtc.GlGenericDrawer.ShaderCallbacks
-        public void onNewShader(GlShader glShader) {
-        }
+    @Override
+    public void onPrepareShader(GlShader shader, float[] texMatrix, int frameWidth, int frameHeight,
+        int viewportWidth, int viewportHeight) {}
+  }
 
-        @Override // org.webrtc.GlGenericDrawer.ShaderCallbacks
-        public void onPrepareShader(GlShader glShader, float[] fArr, int i, int i2, int i3, int i4) {
-        }
-    }
-
-    public GlRectDrawer() {
-        super(FRAGMENT_SHADER, new ShaderCallbacks());
-    }
+  public GlRectDrawer() {
+    super(FRAGMENT_SHADER, new ShaderCallbacks());
+  }
 }

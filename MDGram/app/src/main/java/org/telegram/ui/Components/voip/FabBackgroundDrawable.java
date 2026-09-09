@@ -1,81 +1,81 @@
+/*
+ * This is the source code of Telegram for Android v. 5.x.x.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Grishka, 2013-2016.
+ */
+
 package org.telegram.ui.Components.voip;
 
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.ColorFilter;
-import android.graphics.Paint;
+import android.graphics.*;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.Keep;
-import org.telegram.messenger.a;
-/* loaded from: classes3.dex */
-public class FabBackgroundDrawable extends Drawable {
-    public Bitmap a;
 
-    /* renamed from: a  reason: collision with other field name */
-    public Paint f16158a = new Paint(1);
-    public Paint b;
+import org.telegram.messenger.AndroidUtilities;
+
+import androidx.annotation.Keep;
+
+public class FabBackgroundDrawable extends Drawable {
+
+    private Paint bgPaint, shadowPaint;
+    private Bitmap shadowBitmap;
 
     public FabBackgroundDrawable() {
-        Paint paint = new Paint();
-        this.b = paint;
-        paint.setColor(1275068416);
+        bgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        shadowPaint = new Paint();
+        shadowPaint.setColor(0x4C000000);
     }
 
-    @Override // android.graphics.drawable.Drawable
+    @Override
     public void draw(Canvas canvas) {
-        int i;
-        if (this.a == null) {
+        if (shadowBitmap == null)
             onBoundsChange(getBounds());
-        }
-        int min = Math.min(getBounds().width(), getBounds().height());
-        Bitmap bitmap = this.a;
-        if (bitmap != null) {
-            canvas.drawBitmap(bitmap, getBounds().centerX() - (this.a.getWidth() / 2), getBounds().centerY() - (this.a.getHeight() / 2), this.b);
-        }
-        float f = min / 2;
-        canvas.drawCircle(f, f, i - a.e0(4.0f), this.f16158a);
+        int size = Math.min(getBounds().width(), getBounds().height());
+        if (shadowBitmap != null)
+            canvas.drawBitmap(shadowBitmap, getBounds().centerX() - shadowBitmap.getWidth() / 2, getBounds().centerY() - shadowBitmap.getHeight() / 2, shadowPaint);
+        canvas.drawCircle(size / 2, size / 2, size / 2 - AndroidUtilities.dp(4), bgPaint);
     }
 
-    @Override // android.graphics.drawable.Drawable
+    @Override
+    public void setAlpha(int alpha) {
+
+    }
+
+    @Override
+    public void setColorFilter(ColorFilter colorFilter) {
+
+    }
+
+    @Override
     public int getOpacity() {
-        return -2;
+        return PixelFormat.TRANSPARENT;
     }
 
-    @Override // android.graphics.drawable.Drawable
-    public boolean getPadding(Rect rect) {
-        int e0 = a.e0(4.0f);
-        rect.set(e0, e0, e0, e0);
-        return true;
-    }
-
-    @Override // android.graphics.drawable.Drawable
-    public void onBoundsChange(Rect rect) {
-        int i;
-        int min = Math.min(rect.width(), rect.height());
-        if (min <= 0) {
-            this.a = null;
+    @Override
+    protected void onBoundsChange(Rect bounds) {
+        int size = Math.min(bounds.width(), bounds.height());
+        if (size <= 0) {
+            shadowBitmap = null;
             return;
         }
-        this.a = Bitmap.createBitmap(min, min, Bitmap.Config.ALPHA_8);
-        Canvas canvas = new Canvas(this.a);
-        Paint paint = new Paint(1);
-        paint.setShadowLayer(a.e0(3.33333f), 0.0f, a.e0(0.666f), -1);
-        float f = min / 2;
-        canvas.drawCircle(f, f, i - a.e0(4.0f), paint);
-    }
-
-    @Override // android.graphics.drawable.Drawable
-    public void setAlpha(int i) {
+        shadowBitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ALPHA_8);
+        Canvas c = new Canvas(shadowBitmap);
+        Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
+        p.setShadowLayer(AndroidUtilities.dp(3.33333f), 0, AndroidUtilities.dp(0.666f), 0xFFFFFFFF);
+        c.drawCircle(size / 2, size / 2, size / 2 - AndroidUtilities.dp(4), p);
     }
 
     @Keep
-    public void setColor(int i) {
-        this.f16158a.setColor(i);
+    public void setColor(int color) {
+        bgPaint.setColor(color);
         invalidateSelf();
     }
 
-    @Override // android.graphics.drawable.Drawable
-    public void setColorFilter(ColorFilter colorFilter) {
+    @Override
+    public boolean getPadding(Rect padding) {
+        int pad = AndroidUtilities.dp(4);
+        padding.set(pad, pad, pad, pad);
+        return true;
     }
 }

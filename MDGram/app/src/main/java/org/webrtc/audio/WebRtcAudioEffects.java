@@ -1,200 +1,234 @@
+/*
+ *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc.audio;
 
 import android.media.audiofx.AcousticEchoCanceler;
 import android.media.audiofx.AudioEffect;
+import android.media.audiofx.AudioEffect.Descriptor;
 import android.media.audiofx.NoiseSuppressor;
+import android.os.Build;
+import androidx.annotation.Nullable;
 import java.util.UUID;
 import org.webrtc.Logging;
-/* JADX INFO: Access modifiers changed from: package-private */
-/* loaded from: classes3.dex */
-public class WebRtcAudioEffects {
-    private static final UUID AOSP_ACOUSTIC_ECHO_CANCELER = UUID.fromString("bb392ec0-8d4d-11e0-a896-0002a5d5c51b");
-    private static final UUID AOSP_NOISE_SUPPRESSOR = UUID.fromString("c06c8400-8e06-11e0-9cb6-0002a5d5c51b");
-    private static final boolean DEBUG = false;
-    private static final String TAG = "WebRtcAudioEffectsExternal";
-    private static AudioEffect.Descriptor[] cachedEffects;
-    private AcousticEchoCanceler aec;
-    private NoiseSuppressor ns;
-    private boolean shouldEnableAec;
-    private boolean shouldEnableNs;
 
-    public WebRtcAudioEffects() {
-        Logging.d(TAG, "ctor" + WebRtcAudioUtils.getThreadInfo());
+// This class wraps control of three different platform effects. Supported
+// effects are: AcousticEchoCanceler (AEC) and NoiseSuppressor (NS).
+// Calling enable() will active all effects that are
+// supported by the device if the corresponding |shouldEnableXXX| member is set.
+class WebRtcAudioEffects {
+  private static final boolean DEBUG = false;
+
+  private static final String TAG = "WebRtcAudioEffectsExternal";
+
+  // UUIDs for Software Audio Effects that we want to avoid using.
+  // The implementor field will be set to "The Android Open Source Project".
+  private static final UUID AOSP_ACOUSTIC_ECHO_CANCELER =
+      UUID.fromString("bb392ec0-8d4d-11e0-a896-0002a5d5c51b");
+  private static final UUID AOSP_NOISE_SUPPRESSOR =
+      UUID.fromString("c06c8400-8e06-11e0-9cb6-0002a5d5c51b");
+
+  // Contains the available effect descriptors returned from the
+  // AudioEffect.getEffects() call. This result is cached to avoid doing the
+  // slow OS call multiple times.
+  private static @Nullable Descriptor[] cachedEffects;
+
+  // Contains the audio effect objects. Created in enable() and destroyed
+  // in release().
+  private @Nullable AcousticEchoCanceler aec;
+  private @Nullable NoiseSuppressor ns;
+
+  // Affects the final state given to the setEnabled() method on each effect.
+  // The default state is set to "disabled" but each effect can also be enabled
+  // by calling setAEC() and setNS().
+  private boolean shouldEnableAec;
+  private boolean shouldEnableNs;
+
+  // Returns true if all conditions for supporting HW Acoustic Echo Cancellation (AEC) are
+  // fulfilled.
+  public static boolean isAcousticEchoCancelerSupported() {
+    if (Build.VERSION.SDK_INT < 18)
+      return false;
+    return isEffectTypeAvailable(AudioEffect.EFFECT_TYPE_AEC, AOSP_ACOUSTIC_ECHO_CANCELER);
+  }
+
+  // Returns true if all conditions for supporting HW Noise Suppression (NS) are fulfilled.
+  public static boolean isNoiseSuppressorSupported() {
+    if (Build.VERSION.SDK_INT < 18)
+      return false;
+    return isEffectTypeAvailable(AudioEffect.EFFECT_TYPE_NS, AOSP_NOISE_SUPPRESSOR);
+  }
+
+  public WebRtcAudioEffects() {
+    Logging.d(TAG, "ctor" + WebRtcAudioUtils.getThreadInfo());
+  }
+
+  // Call this method to enable or disable the platform AEC. It modifies
+  // |shouldEnableAec| which is used in enable() where the actual state
+  // of the AEC effect is modified. Returns true if HW AEC is supported and
+  // false otherwise.
+  public boolean setAEC(boolean enable) {
+    Logging.d(TAG, "setAEC(" + enable + ")");
+    if (!isAcousticEchoCancelerSupported()) {
+      Logging.w(TAG, "Platform AEC is not supported");
+      shouldEnableAec = false;
+      return false;
+    }
+    if (aec != null && (enable != shouldEnableAec)) {
+      Logging.e(TAG, "Platform AEC state can't be modified while recording");
+      return false;
+    }
+    shouldEnableAec = enable;
+    return true;
+  }
+
+  // Call this method to enable or disable the platform NS. It modifies
+  // |shouldEnableNs| which is used in enable() where the actual state
+  // of the NS effect is modified. Returns true if HW NS is supported and
+  // false otherwise.
+  public boolean setNS(boolean enable) {
+    Logging.d(TAG, "setNS(" + enable + ")");
+    if (!isNoiseSuppressorSupported()) {
+      Logging.w(TAG, "Platform NS is not supported");
+      shouldEnableNs = false;
+      return false;
+    }
+    if (ns != null && (enable != shouldEnableNs)) {
+      Logging.e(TAG, "Platform NS state can't be modified while recording");
+      return false;
+    }
+    shouldEnableNs = enable;
+    return true;
+  }
+
+  public void enable(int audioSession) {
+    Logging.d(TAG, "enable(audioSession=" + audioSession + ")");
+    assertTrue(aec == null);
+    assertTrue(ns == null);
+
+    if (DEBUG) {
+      // Add logging of supported effects but filter out "VoIP effects", i.e.,
+      // AEC, AEC and NS. Avoid calling AudioEffect.queryEffects() unless the
+      // DEBUG flag is set since we have seen crashes in this API.
+      for (Descriptor d : AudioEffect.queryEffects()) {
+        if (effectTypeIsVoIP(d.type)) {
+          Logging.d(TAG,
+              "name: " + d.name + ", "
+                  + "mode: " + d.connectMode + ", "
+                  + "implementor: " + d.implementor + ", "
+                  + "UUID: " + d.uuid);
+        }
+      }
     }
 
-    private static void assertTrue(boolean z) {
-        if (!z) {
-            throw new AssertionError("Expected condition to be true");
+    if (isAcousticEchoCancelerSupported()) {
+      // Create an AcousticEchoCanceler and attach it to the AudioRecord on
+      // the specified audio session.
+      aec = AcousticEchoCanceler.create(audioSession);
+      if (aec != null) {
+        boolean enabled = aec.getEnabled();
+        boolean enable = shouldEnableAec && isAcousticEchoCancelerSupported();
+        if (aec.setEnabled(enable) != AudioEffect.SUCCESS) {
+          Logging.e(TAG, "Failed to set the AcousticEchoCanceler state");
         }
+        Logging.d(TAG,
+            "AcousticEchoCanceler: was " + (enabled ? "enabled" : "disabled") + ", enable: "
+                + enable + ", is now: " + (aec.getEnabled() ? "enabled" : "disabled"));
+      } else {
+        Logging.e(TAG, "Failed to create the AcousticEchoCanceler instance");
+      }
     }
 
-    private boolean effectTypeIsVoIP(UUID uuid) {
-        if ((AudioEffect.EFFECT_TYPE_AEC.equals(uuid) && isAcousticEchoCancelerSupported()) || (AudioEffect.EFFECT_TYPE_NS.equals(uuid) && isNoiseSuppressorSupported())) {
-            return true;
+    if (isNoiseSuppressorSupported()) {
+      // Create an NoiseSuppressor and attach it to the AudioRecord on the
+      // specified audio session.
+      ns = NoiseSuppressor.create(audioSession);
+      if (ns != null) {
+        boolean enabled = ns.getEnabled();
+        boolean enable = shouldEnableNs && isNoiseSuppressorSupported();
+        if (ns.setEnabled(enable) != AudioEffect.SUCCESS) {
+          Logging.e(TAG, "Failed to set the NoiseSuppressor state");
         }
-        return false;
+        Logging.d(TAG,
+            "NoiseSuppressor: was " + (enabled ? "enabled" : "disabled") + ", enable: " + enable
+                + ", is now: " + (ns.getEnabled() ? "enabled" : "disabled"));
+      } else {
+        Logging.e(TAG, "Failed to create the NoiseSuppressor instance");
+      }
     }
+  }
 
-    private static AudioEffect.Descriptor[] getAvailableEffects() {
-        AudioEffect.Descriptor[] descriptorArr = cachedEffects;
-        if (descriptorArr != null) {
-            return descriptorArr;
-        }
-        AudioEffect.Descriptor[] queryEffects = AudioEffect.queryEffects();
-        cachedEffects = queryEffects;
-        return queryEffects;
+  // Releases all native audio effect resources. It is a good practice to
+  // release the effect engine when not in use as control can be returned
+  // to other applications or the native resources released.
+  public void release() {
+    Logging.d(TAG, "release");
+    if (aec != null) {
+      aec.release();
+      aec = null;
     }
+    if (ns != null) {
+      ns.release();
+      ns = null;
+    }
+  }
 
-    public static boolean isAcousticEchoCancelerSupported() {
-        return isEffectTypeAvailable(AudioEffect.EFFECT_TYPE_AEC, AOSP_ACOUSTIC_ECHO_CANCELER);
-    }
+  // Returns true for effect types in |type| that are of "VoIP" types:
+  // Acoustic Echo Canceler (AEC) or Automatic Gain Control (AGC) or
+  // Noise Suppressor (NS). Note that, an extra check for support is needed
+  // in each comparison since some devices includes effects in the
+  // AudioEffect.Descriptor array that are actually not available on the device.
+  // As an example: Samsung Galaxy S6 includes an AGC in the descriptor but
+  // AutomaticGainControl.isAvailable() returns false.
+  private boolean effectTypeIsVoIP(UUID type) {
+    if (Build.VERSION.SDK_INT < 18)
+      return false;
 
-    private static boolean isEffectTypeAvailable(UUID uuid, UUID uuid2) {
-        AudioEffect.Descriptor[] availableEffects = getAvailableEffects();
-        if (availableEffects == null) {
-            return false;
-        }
-        for (AudioEffect.Descriptor descriptor : availableEffects) {
-            if (descriptor.type.equals(uuid)) {
-                return !descriptor.uuid.equals(uuid2);
-            }
-        }
-        return false;
-    }
+    return (AudioEffect.EFFECT_TYPE_AEC.equals(type) && isAcousticEchoCancelerSupported())
+        || (AudioEffect.EFFECT_TYPE_NS.equals(type) && isNoiseSuppressorSupported());
+  }
 
-    public static boolean isNoiseSuppressorSupported() {
-        return isEffectTypeAvailable(AudioEffect.EFFECT_TYPE_NS, AOSP_NOISE_SUPPRESSOR);
+  // Helper method which throws an exception when an assertion has failed.
+  private static void assertTrue(boolean condition) {
+    if (!condition) {
+      throw new AssertionError("Expected condition to be true");
     }
+  }
 
-    public void enable(int i) {
-        boolean z;
-        boolean z2;
-        String str;
-        boolean z3;
-        String str2;
-        String str3;
-        Logging.d(TAG, "enable(audioSession=" + i + ")");
-        boolean z4 = true;
-        if (this.aec == null) {
-            z = true;
-        } else {
-            z = false;
-        }
-        assertTrue(z);
-        if (this.ns == null) {
-            z2 = true;
-        } else {
-            z2 = false;
-        }
-        assertTrue(z2);
-        String str4 = "enabled";
-        if (isAcousticEchoCancelerSupported()) {
-            AcousticEchoCanceler create = AcousticEchoCanceler.create(i);
-            this.aec = create;
-            if (create != null) {
-                boolean enabled = create.getEnabled();
-                if (this.shouldEnableAec && isAcousticEchoCancelerSupported()) {
-                    z3 = true;
-                } else {
-                    z3 = false;
-                }
-                if (this.aec.setEnabled(z3) != 0) {
-                    Logging.e(TAG, "Failed to set the AcousticEchoCanceler state");
-                }
-                StringBuilder sb = new StringBuilder();
-                sb.append("AcousticEchoCanceler: was ");
-                if (enabled) {
-                    str2 = "enabled";
-                } else {
-                    str2 = "disabled";
-                }
-                sb.append(str2);
-                sb.append(", enable: ");
-                sb.append(z3);
-                sb.append(", is now: ");
-                if (this.aec.getEnabled()) {
-                    str3 = "enabled";
-                } else {
-                    str3 = "disabled";
-                }
-                sb.append(str3);
-                Logging.d(TAG, sb.toString());
-            } else {
-                Logging.e(TAG, "Failed to create the AcousticEchoCanceler instance");
-            }
-        }
-        if (isNoiseSuppressorSupported()) {
-            NoiseSuppressor create2 = NoiseSuppressor.create(i);
-            this.ns = create2;
-            if (create2 != null) {
-                boolean enabled2 = create2.getEnabled();
-                z4 = (this.shouldEnableNs && isNoiseSuppressorSupported()) ? false : false;
-                if (this.ns.setEnabled(z4) != 0) {
-                    Logging.e(TAG, "Failed to set the NoiseSuppressor state");
-                }
-                StringBuilder sb2 = new StringBuilder();
-                sb2.append("NoiseSuppressor: was ");
-                if (enabled2) {
-                    str = "enabled";
-                } else {
-                    str = "disabled";
-                }
-                sb2.append(str);
-                sb2.append(", enable: ");
-                sb2.append(z4);
-                sb2.append(", is now: ");
-                if (!this.ns.getEnabled()) {
-                    str4 = "disabled";
-                }
-                sb2.append(str4);
-                Logging.d(TAG, sb2.toString());
-                return;
-            }
-            Logging.e(TAG, "Failed to create the NoiseSuppressor instance");
-        }
+  // Returns the cached copy of the audio effects array, if available, or
+  // queries the operating system for the list of effects.
+  private static @Nullable Descriptor[] getAvailableEffects() {
+    if (cachedEffects != null) {
+      return cachedEffects;
     }
+    // The caching is best effort only - if this method is called from several
+    // threads in parallel, they may end up doing the underlying OS call
+    // multiple times. It's normally only called on one thread so there's no
+    // real need to optimize for the multiple threads case.
+    cachedEffects = AudioEffect.queryEffects();
+    return cachedEffects;
+  }
 
-    public void release() {
-        Logging.d(TAG, "release");
-        AcousticEchoCanceler acousticEchoCanceler = this.aec;
-        if (acousticEchoCanceler != null) {
-            acousticEchoCanceler.release();
-            this.aec = null;
-        }
-        NoiseSuppressor noiseSuppressor = this.ns;
-        if (noiseSuppressor != null) {
-            noiseSuppressor.release();
-            this.ns = null;
-        }
+  // Returns true if an effect of the specified type is available. Functionally
+  // equivalent to (NoiseSuppressor|AutomaticGainControl|...).isAvailable(), but
+  // faster as it avoids the expensive OS call to enumerate effects.
+  private static boolean isEffectTypeAvailable(UUID effectType, UUID blockListedUuid) {
+    Descriptor[] effects = getAvailableEffects();
+    if (effects == null) {
+      return false;
     }
-
-    public boolean setAEC(boolean z) {
-        Logging.d(TAG, "setAEC(" + z + ")");
-        if (!isAcousticEchoCancelerSupported()) {
-            Logging.w(TAG, "Platform AEC is not supported");
-            this.shouldEnableAec = false;
-            return false;
-        } else if (this.aec != null && z != this.shouldEnableAec) {
-            Logging.e(TAG, "Platform AEC state can't be modified while recording");
-            return false;
-        } else {
-            this.shouldEnableAec = z;
-            return true;
-        }
+    for (Descriptor d : effects) {
+      if (d.type.equals(effectType)) {
+        return !d.uuid.equals(blockListedUuid);
+      }
     }
-
-    public boolean setNS(boolean z) {
-        Logging.d(TAG, "setNS(" + z + ")");
-        if (!isNoiseSuppressorSupported()) {
-            Logging.w(TAG, "Platform NS is not supported");
-            this.shouldEnableNs = false;
-            return false;
-        } else if (this.ns != null && z != this.shouldEnableNs) {
-            Logging.e(TAG, "Platform NS state can't be modified while recording");
-            return false;
-        } else {
-            this.shouldEnableNs = z;
-            return true;
-        }
-    }
+    return false;
+  }
 }

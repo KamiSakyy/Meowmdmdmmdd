@@ -1,76 +1,95 @@
+/*
+ * This is the source code of Telegram for Android v. 5.x.x.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Nikolai Kudashov, 2013-2018.
+ */
+
 package org.telegram.messenger;
 
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
+import android.accounts.AccountManager;
+import android.accounts.NetworkErrorException;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
-/* loaded from: classes2.dex */
-public class AuthenticatorService extends Service {
-    public static a a;
 
-    /* loaded from: classes2.dex */
-    public static class a extends AbstractAccountAuthenticator {
-        public a(Context context) {
+public class AuthenticatorService extends Service {
+
+    private static class Authenticator extends AbstractAccountAuthenticator {
+
+        public Authenticator(Context context) {
             super(context);
         }
 
-        @Override // android.accounts.AbstractAccountAuthenticator
-        public Bundle addAccount(AccountAuthenticatorResponse accountAuthenticatorResponse, String str, String str2, String[] strArr, Bundle bundle) {
+        @Override
+        public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType, String[] requiredFeatures, Bundle options)
+                throws NetworkErrorException {
             return null;
         }
 
-        @Override // android.accounts.AbstractAccountAuthenticator
-        public Bundle confirmCredentials(AccountAuthenticatorResponse accountAuthenticatorResponse, Account account, Bundle bundle) {
+        @Override
+        public Bundle getAccountRemovalAllowed(AccountAuthenticatorResponse response, Account account) throws NetworkErrorException {
+            return super.getAccountRemovalAllowed(response, account);
+        }
+
+        @Override
+        public Bundle confirmCredentials(AccountAuthenticatorResponse response, Account account, Bundle options) throws NetworkErrorException {
             return null;
         }
 
-        @Override // android.accounts.AbstractAccountAuthenticator
-        public Bundle editProperties(AccountAuthenticatorResponse accountAuthenticatorResponse, String str) {
+        @Override
+        public Bundle editProperties(AccountAuthenticatorResponse response, String accountType) {
             return null;
         }
 
-        @Override // android.accounts.AbstractAccountAuthenticator
-        public Bundle getAccountRemovalAllowed(AccountAuthenticatorResponse accountAuthenticatorResponse, Account account) {
-            return super.getAccountRemovalAllowed(accountAuthenticatorResponse, account);
-        }
-
-        @Override // android.accounts.AbstractAccountAuthenticator
-        public Bundle getAuthToken(AccountAuthenticatorResponse accountAuthenticatorResponse, Account account, String str, Bundle bundle) {
+        @Override
+        public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account, String authTokenType, Bundle options)
+                throws NetworkErrorException {
             return null;
         }
 
-        @Override // android.accounts.AbstractAccountAuthenticator
-        public String getAuthTokenLabel(String str) {
+        @Override
+        public String getAuthTokenLabel(String authTokenType) {
             return null;
         }
 
-        @Override // android.accounts.AbstractAccountAuthenticator
-        public Bundle hasFeatures(AccountAuthenticatorResponse accountAuthenticatorResponse, Account account, String[] strArr) {
+        @Override
+        public Bundle hasFeatures(AccountAuthenticatorResponse response,
+                                  Account account, String[] features)
+                throws NetworkErrorException {
             return null;
         }
 
-        @Override // android.accounts.AbstractAccountAuthenticator
-        public Bundle updateCredentials(AccountAuthenticatorResponse accountAuthenticatorResponse, Account account, String str, Bundle bundle) {
+        @Override
+        public Bundle updateCredentials(AccountAuthenticatorResponse response, Account account, String authTokenType, Bundle options)
+                throws NetworkErrorException {
             return null;
         }
+
     }
 
-    public a a() {
-        if (a == null) {
-            a = new a(this);
+    private static Authenticator authenticator = null;
+
+    protected Authenticator getAuthenticator() {
+        if (authenticator == null) {
+            authenticator = new Authenticator(this);
         }
-        return a;
+        return authenticator;
     }
 
-    @Override // android.app.Service
+
+    @Override
     public IBinder onBind(Intent intent) {
-        if (intent.getAction().equals("android.accounts.AccountAuthenticator")) {
-            return a().getIBinder();
+        if (intent.getAction().equals(AccountManager.ACTION_AUTHENTICATOR_INTENT)) {
+            return getAuthenticator().getIBinder();
+        } else {
+            return null;
         }
-        return null;
     }
 }

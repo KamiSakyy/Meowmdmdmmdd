@@ -1,18 +1,28 @@
+/*
+ * This is the source code of Telegram for Android v. 5.x.x.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Nikolai Kudashov, 2013-2018.
+ */
+
 package org.telegram.SQLite;
-/* loaded from: classes2.dex */
+
 public class SQLiteException extends Exception {
-    public final int a;
 
-    public SQLiteException(int i, String str) {
-        super(str);
-        this.a = i;
-    }
+	private static final long serialVersionUID = -2398298479089615621L;
+	public final int errorCode;
 
-    public SQLiteException(String str) {
-        this(0, str);
-    }
+	public SQLiteException(int errcode, String msg) {
+		super(msg);
+		errorCode = errcode;
+	}
 
-    public SQLiteException() {
-        this.a = 0;
-    }
+	public SQLiteException(String msg) {
+		this(0, msg);
+	}
+
+	public SQLiteException() {
+		errorCode = 0;
+	}
 }

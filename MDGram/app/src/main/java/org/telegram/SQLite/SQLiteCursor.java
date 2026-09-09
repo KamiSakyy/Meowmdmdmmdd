@@ -1,126 +1,131 @@
+/*
+ * This is the source code of Telegram for Android v. 5.x.x.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Nikolai Kudashov, 2013-2018.
+ */
+
 package org.telegram.SQLite;
 
-import org.telegram.messenger.l;
+import org.telegram.messenger.BuildVars;
+import org.telegram.messenger.FileLog;
 import org.telegram.tgnet.NativeByteBuffer;
-/* loaded from: classes2.dex */
+
 public class SQLiteCursor {
-    public SQLitePreparedStatement a;
 
-    /* renamed from: a  reason: collision with other field name */
-    public boolean f12133a = false;
+	public static final int FIELD_TYPE_INT = 1;
+	public static final int FIELD_TYPE_FLOAT = 2;
+	public static final int FIELD_TYPE_STRING = 3;
+	public static final int FIELD_TYPE_BYTEARRAY = 4;
+	public static final int FIELD_TYPE_NULL = 5;
 
-    public SQLiteCursor(SQLitePreparedStatement sQLitePreparedStatement) {
-        this.a = sQLitePreparedStatement;
-    }
+	private SQLitePreparedStatement preparedStatement;
+	private boolean inRow = false;
 
-    public byte[] a(int i) {
-        c();
-        return columnByteArrayValue(this.a.j(), i);
-    }
+	public SQLiteCursor(SQLitePreparedStatement stmt) {
+		preparedStatement = stmt;
+	}
 
-    public NativeByteBuffer b(int i) {
-        c();
-        long columnByteBufferValue = columnByteBufferValue(this.a.j(), i);
-        if (columnByteBufferValue != 0) {
-            return NativeByteBuffer.wrap(columnByteBufferValue);
-        }
-        return null;
-    }
+	public boolean isNull(int columnIndex) throws SQLiteException {
+		checkRow();
+		return columnIsNull(preparedStatement.getStatementHandle(), columnIndex) == 1;
+	}
 
-    public void c() {
-        if (this.f12133a) {
-            return;
-        }
-        throw new SQLiteException("You must call next before");
-    }
+	public SQLitePreparedStatement getPreparedStatement() {
+		return preparedStatement;
+	}
 
-    public native byte[] columnByteArrayValue(long j, int i);
+	public int intValue(int columnIndex) throws SQLiteException {
+		checkRow();
+		return columnIntValue(preparedStatement.getStatementHandle(), columnIndex);
+	}
 
-    public native long columnByteBufferValue(long j, int i);
+	public double doubleValue(int columnIndex) throws SQLiteException {
+		checkRow();
+		return columnDoubleValue(preparedStatement.getStatementHandle(), columnIndex);
+	}
 
-    public native int columnCount(long j);
+	public long longValue(int columnIndex) throws SQLiteException {
+		checkRow();
+		return columnLongValue(preparedStatement.getStatementHandle(), columnIndex);
+	}
 
-    public native double columnDoubleValue(long j, int i);
+	public String stringValue(int columnIndex) throws SQLiteException {
+		checkRow();
+		return columnStringValue(preparedStatement.getStatementHandle(), columnIndex);
+	}
 
-    public native int columnIntValue(long j, int i);
+	public byte[] byteArrayValue(int columnIndex) throws SQLiteException {
+		checkRow();
+		return columnByteArrayValue(preparedStatement.getStatementHandle(), columnIndex);
+	}
 
-    public native int columnIsNull(long j, int i);
+	public NativeByteBuffer byteBufferValue(int columnIndex) throws SQLiteException {
+		checkRow();
+		long ptr = columnByteBufferValue(preparedStatement.getStatementHandle(), columnIndex);
+		if (ptr != 0) {
+			return NativeByteBuffer.wrap(ptr);
+		}
+		return null;
+	}
 
-    public native long columnLongValue(long j, int i);
+	public int getTypeOf(int columnIndex) throws SQLiteException {
+		checkRow();
+		return columnType(preparedStatement.getStatementHandle(), columnIndex);
+	}
 
-    public native String columnStringValue(long j, int i);
+	public boolean next() throws SQLiteException {
+		int res = preparedStatement.step(preparedStatement.getStatementHandle());
+		if (res == -1) {
+			int repeatCount = 6;
+			while (repeatCount-- != 0) {
+				try {
+					if (BuildVars.LOGS_ENABLED) {
+						FileLog.d("sqlite busy, waiting...");
+					}
+					Thread.sleep(500);
+					res = preparedStatement.step();
+					if (res == 0) {
+						break;
+					}
+				} catch (Exception e) {
+					FileLog.e(e);
+				}
+			}
+			if (res == -1) {
+				throw new SQLiteException("sqlite busy");
+			}
+		}
+		inRow = (res == 0);
+		return inRow;
+	}
 
-    public void d() {
-        this.a.h();
-    }
+	public long getStatementHandle() {
+		return preparedStatement.getStatementHandle();
+	}
 
-    public double e(int i) {
-        c();
-        return columnDoubleValue(this.a.j(), i);
-    }
+	public int getColumnCount() {
+		return columnCount(preparedStatement.getStatementHandle());
+	}
 
-    public int f() {
-        return columnCount(this.a.j());
-    }
+	public void dispose() {
+		preparedStatement.dispose();
+	}
 
-    public int g(int i) {
-        c();
-        return columnIntValue(this.a.j(), i);
-    }
+	void checkRow() throws SQLiteException {
+		if (!inRow) {
+			throw new SQLiteException("You must call next before");
+		}
+	}
 
-    public boolean h(int i) {
-        c();
-        if (columnIsNull(this.a.j(), i) == 1) {
-            return true;
-        }
-        return false;
-    }
-
-    public long i(int i) {
-        c();
-        return columnLongValue(this.a.j(), i);
-    }
-
-    public boolean j() {
-        boolean z;
-        SQLitePreparedStatement sQLitePreparedStatement = this.a;
-        int step = sQLitePreparedStatement.step(sQLitePreparedStatement.j());
-        if (step == -1) {
-            int i = 6;
-            while (true) {
-                int i2 = i - 1;
-                if (i == 0) {
-                    break;
-                }
-                try {
-                    if (s60.f18613b) {
-                        l.k("sqlite busy, waiting...");
-                    }
-                    Thread.sleep(500L);
-                    step = this.a.m();
-                } catch (Exception e) {
-                    l.p(e);
-                }
-                if (step == 0) {
-                    break;
-                }
-                i = i2;
-            }
-            if (step == -1) {
-                throw new SQLiteException("sqlite busy");
-            }
-        }
-        if (step == 0) {
-            z = true;
-        } else {
-            z = false;
-        }
-        this.f12133a = z;
-        return z;
-    }
-
-    public String k(int i) {
-        c();
-        return columnStringValue(this.a.j(), i);
-    }
+	native int columnType(long statementHandle, int columnIndex);
+	native int columnCount(long statementHandle);
+	native int columnIsNull(long statementHandle, int columnIndex);
+	native int columnIntValue(long statementHandle, int columnIndex);
+	native long columnLongValue(long statementHandle, int columnIndex);
+	native double columnDoubleValue(long statementHandle, int columnIndex);
+	native String columnStringValue(long statementHandle, int columnIndex);
+	native byte[] columnByteArrayValue(long statementHandle, int columnIndex);
+	native long columnByteBufferValue(long statementHandle, int columnIndex);
 }

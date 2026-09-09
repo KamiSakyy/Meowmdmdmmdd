@@ -1,10 +1,17 @@
+/*
+ * This is the source code of Telegram for Android v. 5.x.x.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Nikolai Kudashov, 2013-2018.
+ */
+
 package org.telegram.ui;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.TextUtils;
@@ -12,747 +19,658 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
-import defpackage.tx6;
-import java.util.ArrayList;
+
+import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.ApplicationLoader;
+import org.telegram.messenger.BuildVars;
+import org.telegram.messenger.FileLog;
+import org.telegram.messenger.LocaleController;
+import org.telegram.messenger.MessagesController;
+import org.telegram.messenger.NotificationCenter;
+import org.telegram.messenger.R;
+import org.telegram.messenger.SharedConfig;
+import org.telegram.messenger.UserConfig;
 import org.telegram.tgnet.ConnectionsManager;
-import org.telegram.tgnet.RequestDelegate;
-import org.telegram.tgnet.TLRPC$TL_account_authorizationForm;
-import org.telegram.tgnet.TLRPC$TL_account_getAuthorizationForm;
-import org.telegram.tgnet.TLRPC$TL_account_getPassword;
-import org.telegram.tgnet.TLRPC$TL_error;
-import org.telegram.tgnet.a;
+import org.telegram.tgnet.TLRPC;
+import org.telegram.ui.ActionBar.AlertDialog;
+import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.DrawerLayoutContainer;
-import org.telegram.ui.ActionBar.e;
-import org.telegram.ui.ActionBar.k;
-import org.telegram.ui.Components.b;
-import org.telegram.ui.Components.l2;
-import org.telegram.ui.ExternalActionActivity;
-/* loaded from: classes2.dex */
-public class ExternalActionActivity extends Activity implements k.b {
-    public org.telegram.ui.ActionBar.k actionBarLayout;
-    public l2 backgroundTablet;
-    public DrawerLayoutContainer drawerLayoutContainer;
+import org.telegram.ui.ActionBar.INavigationLayout;
+import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.Components.AlertsCreator;
+import org.telegram.ui.Components.LayoutHelper;
+import org.telegram.ui.Components.PasscodeView;
+import org.telegram.ui.Components.SizeNotifierFrameLayout;
+
+import java.util.ArrayList;
+
+public class ExternalActionActivity extends Activity implements INavigationLayout.INavigationLayoutDelegate {
+
     private boolean finished;
-    public org.telegram.ui.ActionBar.k layersActionBarLayout;
-    private Runnable lockRunnable;
+    private static ArrayList<BaseFragment> mainFragmentsStack = new ArrayList<>();
+    private static ArrayList<BaseFragment> layerFragmentsStack = new ArrayList<>();
+
+    private PasscodeView passcodeView;
+    protected INavigationLayout actionBarLayout;
+    protected INavigationLayout layersActionBarLayout;
+    protected SizeNotifierFrameLayout backgroundTablet;
+    protected DrawerLayoutContainer drawerLayoutContainer;
+
     private Intent passcodeSaveIntent;
-    private int passcodeSaveIntentAccount;
     private boolean passcodeSaveIntentIsNew;
-    private boolean passcodeSaveIntentIsRestore;
+    private int passcodeSaveIntentAccount;
     private int passcodeSaveIntentState;
-    private tx6 passcodeView;
-    private static ArrayList<org.telegram.ui.ActionBar.f> mainFragmentsStack = new ArrayList<>();
-    private static ArrayList<org.telegram.ui.ActionBar.f> layerFragmentsStack = new ArrayList<>();
+    private boolean passcodeSaveIntentIsRestore;
 
-    /* loaded from: classes2.dex */
-    public class a extends l2 {
-        public a(Context context) {
-            super(context);
-        }
+    private Runnable lockRunnable;
 
-        @Override // org.telegram.ui.Components.l2
-        public boolean H() {
-            return false;
-        }
-    }
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        ApplicationLoader.postInitApplication();
 
-    /* loaded from: classes2.dex */
-    public class b extends l2 {
-        public b(Context context) {
-            super(context);
-        }
-
-        @Override // org.telegram.ui.Components.l2
-        public boolean H() {
-            return false;
-        }
-    }
-
-    /* loaded from: classes2.dex */
-    public class c implements ViewTreeObserver.OnGlobalLayoutListener {
-        public c() {
-        }
-
-        @Override // android.view.ViewTreeObserver.OnGlobalLayoutListener
-        public void onGlobalLayout() {
-            ExternalActionActivity.this.K();
-            org.telegram.ui.ActionBar.k kVar = ExternalActionActivity.this.actionBarLayout;
-            if (kVar != null) {
-                kVar.getView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            }
-        }
-    }
-
-    /* loaded from: classes2.dex */
-    public class d implements Runnable {
-        public d() {
-        }
-
-        @Override // java.lang.Runnable
-        public void run() {
-            if (ExternalActionActivity.this.lockRunnable == this) {
-                if (org.telegram.messenger.a.K2(true)) {
-                    if (s60.f18613b) {
-                        org.telegram.messenger.l.k("lock app");
-                    }
-                    ExternalActionActivity.this.P();
-                } else if (s60.f18613b) {
-                    org.telegram.messenger.l.k("didn't pass lock check");
-                }
-                ExternalActionActivity.this.lockRunnable = null;
-            }
-        }
-    }
-
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void A(int i, Intent intent, boolean z, boolean z2, boolean z3, int i2) {
-        if (i2 != i) {
-            Q(i2);
-        }
-        y(intent, z, z2, z3, i2, 1);
-    }
-
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void B(DialogInterface dialogInterface) {
-        setResult(0);
-        finish();
-    }
-
-    public static /* synthetic */ void C(int i, int[] iArr, DialogInterface dialogInterface) {
-        ConnectionsManager.getInstance(i).cancelRequest(iArr[0], true);
-    }
-
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void D(org.telegram.ui.ActionBar.e eVar, org.telegram.tgnet.a aVar, int i, TLRPC$TL_account_authorizationForm tLRPC$TL_account_authorizationForm, TLRPC$TL_account_getAuthorizationForm tLRPC$TL_account_getAuthorizationForm, String str, String str2) {
-        try {
-            eVar.dismiss();
-        } catch (Exception e) {
-            org.telegram.messenger.l.p(e);
-        }
-        if (aVar != null) {
-            org.telegram.messenger.y.u8(i).ji(tLRPC$TL_account_authorizationForm.d, false);
-            j0 j0Var = new j0(5, tLRPC$TL_account_getAuthorizationForm.f13775a, tLRPC$TL_account_getAuthorizationForm.f13776a, tLRPC$TL_account_getAuthorizationForm.b, str, str2, (String) null, tLRPC$TL_account_authorizationForm, (yq9) aVar);
-            j0Var.Y8(true);
-            if (org.telegram.messenger.a.Y1()) {
-                this.layersActionBarLayout.U(j0Var);
-            } else {
-                this.actionBarLayout.U(j0Var);
-            }
-            if (!org.telegram.messenger.a.Y1()) {
-                this.backgroundTablet.setVisibility(8);
-            }
-            this.actionBarLayout.b();
-            if (org.telegram.messenger.a.Y1()) {
-                this.layersActionBarLayout.b();
-            }
-        }
-    }
-
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void E(final org.telegram.ui.ActionBar.e eVar, final int i, final TLRPC$TL_account_authorizationForm tLRPC$TL_account_authorizationForm, final TLRPC$TL_account_getAuthorizationForm tLRPC$TL_account_getAuthorizationForm, final String str, final String str2, final org.telegram.tgnet.a aVar, TLRPC$TL_error tLRPC$TL_error) {
-        org.telegram.messenger.a.m3(new Runnable() { // from class: vy2
-            @Override // java.lang.Runnable
-            public final void run() {
-                ExternalActionActivity.this.D(eVar, aVar, i, tLRPC$TL_account_authorizationForm, tLRPC$TL_account_getAuthorizationForm, str, str2);
-            }
-        });
-    }
-
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void F(TLRPC$TL_error tLRPC$TL_error, DialogInterface dialogInterface) {
-        setResult(1, new Intent().putExtra("error", tLRPC$TL_error.f14225a));
-        finish();
-    }
-
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void G(org.telegram.ui.ActionBar.e eVar, final TLRPC$TL_error tLRPC$TL_error) {
-        try {
-            eVar.dismiss();
-            if ("APP_VERSION_OUTDATED".equals(tLRPC$TL_error.f14225a)) {
-                org.telegram.ui.ActionBar.e Y5 = org.telegram.ui.Components.b.Y5(this, org.telegram.messenger.u.B0("UpdateAppAlert", org.telegram.mdgram.R.string.UpdateAppAlert), true);
-                if (Y5 != null) {
-                    Y5.setOnDismissListener(new DialogInterface.OnDismissListener() { // from class: wy2
-                        @Override // android.content.DialogInterface.OnDismissListener
-                        public final void onDismiss(DialogInterface dialogInterface) {
-                            ExternalActionActivity.this.F(tLRPC$TL_error, dialogInterface);
-                        }
-                    });
-                } else {
-                    setResult(1, new Intent().putExtra("error", tLRPC$TL_error.f14225a));
-                    finish();
-                }
-            } else {
-                if (!"BOT_INVALID".equals(tLRPC$TL_error.f14225a) && !"PUBLIC_KEY_REQUIRED".equals(tLRPC$TL_error.f14225a) && !"PUBLIC_KEY_INVALID".equals(tLRPC$TL_error.f14225a) && !"SCOPE_EMPTY".equals(tLRPC$TL_error.f14225a) && !"PAYLOAD_EMPTY".equals(tLRPC$TL_error.f14225a)) {
-                    setResult(0);
-                    finish();
-                }
-                setResult(1, new Intent().putExtra("error", tLRPC$TL_error.f14225a));
-                finish();
-            }
-        } catch (Exception e) {
-            org.telegram.messenger.l.p(e);
-        }
-    }
-
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ boolean H(View view, MotionEvent motionEvent) {
-        if (!this.actionBarLayout.getFragmentStack().isEmpty() && motionEvent.getAction() == 1) {
-            float x = motionEvent.getX();
-            float y = motionEvent.getY();
-            int[] iArr = new int[2];
-            this.layersActionBarLayout.getView().getLocationOnScreen(iArr);
-            int i = iArr[0];
-            int i2 = iArr[1];
-            if (!this.layersActionBarLayout.O() && (x <= i || x >= i + this.layersActionBarLayout.getView().getWidth() || y <= i2 || y >= i2 + this.layersActionBarLayout.getView().getHeight())) {
-                if (!this.layersActionBarLayout.getFragmentStack().isEmpty()) {
-                    while (this.layersActionBarLayout.getFragmentStack().size() - 1 > 0) {
-                        org.telegram.ui.ActionBar.k kVar = this.layersActionBarLayout;
-                        kVar.E((org.telegram.ui.ActionBar.f) kVar.getFragmentStack().get(0));
-                    }
-                    this.layersActionBarLayout.K(true);
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static /* synthetic */ void I(View view) {
-    }
-
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void J() {
-        org.telegram.messenger.e0.f12733e = false;
-        Intent intent = this.passcodeSaveIntent;
-        if (intent != null) {
-            y(intent, this.passcodeSaveIntentIsNew, this.passcodeSaveIntentIsRestore, true, this.passcodeSaveIntentAccount, this.passcodeSaveIntentState);
-            this.passcodeSaveIntent = null;
-        }
-        this.drawerLayoutContainer.r(true, false);
-        this.actionBarLayout.b();
-        if (org.telegram.messenger.a.Y1()) {
-            this.layersActionBarLayout.b();
-        }
-    }
-
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void z(int[] iArr, final int i, final org.telegram.ui.ActionBar.e eVar, final TLRPC$TL_account_getAuthorizationForm tLRPC$TL_account_getAuthorizationForm, final String str, final String str2, org.telegram.tgnet.a aVar, final TLRPC$TL_error tLRPC$TL_error) {
-        final TLRPC$TL_account_authorizationForm tLRPC$TL_account_authorizationForm = (TLRPC$TL_account_authorizationForm) aVar;
-        if (tLRPC$TL_account_authorizationForm != null) {
-            iArr[0] = ConnectionsManager.getInstance(i).sendRequest(new TLRPC$TL_account_getPassword(), new RequestDelegate() { // from class: ty2
-                @Override // org.telegram.tgnet.RequestDelegate
-                public final void run(a aVar2, TLRPC$TL_error tLRPC$TL_error2) {
-                    ExternalActionActivity.this.E(eVar, i, tLRPC$TL_account_authorizationForm, tLRPC$TL_account_getAuthorizationForm, str, str2, aVar2, tLRPC$TL_error2);
-                }
-            });
-            return;
-        }
-        org.telegram.messenger.a.m3(new Runnable() { // from class: uy2
-            @Override // java.lang.Runnable
-            public final void run() {
-                ExternalActionActivity.this.G(eVar, tLRPC$TL_error);
-            }
-        });
-    }
-
-    public void K() {
-        if (org.telegram.messenger.a.Y1()) {
-            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) this.layersActionBarLayout.getView().getLayoutParams();
-            layoutParams.leftMargin = (org.telegram.messenger.a.f12447a.x - layoutParams.width) / 2;
-            int i = org.telegram.messenger.a.f12472b;
-            layoutParams.topMargin = i + (((org.telegram.messenger.a.f12447a.y - layoutParams.height) - i) / 2);
-            this.layersActionBarLayout.getView().setLayoutParams(layoutParams);
-            if (org.telegram.messenger.a.X1() && getResources().getConfiguration().orientation != 2) {
-                RelativeLayout.LayoutParams layoutParams2 = (RelativeLayout.LayoutParams) this.actionBarLayout.getView().getLayoutParams();
-                layoutParams2.width = -1;
-                layoutParams2.height = -1;
-                this.actionBarLayout.getView().setLayoutParams(layoutParams2);
-                return;
-            }
-            int i2 = (org.telegram.messenger.a.f12447a.x / 100) * 35;
-            if (i2 < org.telegram.messenger.a.e0(320.0f)) {
-                i2 = org.telegram.messenger.a.e0(320.0f);
-            }
-            RelativeLayout.LayoutParams layoutParams3 = (RelativeLayout.LayoutParams) this.actionBarLayout.getView().getLayoutParams();
-            layoutParams3.width = i2;
-            layoutParams3.height = -1;
-            this.actionBarLayout.getView().setLayoutParams(layoutParams3);
-            if (org.telegram.messenger.a.X1() && this.actionBarLayout.getFragmentStack().size() == 2) {
-                ((org.telegram.ui.ActionBar.f) this.actionBarLayout.getFragmentStack().get(1)).n1();
-                this.actionBarLayout.getFragmentStack().remove(1);
-                this.actionBarLayout.b();
-            }
-        }
-    }
-
-    public final void L() {
-        if (this.finished) {
-            return;
-        }
-        Runnable runnable = this.lockRunnable;
-        if (runnable != null) {
-            org.telegram.messenger.a.H(runnable);
-            this.lockRunnable = null;
-        }
-        this.finished = true;
-    }
-
-    public void M() {
-        y(this.passcodeSaveIntent, this.passcodeSaveIntentIsNew, this.passcodeSaveIntentIsRestore, true, this.passcodeSaveIntentAccount, this.passcodeSaveIntentState);
-        this.actionBarLayout.A();
-        org.telegram.ui.ActionBar.k kVar = this.layersActionBarLayout;
-        if (kVar != null) {
-            kVar.A();
-        }
-        l2 l2Var = this.backgroundTablet;
-        if (l2Var != null) {
-            l2Var.setVisibility(0);
-        }
-    }
-
-    public final void N() {
-        Runnable runnable = this.lockRunnable;
-        if (runnable != null) {
-            org.telegram.messenger.a.H(runnable);
-            this.lockRunnable = null;
-        }
-        if (org.telegram.messenger.e0.f12729d.length() != 0) {
-            org.telegram.messenger.e0.e = (int) (SystemClock.elapsedRealtime() / 1000);
-            d dVar = new d();
-            this.lockRunnable = dVar;
-            if (org.telegram.messenger.e0.f12722b) {
-                org.telegram.messenger.a.n3(dVar, 1000L);
-            } else {
-                int i = org.telegram.messenger.e0.d;
-                if (i != 0) {
-                    org.telegram.messenger.a.n3(dVar, (i * 1000) + 1000);
-                }
-            }
-        } else {
-            org.telegram.messenger.e0.e = 0;
-        }
-        org.telegram.messenger.e0.R();
-    }
-
-    public final void O() {
-        Runnable runnable = this.lockRunnable;
-        if (runnable != null) {
-            org.telegram.messenger.a.H(runnable);
-            this.lockRunnable = null;
-        }
-        if (org.telegram.messenger.a.K2(true)) {
-            P();
-        }
-        if (org.telegram.messenger.e0.e != 0) {
-            org.telegram.messenger.e0.e = 0;
-            org.telegram.messenger.e0.R();
-        }
-    }
-
-    public final void P() {
-        if (this.passcodeView == null) {
-            return;
-        }
-        org.telegram.messenger.e0.f12722b = true;
-        if (SecretMediaViewer.e0() && SecretMediaViewer.c0().g0()) {
-            SecretMediaViewer.c0().W(false, false);
-        } else if (PhotoViewer.C9() && PhotoViewer.p9().V9()) {
-            PhotoViewer.p9().B8(false, true);
-        } else if (ArticleViewer.a3() && ArticleViewer.O2().c3()) {
-            ArticleViewer.O2().D2(false, true);
-        }
-        this.passcodeView.f0(true, false);
-        org.telegram.messenger.e0.f12733e = true;
-        this.drawerLayoutContainer.r(false, false);
-        this.passcodeView.setDelegate(new tx6.l() { // from class: ny2
-            @Override // defpackage.tx6.l
-            public final void a() {
-                ExternalActionActivity.this.J();
-            }
-        });
-    }
-
-    public void Q(int i) {
-        int i2 = tla.o;
-        if (i == i2) {
-            return;
-        }
-        ConnectionsManager.getInstance(i2).setAppPaused(true, false);
-        tla.o = i;
-        tla.p(0).G(false);
-        if (!org.telegram.messenger.b.f12525c) {
-            ConnectionsManager.getInstance(tla.o).setAppPaused(false, false);
-        }
-    }
-
-    @Override // org.telegram.ui.ActionBar.k.b
-    public /* synthetic */ void a(float f) {
-        wx3.g(this, f);
-    }
-
-    @Override // org.telegram.ui.ActionBar.k.b
-    public boolean b(org.telegram.ui.ActionBar.f fVar, org.telegram.ui.ActionBar.k kVar) {
-        return true;
-    }
-
-    @Override // org.telegram.ui.ActionBar.k.b
-    public boolean c() {
-        return false;
-    }
-
-    @Override // org.telegram.ui.ActionBar.k.b
-    public boolean d(org.telegram.ui.ActionBar.f fVar, boolean z, boolean z2, org.telegram.ui.ActionBar.k kVar) {
-        return true;
-    }
-
-    @Override // org.telegram.ui.ActionBar.k.b
-    public void e(org.telegram.ui.ActionBar.k kVar, boolean z) {
-        if (org.telegram.messenger.a.Y1() && kVar == this.layersActionBarLayout) {
-            this.actionBarLayout.S(z, z);
-        }
-    }
-
-    @Override // org.telegram.ui.ActionBar.k.b
-    public /* synthetic */ void f(int[] iArr) {
-        wx3.d(this, iArr);
-    }
-
-    @Override // org.telegram.ui.ActionBar.k.b
-    public boolean g(org.telegram.ui.ActionBar.k kVar) {
-        if (org.telegram.messenger.a.Y1()) {
-            if (kVar == this.actionBarLayout && kVar.getFragmentStack().size() <= 1) {
-                L();
-                finish();
-                return false;
-            } else if (kVar == this.layersActionBarLayout && this.actionBarLayout.getFragmentStack().isEmpty() && this.layersActionBarLayout.getFragmentStack().size() == 1) {
-                L();
-                finish();
-                return false;
-            }
-        } else if (kVar.getFragmentStack().size() <= 1) {
-            L();
-            finish();
-            return false;
-        }
-        return true;
-    }
-
-    @Override // org.telegram.ui.ActionBar.k.b
-    public /* synthetic */ boolean h(org.telegram.ui.ActionBar.k kVar, k.c cVar) {
-        return wx3.c(this, kVar, cVar);
-    }
-
-    @Override // android.app.Activity
-    public void onBackPressed() {
-        if (this.passcodeView.getVisibility() == 0) {
-            finish();
-        } else if (PhotoViewer.p9().V9()) {
-            PhotoViewer.p9().B8(true, false);
-        } else if (this.drawerLayoutContainer.k()) {
-            this.drawerLayoutContainer.f(false);
-        } else if (org.telegram.messenger.a.Y1()) {
-            if (this.layersActionBarLayout.getView().getVisibility() == 0) {
-                this.layersActionBarLayout.e();
-            } else {
-                this.actionBarLayout.e();
-            }
-        } else {
-            this.actionBarLayout.e();
-        }
-    }
-
-    @Override // android.app.Activity, android.content.ComponentCallbacks
-    public void onConfigurationChanged(Configuration configuration) {
-        org.telegram.messenger.a.N(this, configuration);
-        super.onConfigurationChanged(configuration);
-        x();
-    }
-
-    @Override // android.app.Activity
-    public void onCreate(Bundle bundle) {
-        boolean z;
-        int i;
-        org.telegram.messenger.b.C();
-        requestWindowFeature(1);
-        setTheme(org.telegram.mdgram.R.style.Theme.TMessages);
-        getWindow().setBackgroundDrawableResource(org.telegram.mdgram.R.drawable.transparent);
-        if (org.telegram.messenger.e0.f12729d.length() > 0 && !org.telegram.messenger.e0.f12730d) {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setTheme(R.style.Theme_TMessages);
+        getWindow().setBackgroundDrawableResource(R.drawable.transparent);
+        if (SharedConfig.passcodeHash.length() > 0 && !SharedConfig.allowScreenCapture) {
             try {
-                getWindow().setFlags(8192, 8192);
+                getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
             } catch (Exception e) {
-                org.telegram.messenger.l.p(e);
+                FileLog.e(e);
             }
         }
-        super.onCreate(bundle);
-        if (org.telegram.messenger.e0.f12729d.length() != 0 && org.telegram.messenger.e0.f12722b) {
-            org.telegram.messenger.e0.e = (int) (SystemClock.elapsedRealtime() / 1000);
+
+        super.onCreate(savedInstanceState);
+
+        if (SharedConfig.passcodeHash.length() != 0 && SharedConfig.appLocked) {
+            SharedConfig.lastPauseTime = (int) (SystemClock.elapsedRealtime() / 1000);
         }
-        org.telegram.messenger.a.k0(this);
-        org.telegram.ui.ActionBar.l.S0(this);
-        org.telegram.ui.ActionBar.l.G0(this, false);
-        this.actionBarLayout = vx3.y(this);
-        DrawerLayoutContainer drawerLayoutContainer = new DrawerLayoutContainer(this);
-        this.drawerLayoutContainer = drawerLayoutContainer;
-        drawerLayoutContainer.r(false, false);
-        setContentView(this.drawerLayoutContainer, new ViewGroup.LayoutParams(-1, -1));
-        if (org.telegram.messenger.a.Y1()) {
-            getWindow().setSoftInputMode(16);
-            RelativeLayout relativeLayout = new RelativeLayout(this);
-            this.drawerLayoutContainer.addView(relativeLayout);
-            FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) relativeLayout.getLayoutParams();
-            layoutParams.width = -1;
-            layoutParams.height = -1;
-            relativeLayout.setLayoutParams(layoutParams);
-            a aVar = new a(this);
-            this.backgroundTablet = aVar;
-            aVar.setOccupyStatusBar(false);
-            this.backgroundTablet.O(org.telegram.ui.ActionBar.l.y1(), org.telegram.ui.ActionBar.l.N2());
-            relativeLayout.addView(this.backgroundTablet, cn4.q(-1, -1));
-            relativeLayout.addView(this.actionBarLayout.getView(), cn4.q(-1, -1));
-            FrameLayout frameLayout = new FrameLayout(this);
-            frameLayout.setBackgroundColor(2130706432);
-            relativeLayout.addView(frameLayout, cn4.q(-1, -1));
-            frameLayout.setOnTouchListener(new View.OnTouchListener() { // from class: my2
-                @Override // android.view.View.OnTouchListener
-                public final boolean onTouch(View view, MotionEvent motionEvent) {
-                    boolean H;
-                    H = ExternalActionActivity.this.H(view, motionEvent);
-                    return H;
+
+        AndroidUtilities.fillStatusBarHeight(this);
+        Theme.createDialogsResources(this);
+        Theme.createChatResources(this, false);
+
+        actionBarLayout = INavigationLayout.newLayout(this);
+
+        drawerLayoutContainer = new DrawerLayoutContainer(this);
+        drawerLayoutContainer.setAllowOpenDrawer(false, false);
+        setContentView(drawerLayoutContainer, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        if (AndroidUtilities.isTablet()) {
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
+            RelativeLayout launchLayout = new RelativeLayout(this);
+            drawerLayoutContainer.addView(launchLayout);
+            FrameLayout.LayoutParams layoutParams1 = (FrameLayout.LayoutParams) launchLayout.getLayoutParams();
+            layoutParams1.width = LayoutHelper.MATCH_PARENT;
+            layoutParams1.height = LayoutHelper.MATCH_PARENT;
+            launchLayout.setLayoutParams(layoutParams1);
+
+            backgroundTablet = new SizeNotifierFrameLayout(this) {
+                @Override
+                protected boolean isActionBarVisible() {
+                    return false;
                 }
-            });
-            frameLayout.setOnClickListener(new View.OnClickListener() { // from class: oy2
-                @Override // android.view.View.OnClickListener
-                public final void onClick(View view) {
-                    ExternalActionActivity.I(view);
+            };
+            backgroundTablet.setOccupyStatusBar(false);
+            backgroundTablet.setBackgroundImage(Theme.getCachedWallpaper(), Theme.isWallpaperMotion());
+            launchLayout.addView(backgroundTablet, LayoutHelper.createRelative(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+
+            launchLayout.addView(actionBarLayout.getView(), LayoutHelper.createRelative(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+
+            FrameLayout shadowTablet = new FrameLayout(this);
+            shadowTablet.setBackgroundColor(0x7F000000);
+            launchLayout.addView(shadowTablet, LayoutHelper.createRelative(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+            shadowTablet.setOnTouchListener((v, event) -> {
+                if (!actionBarLayout.getFragmentStack().isEmpty() && event.getAction() == MotionEvent.ACTION_UP) {
+                    float x = event.getX();
+                    float y = event.getY();
+                    int[] location = new int[2];
+                    layersActionBarLayout.getView().getLocationOnScreen(location);
+                    int viewX = location[0];
+                    int viewY = location[1];
+
+                    if (layersActionBarLayout.checkTransitionAnimation() || x > viewX && x < viewX + layersActionBarLayout.getView().getWidth() && y > viewY && y < viewY + layersActionBarLayout.getView().getHeight()) {
+                        return false;
+                    } else {
+                        if (!layersActionBarLayout.getFragmentStack().isEmpty()) {
+                            for (int a = 0; a < layersActionBarLayout.getFragmentStack().size() - 1; a++) {
+                                layersActionBarLayout.removeFragmentFromStack(layersActionBarLayout.getFragmentStack().get(0));
+                                a--;
+                            }
+                            layersActionBarLayout.closeLastFragment(true);
+                        }
+                        return true;
+                    }
                 }
+                return false;
             });
-            org.telegram.ui.ActionBar.k y = vx3.y(this);
-            this.layersActionBarLayout = y;
-            y.setRemoveActionBarExtraHeight(true);
-            this.layersActionBarLayout.setBackgroundView(frameLayout);
-            this.layersActionBarLayout.setUseAlphaAnimations(true);
-            this.layersActionBarLayout.getView().setBackgroundResource(org.telegram.mdgram.R.drawable.boxshadow);
-            ViewGroup view = this.layersActionBarLayout.getView();
-            if (org.telegram.messenger.a.X1()) {
-                i = 528;
-            } else {
-                i = 700;
-            }
-            relativeLayout.addView(view, cn4.q(530, i));
-            this.layersActionBarLayout.setFragmentStack(layerFragmentsStack);
-            this.layersActionBarLayout.setDelegate(this);
-            this.layersActionBarLayout.setDrawerLayoutContainer(this.drawerLayoutContainer);
+
+            shadowTablet.setOnClickListener(v -> {
+
+            });
+
+            layersActionBarLayout = INavigationLayout.newLayout(this);
+            layersActionBarLayout.setRemoveActionBarExtraHeight(true);
+            layersActionBarLayout.setBackgroundView(shadowTablet);
+            layersActionBarLayout.setUseAlphaAnimations(true);
+            layersActionBarLayout.getView().setBackgroundResource(R.drawable.boxshadow);
+            launchLayout.addView(layersActionBarLayout.getView(), LayoutHelper.createRelative(530, (AndroidUtilities.isSmallTablet() ? 528 : 700)));
+            layersActionBarLayout.setFragmentStack(layerFragmentsStack);
+            layersActionBarLayout.setDelegate(this);
+            layersActionBarLayout.setDrawerLayoutContainer(drawerLayoutContainer);
         } else {
-            RelativeLayout relativeLayout2 = new RelativeLayout(this);
-            this.drawerLayoutContainer.addView(relativeLayout2, cn4.b(-1, -1.0f));
-            b bVar = new b(this);
-            this.backgroundTablet = bVar;
-            bVar.setOccupyStatusBar(false);
-            this.backgroundTablet.O(org.telegram.ui.ActionBar.l.y1(), org.telegram.ui.ActionBar.l.N2());
-            relativeLayout2.addView(this.backgroundTablet, cn4.q(-1, -1));
-            relativeLayout2.addView(this.actionBarLayout.getView(), cn4.q(-1, -1));
+            RelativeLayout launchLayout = new RelativeLayout(this);
+            drawerLayoutContainer.addView(launchLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+
+            backgroundTablet = new SizeNotifierFrameLayout(this) {
+                @Override
+                protected boolean isActionBarVisible() {
+                    return false;
+                }
+            };
+            backgroundTablet.setOccupyStatusBar(false);
+            backgroundTablet.setBackgroundImage(Theme.getCachedWallpaper(), Theme.isWallpaperMotion());
+            launchLayout.addView(backgroundTablet, LayoutHelper.createRelative(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+
+            launchLayout.addView(actionBarLayout.getView(), LayoutHelper.createRelative(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
         }
-        this.drawerLayoutContainer.setParentActionBarLayout(this.actionBarLayout);
-        this.actionBarLayout.setDrawerLayoutContainer(this.drawerLayoutContainer);
-        this.actionBarLayout.setFragmentStack(mainFragmentsStack);
-        this.actionBarLayout.setDelegate(this);
-        tx6 tx6Var = new tx6(this);
-        this.passcodeView = tx6Var;
-        this.drawerLayoutContainer.addView(tx6Var, cn4.b(-1, -1.0f));
-        org.telegram.messenger.a0.j().s(org.telegram.messenger.a0.u2, this);
-        this.actionBarLayout.A();
-        org.telegram.ui.ActionBar.k kVar = this.layersActionBarLayout;
-        if (kVar != null) {
-            kVar.A();
+
+        // drawerLayoutContainer.setDrawerLayout(listView);
+
+        drawerLayoutContainer.setParentActionBarLayout(actionBarLayout);
+        actionBarLayout.setDrawerLayoutContainer(drawerLayoutContainer);
+        actionBarLayout.setFragmentStack(mainFragmentsStack);
+        actionBarLayout.setDelegate(this);
+
+        passcodeView = new PasscodeView(this);
+        drawerLayoutContainer.addView(passcodeView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+
+        NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.closeOtherAppActivities, this);
+
+        actionBarLayout.removeAllFragments();
+        if (layersActionBarLayout != null) {
+            layersActionBarLayout.removeAllFragments();
         }
-        Intent intent = getIntent();
-        if (bundle != null) {
-            z = true;
-        } else {
-            z = false;
-        }
-        y(intent, false, z, false, tla.o, 0);
-        K();
+
+        handleIntent(getIntent(), false, savedInstanceState != null, false, UserConfig.selectedAccount, 0);
+        needLayout();
     }
 
-    @Override // android.app.Activity
-    public void onDestroy() {
-        super.onDestroy();
-        L();
-    }
-
-    @Override // android.app.Activity, android.content.ComponentCallbacks
-    public void onLowMemory() {
-        super.onLowMemory();
-        this.actionBarLayout.onLowMemory();
-        if (org.telegram.messenger.a.Y1()) {
-            this.layersActionBarLayout.onLowMemory();
-        }
-    }
-
-    @Override // android.app.Activity
-    public void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        y(intent, true, false, false, tla.o, 0);
-    }
-
-    @Override // android.app.Activity
-    public void onPause() {
-        super.onPause();
-        this.actionBarLayout.c();
-        if (org.telegram.messenger.a.Y1()) {
-            this.layersActionBarLayout.c();
-        }
-        org.telegram.messenger.b.e = true;
-        N();
-        tx6 tx6Var = this.passcodeView;
-        if (tx6Var != null) {
-            tx6Var.d0();
-        }
-    }
-
-    @Override // android.app.Activity
-    public void onResume() {
-        super.onResume();
-        this.actionBarLayout.a();
-        if (org.telegram.messenger.a.Y1()) {
-            this.layersActionBarLayout.a();
-        }
-        org.telegram.messenger.b.e = false;
-        O();
-        if (this.passcodeView.getVisibility() != 0) {
-            this.actionBarLayout.a();
-            if (org.telegram.messenger.a.Y1()) {
-                this.layersActionBarLayout.a();
-                return;
-            }
+    private void showPasscodeActivity() {
+        if (passcodeView == null) {
             return;
         }
-        this.actionBarLayout.p();
-        if (org.telegram.messenger.a.Y1()) {
-            this.layersActionBarLayout.p();
+        SharedConfig.appLocked = true;
+        if (SecretMediaViewer.hasInstance() && SecretMediaViewer.getInstance().isVisible()) {
+            SecretMediaViewer.getInstance().closePhoto(false, false);
+        } else if (PhotoViewer.hasInstance() && PhotoViewer.getInstance().isVisible()) {
+            PhotoViewer.getInstance().closePhoto(false, true);
+        } else if (ArticleViewer.hasInstance() && ArticleViewer.getInstance().isVisible()) {
+            ArticleViewer.getInstance().close(false, true);
         }
-        this.passcodeView.e0();
+        passcodeView.onShow(true, false);
+        SharedConfig.isWaitingForPasscodeEnter = true;
+        drawerLayoutContainer.setAllowOpenDrawer(false, false);
+        passcodeView.setDelegate(() -> {
+            SharedConfig.isWaitingForPasscodeEnter = false;
+            if (passcodeSaveIntent != null) {
+                handleIntent(passcodeSaveIntent, passcodeSaveIntentIsNew, passcodeSaveIntentIsRestore, true, passcodeSaveIntentAccount, passcodeSaveIntentState);
+                passcodeSaveIntent = null;
+            }
+            drawerLayoutContainer.setAllowOpenDrawer(true, false);
+            actionBarLayout.showLastFragment();
+            if (AndroidUtilities.isTablet()) {
+                layersActionBarLayout.showLastFragment();
+            }
+        });
     }
 
-    public boolean w(Intent intent, boolean z, boolean z2, boolean z3, int i, int i2) {
-        if (z3 || (!org.telegram.messenger.a.K2(true) && !org.telegram.messenger.e0.f12733e)) {
-            return true;
+    public void onFinishLogin() {
+        handleIntent(passcodeSaveIntent, passcodeSaveIntentIsNew, passcodeSaveIntentIsRestore, true, passcodeSaveIntentAccount, passcodeSaveIntentState);
+        actionBarLayout.removeAllFragments();
+        if (layersActionBarLayout != null) {
+            layersActionBarLayout.removeAllFragments();
         }
-        P();
-        this.passcodeSaveIntent = intent;
-        this.passcodeSaveIntentIsNew = z;
-        this.passcodeSaveIntentIsRestore = z2;
-        this.passcodeSaveIntentAccount = i;
-        this.passcodeSaveIntentState = i2;
-        tla.p(i).G(false);
-        return false;
+        if (backgroundTablet != null) {
+            backgroundTablet.setVisibility(View.VISIBLE);
+        }
     }
 
-    public void x() {
-        org.telegram.ui.ActionBar.k kVar;
-        if (!org.telegram.messenger.a.Y1() || (kVar = this.actionBarLayout) == null) {
-            return;
+    protected boolean checkPasscode(final Intent intent, final boolean isNew, final boolean restore, final boolean fromPassword, final int intentAccount, int state) {
+        if (!fromPassword && (AndroidUtilities.needShowPasscode(true) || SharedConfig.isWaitingForPasscodeEnter)) {
+            showPasscodeActivity();
+            passcodeSaveIntent = intent;
+            passcodeSaveIntentIsNew = isNew;
+            passcodeSaveIntentIsRestore = restore;
+            passcodeSaveIntentAccount = intentAccount;
+            passcodeSaveIntentState = state;
+            UserConfig.getInstance(intentAccount).saveConfig(false);
+            return false;
         }
-        kVar.getView().getViewTreeObserver().addOnGlobalLayoutListener(new c());
+        return true;
     }
 
-    public boolean y(final Intent intent, final boolean z, final boolean z2, final boolean z3, final int i, int i2) {
-        if (!w(intent, z, z2, z3, i, i2)) {
+    protected boolean handleIntent(final Intent intent, final boolean isNew, final boolean restore, final boolean fromPassword, final int intentAccount, int state) {
+        if (!checkPasscode(intent, isNew, restore, fromPassword, intentAccount, state)) {
             return false;
         }
         if ("org.telegram.passport.AUTHORIZE".equals(intent.getAction())) {
-            if (i2 == 0) {
-                int i3 = tla.i();
-                if (i3 == 0) {
-                    this.passcodeSaveIntent = intent;
-                    this.passcodeSaveIntentIsNew = z;
-                    this.passcodeSaveIntentIsRestore = z2;
-                    this.passcodeSaveIntentAccount = i;
-                    this.passcodeSaveIntentState = i2;
-                    e0 e0Var = new e0();
-                    if (org.telegram.messenger.a.Y1()) {
-                        this.layersActionBarLayout.U(e0Var);
+            if (state == 0) {
+                int activatedAccountsCount = UserConfig.getActivatedAccountsCount();
+                if (activatedAccountsCount == 0) {
+                    passcodeSaveIntent = intent;
+                    passcodeSaveIntentIsNew = isNew;
+                    passcodeSaveIntentIsRestore = restore;
+                    passcodeSaveIntentAccount = intentAccount;
+                    passcodeSaveIntentState = state;
+
+                    LoginActivity fragment = new LoginActivity();
+                    if (AndroidUtilities.isTablet()) {
+                        layersActionBarLayout.addFragmentToStack(fragment);
                     } else {
-                        this.actionBarLayout.U(e0Var);
+                        actionBarLayout.addFragmentToStack(fragment);
                     }
-                    if (!org.telegram.messenger.a.Y1()) {
-                        this.backgroundTablet.setVisibility(8);
+                    if (!AndroidUtilities.isTablet()) {
+                        backgroundTablet.setVisibility(View.GONE);
                     }
-                    this.actionBarLayout.b();
-                    if (org.telegram.messenger.a.Y1()) {
-                        this.layersActionBarLayout.b();
+                    actionBarLayout.showLastFragment();
+                    if (AndroidUtilities.isTablet()) {
+                        layersActionBarLayout.showLastFragment();
                     }
-                    e.k kVar = new e.k(this);
-                    kVar.x(org.telegram.messenger.u.B0("AppName", org.telegram.mdgram.R.string.AppName));
-                    kVar.n(org.telegram.messenger.u.B0("PleaseLoginPassport", org.telegram.mdgram.R.string.PleaseLoginPassport));
-                    kVar.v(org.telegram.messenger.u.B0("OK", org.telegram.mdgram.R.string.OK), null);
-                    kVar.G();
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ExternalActionActivity.this);
+                    builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+                    builder.setMessage(LocaleController.getString("PleaseLoginPassport", R.string.PleaseLoginPassport));
+                    builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), null);
+                    builder.show();
+
                     return true;
-                } else if (i3 >= 2) {
-                    org.telegram.ui.ActionBar.e M1 = org.telegram.ui.Components.b.M1(this, new b.n0() { // from class: py2
-                        @Override // org.telegram.ui.Components.b.n0
-                        public final void a(int i4) {
-                            ExternalActionActivity.this.A(i, intent, z, z2, z3, i4);
+                } else if (activatedAccountsCount >= 2) {
+                    AlertDialog alertDialog = AlertsCreator.createAccountSelectDialog(this, account -> {
+                        if (account != intentAccount) {
+                            switchToAccount(account);
                         }
+                        handleIntent(intent, isNew, restore, fromPassword, account, 1);
                     });
-                    M1.show();
-                    M1.setCanceledOnTouchOutside(false);
-                    M1.setOnDismissListener(new DialogInterface.OnDismissListener() { // from class: qy2
-                        @Override // android.content.DialogInterface.OnDismissListener
-                        public final void onDismiss(DialogInterface dialogInterface) {
-                            ExternalActionActivity.this.B(dialogInterface);
-                        }
+                    alertDialog.show();
+                    alertDialog.setCanceledOnTouchOutside(false);
+                    alertDialog.setOnDismissListener(dialog -> {
+                        setResult(RESULT_CANCELED);
+                        finish();
                     });
                     return true;
                 }
             }
-            long longExtra = intent.getLongExtra("bot_id", intent.getIntExtra("bot_id", 0));
-            final String stringExtra = intent.getStringExtra("nonce");
-            final String stringExtra2 = intent.getStringExtra("payload");
-            final TLRPC$TL_account_getAuthorizationForm tLRPC$TL_account_getAuthorizationForm = new TLRPC$TL_account_getAuthorizationForm();
-            tLRPC$TL_account_getAuthorizationForm.f13775a = longExtra;
-            tLRPC$TL_account_getAuthorizationForm.f13776a = intent.getStringExtra("scope");
-            tLRPC$TL_account_getAuthorizationForm.b = intent.getStringExtra("public_key");
-            if (longExtra != 0 && ((!TextUtils.isEmpty(stringExtra2) || !TextUtils.isEmpty(stringExtra)) && !TextUtils.isEmpty(tLRPC$TL_account_getAuthorizationForm.f13776a) && !TextUtils.isEmpty(tLRPC$TL_account_getAuthorizationForm.b))) {
-                final int[] iArr = {0};
-                final org.telegram.ui.ActionBar.e eVar = new org.telegram.ui.ActionBar.e(this, 3);
-                eVar.setOnCancelListener(new DialogInterface.OnCancelListener() { // from class: ry2
-                    @Override // android.content.DialogInterface.OnCancelListener
-                    public final void onCancel(DialogInterface dialogInterface) {
-                        ExternalActionActivity.C(i, iArr, dialogInterface);
-                    }
-                });
-                eVar.show();
-                iArr[0] = ConnectionsManager.getInstance(i).sendRequest(tLRPC$TL_account_getAuthorizationForm, new RequestDelegate() { // from class: sy2
-                    @Override // org.telegram.tgnet.RequestDelegate
-                    public final void run(a aVar, TLRPC$TL_error tLRPC$TL_error) {
-                        ExternalActionActivity.this.z(iArr, i, eVar, tLRPC$TL_account_getAuthorizationForm, stringExtra2, stringExtra, aVar, tLRPC$TL_error);
-                    }
-                }, 10);
-            } else {
+
+            final long bot_id = intent.getLongExtra("bot_id", intent.getIntExtra("bot_id", 0));
+            final String nonce = intent.getStringExtra("nonce");
+            final String payload = intent.getStringExtra("payload");
+            final TLRPC.TL_account_getAuthorizationForm req = new TLRPC.TL_account_getAuthorizationForm();
+            req.bot_id = bot_id;
+            req.scope = intent.getStringExtra("scope");
+            req.public_key = intent.getStringExtra("public_key");
+
+            if (bot_id == 0 || TextUtils.isEmpty(payload) && TextUtils.isEmpty(nonce) || TextUtils.isEmpty(req.scope) || TextUtils.isEmpty(req.public_key)) {
                 finish();
                 return false;
             }
-        } else {
-            if (org.telegram.messenger.a.Y1()) {
-                if (this.layersActionBarLayout.getFragmentStack().isEmpty()) {
-                    this.layersActionBarLayout.U(new e());
+
+            final int[] requestId = {0};
+
+            final AlertDialog progressDialog = new AlertDialog(this, AlertDialog.ALERT_TYPE_SPINNER);
+            progressDialog.setOnCancelListener(dialog -> ConnectionsManager.getInstance(intentAccount).cancelRequest(requestId[0], true));
+
+            progressDialog.show();
+            requestId[0] = ConnectionsManager.getInstance(intentAccount).sendRequest(req, (response, error) -> {
+                final TLRPC.TL_account_authorizationForm authorizationForm = (TLRPC.TL_account_authorizationForm) response;
+                if (authorizationForm != null) {
+                    TLRPC.TL_account_getPassword req2 = new TLRPC.TL_account_getPassword();
+                    requestId[0] = ConnectionsManager.getInstance(intentAccount).sendRequest(req2, (response1, error1) -> AndroidUtilities.runOnUIThread(() -> {
+                        try {
+                            progressDialog.dismiss();
+                        } catch (Exception e) {
+                            FileLog.e(e);
+                        }
+                        if (response1 != null) {
+                            TLRPC.account_Password accountPassword = (TLRPC.account_Password) response1;
+                            MessagesController.getInstance(intentAccount).putUsers(authorizationForm.users, false);
+                            PassportActivity fragment = new PassportActivity(PassportActivity.TYPE_PASSWORD, req.bot_id, req.scope, req.public_key, payload, nonce, null, authorizationForm, accountPassword);
+                            fragment.setNeedActivityResult(true);
+                            if (AndroidUtilities.isTablet()) {
+                                layersActionBarLayout.addFragmentToStack(fragment);
+                            } else {
+                                actionBarLayout.addFragmentToStack(fragment);
+                            }
+                            if (!AndroidUtilities.isTablet()) {
+                                backgroundTablet.setVisibility(View.GONE);
+                            }
+                            actionBarLayout.showLastFragment();
+                            if (AndroidUtilities.isTablet()) {
+                                layersActionBarLayout.showLastFragment();
+                            }
+                        }
+                    }));
+                } else {
+                    AndroidUtilities.runOnUIThread(() -> {
+                        try {
+                            progressDialog.dismiss();
+                            if ("APP_VERSION_OUTDATED".equals(error.text)) {
+                                AlertDialog dialog = AlertsCreator.showUpdateAppAlert(ExternalActionActivity.this, LocaleController.getString("UpdateAppAlert", R.string.UpdateAppAlert), true);
+                                if (dialog != null) {
+                                    dialog.setOnDismissListener(dialog1 -> {
+                                        setResult(RESULT_FIRST_USER, new Intent().putExtra("error", error.text));
+                                        finish();
+                                    });
+                                } else {
+                                    setResult(RESULT_FIRST_USER, new Intent().putExtra("error", error.text));
+                                    finish();
+                                }
+                            } else if (("BOT_INVALID".equals(error.text) ||
+                                    "PUBLIC_KEY_REQUIRED".equals(error.text) ||
+                                    "PUBLIC_KEY_INVALID".equals(error.text)
+                                    || "SCOPE_EMPTY".equals(error.text) ||
+                                    "PAYLOAD_EMPTY".equals(error.text))) {
+                                setResult(RESULT_FIRST_USER, new Intent().putExtra("error", error.text));
+                                finish();
+                            } else {
+                                setResult(RESULT_CANCELED);
+                                finish();
+                            }
+                        } catch (Exception e) {
+                            FileLog.e(e);
+                        }
+                    });
                 }
-            } else if (this.actionBarLayout.getFragmentStack().isEmpty()) {
-                this.actionBarLayout.U(new e());
+            }, ConnectionsManager.RequestFlagFailOnServerErrors | ConnectionsManager.RequestFlagWithoutLogin);
+        } else {
+            if (AndroidUtilities.isTablet()) {
+                if (layersActionBarLayout.getFragmentStack().isEmpty()) {
+                    layersActionBarLayout.addFragmentToStack(new CacheControlActivity());
+                }
+            } else {
+                if (actionBarLayout.getFragmentStack().isEmpty()) {
+                    actionBarLayout.addFragmentToStack(new CacheControlActivity());
+                }
             }
-            if (!org.telegram.messenger.a.Y1()) {
-                this.backgroundTablet.setVisibility(8);
+            if (!AndroidUtilities.isTablet()) {
+                backgroundTablet.setVisibility(View.GONE);
             }
-            this.actionBarLayout.b();
-            if (org.telegram.messenger.a.Y1()) {
-                this.layersActionBarLayout.b();
+            actionBarLayout.showLastFragment();
+            if (AndroidUtilities.isTablet()) {
+                layersActionBarLayout.showLastFragment();
             }
             intent.setAction(null);
         }
         return false;
+    }
+
+    public void switchToAccount(int account) {
+        if (account == UserConfig.selectedAccount) {
+            return;
+        }
+        ConnectionsManager.getInstance(UserConfig.selectedAccount).setAppPaused(true, false);
+        UserConfig.selectedAccount = account;
+        UserConfig.getInstance(0).saveConfig(false);
+        if (!ApplicationLoader.mainInterfacePaused) {
+            ConnectionsManager.getInstance(UserConfig.selectedAccount).setAppPaused(false, false);
+        }
+    }
+
+    @Override
+    public boolean onPreIme() {
+        return false;
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleIntent(intent, true, false, false, UserConfig.selectedAccount, 0);
+    }
+
+    private void onFinish() {
+        if (finished) {
+            return;
+        }
+        if (lockRunnable != null) {
+            AndroidUtilities.cancelRunOnUIThread(lockRunnable);
+            lockRunnable = null;
+        }
+        finished = true;
+    }
+
+    public void presentFragment(BaseFragment fragment) {
+        actionBarLayout.presentFragment(fragment);
+    }
+
+    public boolean presentFragment(final BaseFragment fragment, final boolean removeLast, boolean forceWithoutAnimation) {
+        return actionBarLayout.presentFragment(fragment, removeLast, forceWithoutAnimation, true, false);
+    }
+
+    public void needLayout() {
+        if (AndroidUtilities.isTablet()) {
+            RelativeLayout.LayoutParams relativeLayoutParams = (RelativeLayout.LayoutParams) layersActionBarLayout.getView().getLayoutParams();
+            relativeLayoutParams.leftMargin = (AndroidUtilities.displaySize.x - relativeLayoutParams.width) / 2;
+            int y = (Build.VERSION.SDK_INT >= 21 ? AndroidUtilities.statusBarHeight : 0);
+            relativeLayoutParams.topMargin = y + (AndroidUtilities.displaySize.y - relativeLayoutParams.height - y) / 2;
+            layersActionBarLayout.getView().setLayoutParams(relativeLayoutParams);
+
+
+            if (!AndroidUtilities.isSmallTablet() || getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                int leftWidth = AndroidUtilities.displaySize.x / 100 * 35;
+                if (leftWidth < AndroidUtilities.dp(320)) {
+                    leftWidth = AndroidUtilities.dp(320);
+                }
+
+                relativeLayoutParams = (RelativeLayout.LayoutParams) actionBarLayout.getView().getLayoutParams();
+                relativeLayoutParams.width = leftWidth;
+                relativeLayoutParams.height = LayoutHelper.MATCH_PARENT;
+                actionBarLayout.getView().setLayoutParams(relativeLayoutParams);
+
+                if (AndroidUtilities.isSmallTablet() && actionBarLayout.getFragmentStack().size() == 2) {
+                    BaseFragment chatFragment = actionBarLayout.getFragmentStack().get(1);
+                    chatFragment.onPause();
+                    actionBarLayout.getFragmentStack().remove(1);
+                    actionBarLayout.showLastFragment();
+                }
+            } else {
+                relativeLayoutParams = (RelativeLayout.LayoutParams) actionBarLayout.getView().getLayoutParams();
+                relativeLayoutParams.width = LayoutHelper.MATCH_PARENT;
+                relativeLayoutParams.height = LayoutHelper.MATCH_PARENT;
+                actionBarLayout.getView().setLayoutParams(relativeLayoutParams);
+            }
+        }
+    }
+
+    public void fixLayout() {
+        if (!AndroidUtilities.isTablet()) {
+            return;
+        }
+        if (actionBarLayout == null) {
+            return;
+        }
+        actionBarLayout.getView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                needLayout();
+                if (actionBarLayout != null) {
+                    actionBarLayout.getView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        actionBarLayout.onPause();
+        if (AndroidUtilities.isTablet()) {
+            layersActionBarLayout.onPause();
+        }
+        ApplicationLoader.externalInterfacePaused = true;
+        onPasscodePause();
+        if (passcodeView != null) {
+            passcodeView.onPause();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        onFinish();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        actionBarLayout.onResume();
+        if (AndroidUtilities.isTablet()) {
+            layersActionBarLayout.onResume();
+        }
+        ApplicationLoader.externalInterfacePaused = false;
+        onPasscodeResume();
+        if (passcodeView.getVisibility() != View.VISIBLE) {
+            actionBarLayout.onResume();
+            if (AndroidUtilities.isTablet()) {
+                layersActionBarLayout.onResume();
+            }
+        } else {
+            actionBarLayout.dismissDialogs();
+            if (AndroidUtilities.isTablet()) {
+                layersActionBarLayout.dismissDialogs();
+            }
+            passcodeView.onResume();
+        }
+    }
+
+    private void onPasscodePause() {
+        if (lockRunnable != null) {
+            AndroidUtilities.cancelRunOnUIThread(lockRunnable);
+            lockRunnable = null;
+        }
+        if (SharedConfig.passcodeHash.length() != 0) {
+            SharedConfig.lastPauseTime = (int) (SystemClock.elapsedRealtime() / 1000);
+            lockRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    if (lockRunnable == this) {
+                        if (AndroidUtilities.needShowPasscode(true)) {
+                            if (BuildVars.LOGS_ENABLED) {
+                                FileLog.d("lock app");
+                            }
+                            showPasscodeActivity();
+                        } else {
+                            if (BuildVars.LOGS_ENABLED) {
+                                FileLog.d("didn't pass lock check");
+                            }
+                        }
+                        lockRunnable = null;
+                    }
+                }
+            };
+            if (SharedConfig.appLocked) {
+                AndroidUtilities.runOnUIThread(lockRunnable, 1000);
+            } else if (SharedConfig.autoLockIn != 0) {
+                AndroidUtilities.runOnUIThread(lockRunnable, (long) SharedConfig.autoLockIn * 1000 + 1000);
+            }
+        } else {
+            SharedConfig.lastPauseTime = 0;
+        }
+        SharedConfig.saveConfig();
+    }
+
+    private void onPasscodeResume() {
+        if (lockRunnable != null) {
+            AndroidUtilities.cancelRunOnUIThread(lockRunnable);
+            lockRunnable = null;
+        }
+        if (AndroidUtilities.needShowPasscode(true)) {
+            showPasscodeActivity();
+        }
+        if (SharedConfig.lastPauseTime != 0) {
+            SharedConfig.lastPauseTime = 0;
+            SharedConfig.saveConfig();
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(android.content.res.Configuration newConfig) {
+        AndroidUtilities.checkDisplaySize(this, newConfig);
+        super.onConfigurationChanged(newConfig);
+        fixLayout();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (passcodeView.getVisibility() == View.VISIBLE) {
+            finish();
+            return;
+        }
+        if (PhotoViewer.getInstance().isVisible()) {
+            PhotoViewer.getInstance().closePhoto(true, false);
+        } else if (drawerLayoutContainer.isDrawerOpened()) {
+            drawerLayoutContainer.closeDrawer(false);
+        } else if (AndroidUtilities.isTablet()) {
+            if (layersActionBarLayout.getView().getVisibility() == View.VISIBLE) {
+                layersActionBarLayout.onBackPressed();
+            } else {
+                actionBarLayout.onBackPressed();
+            }
+        } else {
+            actionBarLayout.onBackPressed();
+        }
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        actionBarLayout.onLowMemory();
+        if (AndroidUtilities.isTablet()) {
+            layersActionBarLayout.onLowMemory();
+        }
+    }
+
+    @Override
+    public boolean needPresentFragment(BaseFragment fragment, boolean removeLast, boolean forceWithoutAnimation, INavigationLayout layout) {
+        return true;
+    }
+
+    @Override
+    public boolean needAddFragmentToStack(BaseFragment fragment, INavigationLayout layout) {
+        return true;
+    }
+
+    @Override
+    public boolean needCloseLastFragment(INavigationLayout layout) {
+        if (AndroidUtilities.isTablet()) {
+            if (layout == actionBarLayout && layout.getFragmentStack().size() <= 1) {
+                onFinish();
+                finish();
+                return false;
+            } else if (layout == layersActionBarLayout && actionBarLayout.getFragmentStack().isEmpty() && layersActionBarLayout.getFragmentStack().size() == 1) {
+                onFinish();
+                finish();
+                return false;
+            }
+        } else {
+            if (layout.getFragmentStack().size() <= 1) {
+                onFinish();
+                finish();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public void onRebuildAllFragments(INavigationLayout layout, boolean last) {
+        if (AndroidUtilities.isTablet()) {
+            if (layout == layersActionBarLayout) {
+                actionBarLayout.rebuildAllFragmentViews(last, last);
+            }
+        }
     }
 }

@@ -1,18 +1,31 @@
+/*
+ *  Copyright 2017 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
-/* loaded from: classes3.dex */
+
+/**
+ * A combined video decoder that falls back on a secondary decoder if the primary decoder fails.
+ */
 public class VideoDecoderFallback extends WrappedNativeVideoDecoder {
-    private final VideoDecoder fallback;
-    private final VideoDecoder primary;
+  private final VideoDecoder fallback;
+  private final VideoDecoder primary;
 
-    public VideoDecoderFallback(VideoDecoder videoDecoder, VideoDecoder videoDecoder2) {
-        this.fallback = videoDecoder;
-        this.primary = videoDecoder2;
-    }
+  public VideoDecoderFallback(VideoDecoder fallback, VideoDecoder primary) {
+    this.fallback = fallback;
+    this.primary = primary;
+  }
 
-    private static native long nativeCreateDecoder(VideoDecoder videoDecoder, VideoDecoder videoDecoder2);
+  @Override
+  public long createNativeVideoDecoder() {
+    return nativeCreateDecoder(fallback, primary);
+  }
 
-    @Override // org.webrtc.WrappedNativeVideoDecoder, org.webrtc.VideoDecoder
-    public long createNativeVideoDecoder() {
-        return nativeCreateDecoder(this.fallback, this.primary);
-    }
+  private static native long nativeCreateDecoder(VideoDecoder fallback, VideoDecoder primary);
 }

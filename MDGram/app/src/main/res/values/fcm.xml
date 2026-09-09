@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ключи FCM из оригинального MDGram (вместо google-services.json) -->
+<resources>
+    <string name="gcm_defaultSenderId">662338848789</string>
+    <string name="google_api_key">AIzaSyBeOexQ_kI-jb3-KQyMubX38JXbDHphTtA</string>
+    <string name="google_app_id">1:662338848789:android:fbb29fcdfa269dbe72261c</string>
+    <string name="google_assistant_verification_channel_name">Assistant verifier</string>
+    <string name="google_assistant_verification_notification_title">Google Assistant sending message</string>
+    <string name="google_crash_reporting_api_key">AIzaSyBeOexQ_kI-jb3-KQyMubX38JXbDHphTtA</string>
+    <string name="google_storage_bucket">mdgramyou.appspot.com</string>
+    <string name="project_id">mdgramyou</string>
+</resources>

@@ -1,30 +1,45 @@
+/*
+ *  Copyright 2016 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
-/* loaded from: classes3.dex */
+
+/**
+ * Class for representing size of an object. Very similar to android.util.Size but available on all
+ * devices.
+ */
 public class Size {
-    public int height;
-    public int width;
+  public int width;
+  public int height;
 
-    public Size(int i, int i2) {
-        this.width = i;
-        this.height = i2;
-    }
+  public Size(int width, int height) {
+    this.width = width;
+    this.height = height;
+  }
 
-    public boolean equals(Object obj) {
-        if (!(obj instanceof Size)) {
-            return false;
-        }
-        Size size = (Size) obj;
-        if (this.width != size.width || this.height != size.height) {
-            return false;
-        }
-        return true;
-    }
+  @Override
+  public String toString() {
+    return width + "x" + height;
+  }
 
-    public int hashCode() {
-        return (this.width * 65537) + 1 + this.height;
+  @Override
+  public boolean equals(Object other) {
+    if (!(other instanceof Size)) {
+      return false;
     }
+    final Size otherSize = (Size) other;
+    return width == otherSize.width && height == otherSize.height;
+  }
 
-    public String toString() {
-        return this.width + "x" + this.height;
-    }
+  @Override
+  public int hashCode() {
+    // Use prime close to 2^16 to avoid collisions for normal values less than 2^16.
+    return 1 + 65537 * width + height;
+  }
 }

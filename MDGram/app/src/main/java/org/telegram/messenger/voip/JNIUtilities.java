@@ -1,6 +1,7 @@
 package org.telegram.messenger.voip;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.LinkAddress;
 import android.net.LinkProperties;
@@ -11,116 +12,127 @@ import android.os.Build;
 import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
+
+import org.telegram.messenger.ApplicationLoader;
+import org.telegram.messenger.FileLog;
+
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.Enumeration;
-import org.telegram.messenger.l;
-/* loaded from: classes2.dex */
+
+/**
+ * Created by grishka on 16.01.2018.
+ */
+
 public class JNIUtilities {
-    public static String[] getCarrierInfo() {
-        String str;
-        int defaultDataSubscriptionId;
-        TelephonyManager telephonyManager = (TelephonyManager) org.telegram.messenger.b.f12514a.getSystemService("phone");
-        if (Build.VERSION.SDK_INT >= 24) {
-            defaultDataSubscriptionId = SubscriptionManager.getDefaultDataSubscriptionId();
-            telephonyManager = telephonyManager.createForSubscriptionId(defaultDataSubscriptionId);
-        }
-        if (!TextUtils.isEmpty(telephonyManager.getNetworkOperatorName())) {
-            String networkOperator = telephonyManager.getNetworkOperator();
-            String str2 = "";
-            if (networkOperator == null || networkOperator.length() <= 3) {
-                str = "";
-            } else {
-                str2 = networkOperator.substring(0, 3);
-                str = networkOperator.substring(3);
-            }
-            return new String[]{telephonyManager.getNetworkOperatorName(), telephonyManager.getNetworkCountryIso().toUpperCase(), str2, str};
-        }
-        return null;
-    }
+	@TargetApi(23)
+	public static String getCurrentNetworkInterfaceName() {
+		ConnectivityManager cm = (ConnectivityManager) ApplicationLoader.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+		Network net = cm.getActiveNetwork();
+		if (net == null) {
+			return null;
+		}
+		LinkProperties props = cm.getLinkProperties(net);
+		if (props == null) {
+			return null;
+		}
+		return props.getInterfaceName();
+	}
 
-    @TargetApi(23)
-    public static String getCurrentNetworkInterfaceName() {
-        Network activeNetwork;
-        LinkProperties linkProperties;
-        ConnectivityManager connectivityManager = (ConnectivityManager) org.telegram.messenger.b.f12514a.getSystemService("connectivity");
-        activeNetwork = connectivityManager.getActiveNetwork();
-        if (activeNetwork == null || (linkProperties = connectivityManager.getLinkProperties(activeNetwork)) == null) {
-            return null;
-        }
-        return linkProperties.getInterfaceName();
-    }
+	public static String[] getLocalNetworkAddressesAndInterfaceName() {
+		ConnectivityManager cm = (ConnectivityManager) ApplicationLoader.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			Network net = cm.getActiveNetwork();
+			if (net == null) {
+				return null;
+			}
+			LinkProperties linkProps = cm.getLinkProperties(net);
+			if (linkProps == null) {
+				return null;
+			}
+			String ipv4 = null, ipv6 = null;
+			for (LinkAddress addr : linkProps.getLinkAddresses()) {
+				InetAddress a = addr.getAddress();
+				if (a instanceof Inet4Address) {
+					if (!a.isLinkLocalAddress()) {
+						ipv4 = a.getHostAddress();
+					}
+				} else if (a instanceof Inet6Address) {
+					if (!a.isLinkLocalAddress() && (a.getAddress()[0] & 0xF0) != 0xF0) {
+						ipv6 = a.getHostAddress();
+					}
+				}
+			}
+			return new String[]{linkProps.getInterfaceName(), ipv4, ipv6};
+		} else {
+			try {
+				Enumeration<NetworkInterface> itfs = NetworkInterface.getNetworkInterfaces();
+				if (itfs == null)
+					return null;
+				while (itfs.hasMoreElements()) {
+					NetworkInterface itf = itfs.nextElement();
+					if (itf.isLoopback() || !itf.isUp()) {
+						continue;
+					}
+					Enumeration<InetAddress> addrs = itf.getInetAddresses();
+					String ipv4 = null, ipv6 = null;
+					while (addrs.hasMoreElements()) {
+						InetAddress a = addrs.nextElement();
+						if (a instanceof Inet4Address) {
+							if (!a.isLinkLocalAddress()) {
+								ipv4 = a.getHostAddress();
+							}
+						} else if (a instanceof Inet6Address) {
+							if (!a.isLinkLocalAddress() && (a.getAddress()[0] & 0xF0) != 0xF0) {
+								ipv6 = a.getHostAddress();
+							}
+						}
+					}
+					return new String[]{itf.getName(), ipv4, ipv6};
+				}
+				return null;
+			} catch (Exception x) {
+				FileLog.e(x);
+				return null;
+			}
+		}
+	}
 
-    public static String[] getLocalNetworkAddressesAndInterfaceName() {
-        Network activeNetwork;
-        LinkProperties linkProperties;
-        ConnectivityManager connectivityManager = (ConnectivityManager) org.telegram.messenger.b.f12514a.getSystemService("connectivity");
-        String str = null;
-        if (Build.VERSION.SDK_INT >= 23) {
-            activeNetwork = connectivityManager.getActiveNetwork();
-            if (activeNetwork == null || (linkProperties = connectivityManager.getLinkProperties(activeNetwork)) == null) {
-                return null;
-            }
-            String str2 = null;
-            for (LinkAddress linkAddress : linkProperties.getLinkAddresses()) {
-                InetAddress address = linkAddress.getAddress();
-                if (address instanceof Inet4Address) {
-                    if (!address.isLinkLocalAddress()) {
-                        str = address.getHostAddress();
-                    }
-                } else if ((address instanceof Inet6Address) && !address.isLinkLocalAddress() && (address.getAddress()[0] & 240) != 240) {
-                    str2 = address.getHostAddress();
-                }
-            }
-            return new String[]{linkProperties.getInterfaceName(), str, str2};
-        }
-        try {
-            Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
-            if (networkInterfaces == null) {
-                return null;
-            }
-            while (networkInterfaces.hasMoreElements()) {
-                NetworkInterface nextElement = networkInterfaces.nextElement();
-                if (!nextElement.isLoopback() && nextElement.isUp()) {
-                    Enumeration<InetAddress> inetAddresses = nextElement.getInetAddresses();
-                    String str3 = null;
-                    String str4 = null;
-                    while (inetAddresses.hasMoreElements()) {
-                        InetAddress nextElement2 = inetAddresses.nextElement();
-                        if (nextElement2 instanceof Inet4Address) {
-                            if (!nextElement2.isLinkLocalAddress()) {
-                                str3 = nextElement2.getHostAddress();
-                            }
-                        } else if ((nextElement2 instanceof Inet6Address) && !nextElement2.isLinkLocalAddress() && (nextElement2.getAddress()[0] & 240) != 240) {
-                            str4 = nextElement2.getHostAddress();
-                        }
-                    }
-                    return new String[]{nextElement.getName(), str3, str4};
-                }
-            }
-            return null;
-        } catch (Exception e) {
-            l.p(e);
-            return null;
-        }
-    }
+	// [name, country, mcc, mnc]
+	public static String[] getCarrierInfo() {
+		TelephonyManager tm = (TelephonyManager) ApplicationLoader.applicationContext.getSystemService(Context.TELEPHONY_SERVICE);
+		if (Build.VERSION.SDK_INT >= 24) {
+			tm = tm.createForSubscriptionId(SubscriptionManager.getDefaultDataSubscriptionId());
+		}
+		if (!TextUtils.isEmpty(tm.getNetworkOperatorName())) {
+			String mnc = "", mcc = "";
+			String carrierID = tm.getNetworkOperator();
+			if (carrierID != null && carrierID.length() > 3) {
+				mcc = carrierID.substring(0, 3);
+				mnc = carrierID.substring(3);
+			}
+			return new String[]{tm.getNetworkOperatorName(), tm.getNetworkCountryIso().toUpperCase(), mcc, mnc};
+		}
+		return null;
+	}
 
-    public static int getMaxVideoResolution() {
-        return 320;
-    }
+	public static int[] getWifiInfo() {
+		try {
+			WifiManager wmgr = (WifiManager) ApplicationLoader.applicationContext.getSystemService(Context.WIFI_SERVICE);
+			WifiInfo info = wmgr.getConnectionInfo();
+			return new int[]{info.getRssi(), info.getLinkSpeed()};
+		} catch (Exception ignore) {
+		}
+		return null;
+	}
 
-    public static String getSupportedVideoCodecs() {
-        return "";
-    }
+	public static String getSupportedVideoCodecs() {
+		return "";
+	}
 
-    public static int[] getWifiInfo() {
-        try {
-            WifiInfo connectionInfo = ((WifiManager) org.telegram.messenger.b.f12514a.getSystemService("wifi")).getConnectionInfo();
-            return new int[]{connectionInfo.getRssi(), connectionInfo.getLinkSpeed()};
-        } catch (Exception unused) {
-            return null;
-        }
-    }
+	public static int getMaxVideoResolution() {
+		return 320;
+	}
 }

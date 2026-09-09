@@ -1,43 +1,39 @@
+/*
+ *  Copyright 2018 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
 
 import android.media.MediaCodecInfo;
-import org.webrtc.EglBase;
-import org.webrtc.Predicate;
-/* loaded from: classes3.dex */
+import androidx.annotation.Nullable;
+import java.util.Arrays;
+
+/** Factory for Android platform software VideoDecoders. */
 public class PlatformSoftwareVideoDecoderFactory extends MediaCodecVideoDecoderFactory {
-    private static final Predicate<MediaCodecInfo> defaultAllowedPredicate = new Predicate<MediaCodecInfo>() { // from class: org.webrtc.PlatformSoftwareVideoDecoderFactory.1
-        @Override // org.webrtc.Predicate
-        public /* synthetic */ Predicate<MediaCodecInfo> and(Predicate<? super MediaCodecInfo> predicate) {
-            return Predicate.CC.a(this, predicate);
+  /**
+   * Default allowed predicate.
+   */
+  private static final Predicate<MediaCodecInfo> defaultAllowedPredicate =
+      new Predicate<MediaCodecInfo>() {
+        @Override
+        public boolean test(MediaCodecInfo arg) {
+          return MediaCodecUtils.isSoftwareOnly(arg);
         }
+      };
 
-        @Override // org.webrtc.Predicate
-        public /* synthetic */ Predicate<MediaCodecInfo> negate() {
-            return Predicate.CC.b(this);
-        }
-
-        @Override // org.webrtc.Predicate
-        public /* synthetic */ Predicate<MediaCodecInfo> or(Predicate<? super MediaCodecInfo> predicate) {
-            return Predicate.CC.c(this, predicate);
-        }
-
-        @Override // org.webrtc.Predicate
-        public boolean test(MediaCodecInfo mediaCodecInfo) {
-            return MediaCodecUtils.isSoftwareOnly(mediaCodecInfo);
-        }
-    };
-
-    public PlatformSoftwareVideoDecoderFactory(EglBase.Context context) {
-        super(context, defaultAllowedPredicate);
-    }
-
-    @Override // org.webrtc.MediaCodecVideoDecoderFactory, org.webrtc.VideoDecoderFactory
-    public /* bridge */ /* synthetic */ VideoDecoder createDecoder(VideoCodecInfo videoCodecInfo) {
-        return super.createDecoder(videoCodecInfo);
-    }
-
-    @Override // org.webrtc.MediaCodecVideoDecoderFactory, org.webrtc.VideoDecoderFactory
-    public /* bridge */ /* synthetic */ VideoCodecInfo[] getSupportedCodecs() {
-        return super.getSupportedCodecs();
-    }
+  /**
+   * Creates a PlatformSoftwareVideoDecoderFactory that supports surface texture rendering.
+   *
+   * @param sharedContext The textures generated will be accessible from this context. May be null,
+   *                      this disables texture support.
+   */
+  public PlatformSoftwareVideoDecoderFactory(@Nullable EglBase.Context sharedContext) {
+    super(sharedContext, defaultAllowedPredicate);
+  }
 }

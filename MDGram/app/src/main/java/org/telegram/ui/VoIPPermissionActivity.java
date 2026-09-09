@@ -1,89 +1,69 @@
 package org.telegram.ui;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
-import java.util.ArrayList;
-import org.h2.mvstore.DataUtils;
-import org.telegram.messenger.voip.VoIPService;
-import org.telegram.ui.VoIPPermissionActivity;
-@TargetApi(23)
-/* loaded from: classes2.dex */
-public class VoIPPermissionActivity extends Activity {
-    @Override // android.app.Activity
-    public void onCreate(Bundle bundle) {
-        boolean z;
-        int i;
-        gp9 gp9Var;
-        super.onCreate(bundle);
-        VoIPService sharedInstance = VoIPService.getSharedInstance();
-        if (sharedInstance != null && (gp9Var = sharedInstance.privateCall) != null && gp9Var.f6352d) {
-            z = true;
-        } else {
-            z = false;
-        }
-        ArrayList arrayList = new ArrayList();
-        if (checkSelfPermission("android.permission.RECORD_AUDIO") != 0) {
-            arrayList.add("android.permission.RECORD_AUDIO");
-        }
-        if (z && checkSelfPermission("android.permission.CAMERA") != 0) {
-            arrayList.add("android.permission.CAMERA");
-        }
-        if (Build.VERSION.SDK_INT >= 31 && checkSelfPermission("android.permission.BLUETOOTH_CONNECT") != 0) {
-            arrayList.add("android.permission.BLUETOOTH_CONNECT");
-        }
-        if (!arrayList.isEmpty()) {
-            try {
-                String[] strArr = (String[]) arrayList.toArray(new String[0]);
-                if (z) {
-                    i = DataUtils.ERROR_TOO_MANY_OPEN_TRANSACTIONS;
-                } else {
-                    i = DataUtils.ERROR_TRANSACTION_LOCKED;
-                }
-                requestPermissions(strArr, i);
-            } catch (Exception e) {
-                org.telegram.messenger.l.p(e);
-            }
-        }
-    }
 
-    @Override // android.app.Activity
-    public void onRequestPermissionsResult(int i, String[] strArr, int[] iArr) {
-        if (i == 101 || i == 102) {
-            boolean z = false;
-            int i2 = 0;
-            while (true) {
-                if (i2 < iArr.length) {
-                    if (iArr[i2] != 0) {
-                        break;
-                    }
-                    i2++;
-                } else {
-                    z = true;
-                    break;
-                }
-            }
-            if (iArr.length > 0 && z) {
-                if (VoIPService.getSharedInstance() != null) {
-                    VoIPService.getSharedInstance().acceptIncomingCall();
-                }
-                finish();
-                startActivity(new Intent(this, LaunchActivity.class).setAction("voip"));
-            } else if (!shouldShowRequestPermissionRationale("android.permission.RECORD_AUDIO")) {
-                if (VoIPService.getSharedInstance() != null) {
-                    VoIPService.getSharedInstance().declineIncomingCall();
-                }
-                pwa.b0(this, new Runnable() { // from class: zwa
-                    @Override // java.lang.Runnable
-                    public final void run() {
-                        VoIPPermissionActivity.this.finish();
-                    }
-                }, i);
-            } else {
-                finish();
-            }
-        }
-    }
+import org.telegram.messenger.FileLog;
+import org.telegram.messenger.voip.VoIPService;
+import org.telegram.ui.Components.voip.VoIPHelper;
+
+import java.util.ArrayList;
+
+@TargetApi(23)
+public class VoIPPermissionActivity extends Activity {
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		VoIPService service = VoIPService.getSharedInstance();
+		boolean isVideoCall = service != null && service.privateCall != null && service.privateCall.video;
+
+		ArrayList<String> permissions = new ArrayList<>();
+		if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+			permissions.add(Manifest.permission.RECORD_AUDIO);
+		}
+		if (isVideoCall && checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+			permissions.add(Manifest.permission.CAMERA);
+		}
+		if (!permissions.isEmpty()) {
+			try {
+				requestPermissions(permissions.toArray(new String[0]), isVideoCall ? 102 : 101);
+			} catch (Exception e) {
+				FileLog.e(e);
+			}
+		}
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+		if (requestCode == 101 || requestCode == 102) {
+			boolean allGranted = true;
+			for (int a = 0; a < grantResults.length; a++) {
+				if (grantResults[a] != PackageManager.PERMISSION_GRANTED) {
+					allGranted = false;
+					break;
+				}
+			}
+			if (grantResults.length > 0 && allGranted) {
+				if (VoIPService.getSharedInstance() != null) {
+					VoIPService.getSharedInstance().acceptIncomingCall();
+				}
+				finish();
+				startActivity(new Intent(this, LaunchActivity.class).setAction("voip"));
+			} else {
+				if (!shouldShowRequestPermissionRationale(Manifest.permission.RECORD_AUDIO)) {
+					if (VoIPService.getSharedInstance() != null) {
+						VoIPService.getSharedInstance().declineIncomingCall();
+					}
+					VoIPHelper.permissionDenied(this, this::finish, requestCode);
+				} else {
+					finish();
+				}
+			}
+		}
+	}
 }

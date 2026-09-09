@@ -1,86 +1,149 @@
+/*
+ *  Copyright 2017 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
 
 import java.nio.ByteBuffer;
-/* loaded from: classes3.dex */
+
+/** Wraps libyuv methods to Java. All passed byte buffers must be direct byte buffers. */
 public class YuvHelper {
-    public static void ABGRToI420(ByteBuffer byteBuffer, int i, ByteBuffer byteBuffer2, int i2, ByteBuffer byteBuffer3, int i3, ByteBuffer byteBuffer4, int i4, int i5, int i6) {
-        nativeABGRToI420(byteBuffer, i, byteBuffer2, i2, byteBuffer3, i3, byteBuffer4, i4, i5, i6);
+  /** Helper method for copying I420 to tightly packed destination buffer. */
+  public static void I420Copy(ByteBuffer srcY, int srcStrideY, ByteBuffer srcU, int srcStrideU,
+      ByteBuffer srcV, int srcStrideV, ByteBuffer dst, int width, int height) {
+    final int chromaHeight = (height + 1) / 2;
+    final int chromaWidth = (width + 1) / 2;
+
+    final int minSize = width * height + chromaWidth * chromaHeight * 2;
+    if (dst.capacity() < minSize) {
+      throw new IllegalArgumentException("Expected destination buffer capacity to be at least "
+          + minSize + " was " + dst.capacity());
     }
 
-    public static void I420Copy(ByteBuffer byteBuffer, int i, ByteBuffer byteBuffer2, int i2, ByteBuffer byteBuffer3, int i3, ByteBuffer byteBuffer4, int i4, int i5) {
-        int i6 = (i4 + 1) / 2;
-        int i7 = i4 * i5;
-        int i8 = ((i5 + 1) / 2) * i6;
-        int i9 = (i8 * 2) + i7;
-        if (byteBuffer4.capacity() >= i9) {
-            byteBuffer4.position(0);
-            ByteBuffer slice = byteBuffer4.slice();
-            byteBuffer4.position(i7);
-            ByteBuffer slice2 = byteBuffer4.slice();
-            byteBuffer4.position(i8 + i7);
-            nativeI420Copy(byteBuffer, i, byteBuffer2, i2, byteBuffer3, i3, slice, i4, slice2, i6, byteBuffer4.slice(), i6, i4, i5);
-            return;
-        }
-        throw new IllegalArgumentException("Expected destination buffer capacity to be at least " + i9 + " was " + byteBuffer4.capacity());
+    final int startY = 0;
+    final int startU = height * width;
+    final int startV = startU + chromaHeight * chromaWidth;
+
+    dst.position(startY);
+    final ByteBuffer dstY = dst.slice();
+    dst.position(startU);
+    final ByteBuffer dstU = dst.slice();
+    dst.position(startV);
+    final ByteBuffer dstV = dst.slice();
+
+    nativeI420Copy(srcY, srcStrideY, srcU, srcStrideU, srcV, srcStrideV, dstY, width, dstU,
+        chromaWidth, dstV, chromaWidth, width, height);
+  }
+
+  /** Helper method for copying I420 to tightly packed NV12 destination buffer. */
+  public static void I420ToNV12(ByteBuffer srcY, int srcStrideY, ByteBuffer srcU, int srcStrideU,
+      ByteBuffer srcV, int srcStrideV, ByteBuffer dst, int width, int height) {
+    final int chromaWidth = (width + 1) / 2;
+    final int chromaHeight = (height + 1) / 2;
+
+    final int minSize = width * height + chromaWidth * chromaHeight * 2;
+    if (dst.capacity() < minSize) {
+      throw new IllegalArgumentException("Expected destination buffer capacity to be at least "
+          + minSize + " was " + dst.capacity());
     }
 
-    public static void I420Rotate(ByteBuffer byteBuffer, int i, ByteBuffer byteBuffer2, int i2, ByteBuffer byteBuffer3, int i3, ByteBuffer byteBuffer4, int i4, int i5, int i6) {
-        int i7 = i6 % 180;
-        int i8 = i7 == 0 ? i4 : i5;
-        int i9 = i7 == 0 ? i5 : i4;
-        int i10 = (i8 + 1) / 2;
-        int i11 = i9 * i8;
-        int i12 = ((i9 + 1) / 2) * i10;
-        int i13 = (i12 * 2) + i11;
-        if (byteBuffer4.capacity() >= i13) {
-            byteBuffer4.position(0);
-            ByteBuffer slice = byteBuffer4.slice();
-            byteBuffer4.position(i11);
-            ByteBuffer slice2 = byteBuffer4.slice();
-            byteBuffer4.position(i12 + i11);
-            nativeI420Rotate(byteBuffer, i, byteBuffer2, i2, byteBuffer3, i3, slice, i8, slice2, i10, byteBuffer4.slice(), i10, i4, i5, i6);
-            return;
-        }
-        throw new IllegalArgumentException("Expected destination buffer capacity to be at least " + i13 + " was " + byteBuffer4.capacity());
+    final int startY = 0;
+    final int startUV = height * width;
+
+    dst.position(startY);
+    final ByteBuffer dstY = dst.slice();
+    dst.position(startUV);
+    final ByteBuffer dstUV = dst.slice();
+
+    nativeI420ToNV12(srcY, srcStrideY, srcU, srcStrideU, srcV, srcStrideV, dstY, width, dstUV,
+        chromaWidth * 2, width, height);
+  }
+
+  /** Helper method for rotating I420 to tightly packed destination buffer. */
+  public static void I420Rotate(ByteBuffer srcY, int srcStrideY, ByteBuffer srcU, int srcStrideU,
+      ByteBuffer srcV, int srcStrideV, ByteBuffer dst, int srcWidth, int srcHeight,
+      int rotationMode) {
+    final int dstWidth = rotationMode % 180 == 0 ? srcWidth : srcHeight;
+    final int dstHeight = rotationMode % 180 == 0 ? srcHeight : srcWidth;
+
+    final int dstChromaHeight = (dstHeight + 1) / 2;
+    final int dstChromaWidth = (dstWidth + 1) / 2;
+
+    final int minSize = dstWidth * dstHeight + dstChromaWidth * dstChromaHeight * 2;
+    if (dst.capacity() < minSize) {
+      throw new IllegalArgumentException("Expected destination buffer capacity to be at least "
+          + minSize + " was " + dst.capacity());
     }
 
-    public static void I420ToNV12(ByteBuffer byteBuffer, int i, ByteBuffer byteBuffer2, int i2, ByteBuffer byteBuffer3, int i3, ByteBuffer byteBuffer4, int i4, int i5) {
-        int i6 = (i4 + 1) / 2;
-        int i7 = i4 * i5;
-        int i8 = (((i5 + 1) / 2) * i6 * 2) + i7;
-        if (byteBuffer4.capacity() >= i8) {
-            byteBuffer4.position(0);
-            ByteBuffer slice = byteBuffer4.slice();
-            byteBuffer4.position(i7);
-            nativeI420ToNV12(byteBuffer, i, byteBuffer2, i2, byteBuffer3, i3, slice, i4, byteBuffer4.slice(), i6 * 2, i4, i5);
-            return;
-        }
-        throw new IllegalArgumentException("Expected destination buffer capacity to be at least " + i8 + " was " + byteBuffer4.capacity());
-    }
+    final int startY = 0;
+    final int startU = dstHeight * dstWidth;
+    final int startV = startU + dstChromaHeight * dstChromaWidth;
 
-    public static void copyPlane(ByteBuffer byteBuffer, int i, ByteBuffer byteBuffer2, int i2, int i3, int i4) {
-        nativeCopyPlane(byteBuffer, i, byteBuffer2, i2, i3, i4);
-    }
+    dst.position(startY);
+    final ByteBuffer dstY = dst.slice();
+    dst.position(startU);
+    final ByteBuffer dstU = dst.slice();
+    dst.position(startV);
+    final ByteBuffer dstV = dst.slice();
 
-    private static native void nativeABGRToI420(ByteBuffer byteBuffer, int i, ByteBuffer byteBuffer2, int i2, ByteBuffer byteBuffer3, int i3, ByteBuffer byteBuffer4, int i4, int i5, int i6);
+    nativeI420Rotate(srcY, srcStrideY, srcU, srcStrideU, srcV, srcStrideV, dstY, dstWidth, dstU,
+        dstChromaWidth, dstV, dstChromaWidth, srcWidth, srcHeight, rotationMode);
+  }
 
-    private static native void nativeCopyPlane(ByteBuffer byteBuffer, int i, ByteBuffer byteBuffer2, int i2, int i3, int i4);
+  /** Helper method for copying a single colour plane. */
+  public static void copyPlane(
+      ByteBuffer src, int srcStride, ByteBuffer dst, int dstStride, int width, int height) {
+    nativeCopyPlane(src, srcStride, dst, dstStride, width, height);
+  }
 
-    private static native void nativeI420Copy(ByteBuffer byteBuffer, int i, ByteBuffer byteBuffer2, int i2, ByteBuffer byteBuffer3, int i3, ByteBuffer byteBuffer4, int i4, ByteBuffer byteBuffer5, int i5, ByteBuffer byteBuffer6, int i6, int i7, int i8);
+  /** Converts ABGR little endian (rgba in memory) to I420. */
+  public static void ABGRToI420(ByteBuffer src, int srcStride, ByteBuffer dstY, int dstStrideY,
+      ByteBuffer dstU, int dstStrideU, ByteBuffer dstV, int dstStrideV, int width, int height) {
+    nativeABGRToI420(
+        src, srcStride, dstY, dstStrideY, dstU, dstStrideU, dstV, dstStrideV, width, height);
+  }
 
-    private static native void nativeI420Rotate(ByteBuffer byteBuffer, int i, ByteBuffer byteBuffer2, int i2, ByteBuffer byteBuffer3, int i3, ByteBuffer byteBuffer4, int i4, ByteBuffer byteBuffer5, int i5, ByteBuffer byteBuffer6, int i6, int i7, int i8, int i9);
+  public static void I420Copy(ByteBuffer srcY, int srcStrideY, ByteBuffer srcU, int srcStrideU,
+      ByteBuffer srcV, int srcStrideV, ByteBuffer dstY, int dstStrideY, ByteBuffer dstU,
+      int dstStrideU, ByteBuffer dstV, int dstStrideV, int width, int height) {
+    nativeI420Copy(srcY, srcStrideY, srcU, srcStrideU, srcV, srcStrideV, dstY, dstStrideY, dstU,
+        dstStrideU, dstV, dstStrideV, width, height);
+  }
 
-    private static native void nativeI420ToNV12(ByteBuffer byteBuffer, int i, ByteBuffer byteBuffer2, int i2, ByteBuffer byteBuffer3, int i3, ByteBuffer byteBuffer4, int i4, ByteBuffer byteBuffer5, int i5, int i6, int i7);
+  public static void I420ToNV12(ByteBuffer srcY, int srcStrideY, ByteBuffer srcU, int srcStrideU,
+      ByteBuffer srcV, int srcStrideV, ByteBuffer dstY, int dstStrideY, ByteBuffer dstUV,
+      int dstStrideUV, int width, int height) {
+    nativeI420ToNV12(srcY, srcStrideY, srcU, srcStrideU, srcV, srcStrideV, dstY, dstStrideY, dstUV,
+        dstStrideUV, width, height);
+  }
 
-    public static void I420ToNV12(ByteBuffer byteBuffer, int i, ByteBuffer byteBuffer2, int i2, ByteBuffer byteBuffer3, int i3, ByteBuffer byteBuffer4, int i4, ByteBuffer byteBuffer5, int i5, int i6, int i7) {
-        nativeI420ToNV12(byteBuffer, i, byteBuffer2, i2, byteBuffer3, i3, byteBuffer4, i4, byteBuffer5, i5, i6, i7);
-    }
+  public static void I420Rotate(ByteBuffer srcY, int srcStrideY, ByteBuffer srcU, int srcStrideU,
+      ByteBuffer srcV, int srcStrideV, ByteBuffer dstY, int dstStrideY, ByteBuffer dstU,
+      int dstStrideU, ByteBuffer dstV, int dstStrideV, int srcWidth, int srcHeight,
+      int rotationMode) {
+    nativeI420Rotate(srcY, srcStrideY, srcU, srcStrideU, srcV, srcStrideV, dstY, dstStrideY, dstU,
+        dstStrideU, dstV, dstStrideV, srcWidth, srcHeight, rotationMode);
+  }
 
-    public static void I420Copy(ByteBuffer byteBuffer, int i, ByteBuffer byteBuffer2, int i2, ByteBuffer byteBuffer3, int i3, ByteBuffer byteBuffer4, int i4, ByteBuffer byteBuffer5, int i5, ByteBuffer byteBuffer6, int i6, int i7, int i8) {
-        nativeI420Copy(byteBuffer, i, byteBuffer2, i2, byteBuffer3, i3, byteBuffer4, i4, byteBuffer5, i5, byteBuffer6, i6, i7, i8);
-    }
-
-    public static void I420Rotate(ByteBuffer byteBuffer, int i, ByteBuffer byteBuffer2, int i2, ByteBuffer byteBuffer3, int i3, ByteBuffer byteBuffer4, int i4, ByteBuffer byteBuffer5, int i5, ByteBuffer byteBuffer6, int i6, int i7, int i8, int i9) {
-        nativeI420Rotate(byteBuffer, i, byteBuffer2, i2, byteBuffer3, i3, byteBuffer4, i4, byteBuffer5, i5, byteBuffer6, i6, i7, i8, i9);
-    }
+  private static native void nativeCopyPlane(
+      ByteBuffer src, int srcStride, ByteBuffer dst, int dstStride, int width, int height);
+  private static native void nativeI420Copy(ByteBuffer srcY, int srcStrideY, ByteBuffer srcU,
+      int srcStrideU, ByteBuffer srcV, int srcStrideV, ByteBuffer dstY, int dstStrideY,
+      ByteBuffer dstU, int dstStrideU, ByteBuffer dstV, int dstStrideV, int width, int height);
+  private static native void nativeI420ToNV12(ByteBuffer srcY, int srcStrideY, ByteBuffer srcU,
+      int srcStrideU, ByteBuffer srcV, int srcStrideV, ByteBuffer dstY, int dstStrideY,
+      ByteBuffer dstUV, int dstStrideUV, int width, int height);
+  private static native void nativeI420Rotate(ByteBuffer srcY, int srcStrideY, ByteBuffer srcU,
+      int srcStrideU, ByteBuffer srcV, int srcStrideV, ByteBuffer dstY, int dstStrideY,
+      ByteBuffer dstU, int dstStrideU, ByteBuffer dstV, int dstStrideV, int srcWidth, int srcHeight,
+      int rotationMode);
+  private static native void nativeABGRToI420(ByteBuffer src, int srcStride, ByteBuffer dstY,
+      int dstStrideY, ByteBuffer dstU, int dstStrideU, ByteBuffer dstV, int dstStrideV, int width,
+      int height);
 }

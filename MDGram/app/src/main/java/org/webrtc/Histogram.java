@@ -1,28 +1,44 @@
+/*
+ *  Copyright 2016 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
-/* JADX INFO: Access modifiers changed from: package-private */
-/* loaded from: classes3.dex */
-public class Histogram {
-    private final long handle;
 
-    private Histogram(long j) {
-        this.handle = j;
-    }
+/**
+ * Class for holding the native pointer of a histogram. Since there is no way to destroy a
+ * histogram, please don't create unnecessary instances of this object. This class is thread safe.
+ *
+ * Usage example:
+ * private static final Histogram someMetricHistogram =
+ *     Histogram.createCounts("WebRTC.Video.SomeMetric", 1, 10000, 50);
+ * someMetricHistogram.addSample(someVariable);
+ */
+class Histogram {
+  private final long handle;
 
-    public static Histogram createCounts(String str, int i, int i2, int i3) {
-        return new Histogram(nativeCreateCounts(str, i, i2, i3));
-    }
+  private Histogram(long handle) {
+    this.handle = handle;
+  }
 
-    public static Histogram createEnumeration(String str, int i) {
-        return new Histogram(nativeCreateEnumeration(str, i));
-    }
+  static public Histogram createCounts(String name, int min, int max, int bucketCount) {
+    return new Histogram(nativeCreateCounts(name, min, max, bucketCount));
+  }
 
-    private static native void nativeAddSample(long j, int i);
+  static public Histogram createEnumeration(String name, int max) {
+    return new Histogram(nativeCreateEnumeration(name, max));
+  }
 
-    private static native long nativeCreateCounts(String str, int i, int i2, int i3);
+  public void addSample(int sample) {
+    nativeAddSample(handle, sample);
+  }
 
-    private static native long nativeCreateEnumeration(String str, int i);
-
-    public void addSample(int i) {
-        nativeAddSample(this.handle, i);
-    }
+  private static native long nativeCreateCounts(String name, int min, int max, int bucketCount);
+  private static native long nativeCreateEnumeration(String name, int max);
+  private static native void nativeAddSample(long handle, int sample);
 }

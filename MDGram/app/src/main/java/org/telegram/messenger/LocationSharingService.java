@@ -1,3 +1,11 @@
+/*
+ * This is the source code of Telegram for Android v. 5.x.x.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Nikolai Kudashov, 2013-2018.
+ */
+
 package org.telegram.messenger;
 
 import android.app.PendingIntent;
@@ -5,168 +13,144 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
-import defpackage.mk6;
-import java.util.ArrayList;
-import org.telegram.messenger.LocationSharingService;
-import org.telegram.messenger.a0;
-import org.telegram.messenger.v;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+
+import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.LaunchActivity;
-/* loaded from: classes2.dex */
-public class LocationSharingService extends Service implements a0.d {
-    public Handler a;
 
-    /* renamed from: a  reason: collision with other field name */
-    public Runnable f12211a;
+import java.util.ArrayList;
 
-    /* renamed from: a  reason: collision with other field name */
-    public mk6.f f12212a;
+public class LocationSharingService extends Service implements NotificationCenter.NotificationCenterDelegate {
+
+    private NotificationCompat.Builder builder;
+    private Handler handler;
+    private Runnable runnable;
 
     public LocationSharingService() {
-        a0.j().d(this, a0.M2);
+        super();
+        NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.liveLocationsChanged);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void e() {
-        if (d().isEmpty()) {
-            stopSelf();
-        } else {
-            h(true);
-        }
-    }
-
-    public static /* synthetic */ void f() {
-        for (int i = 0; i < 10; i++) {
-            v.W(i).a1();
-        }
-    }
-
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void g() {
-        this.a.postDelayed(this.f12211a, 1000L);
-        Utilities.a.j(new Runnable() { // from class: aw4
-            @Override // java.lang.Runnable
-            public final void run() {
-                LocationSharingService.f();
-            }
-        });
-    }
-
-    public final ArrayList d() {
-        ArrayList arrayList = new ArrayList();
-        for (int i = 0; i < 10; i++) {
-            ArrayList arrayList2 = v.W(i).f13232b;
-            if (!arrayList2.isEmpty()) {
-                arrayList.addAll(arrayList2);
-            }
-        }
-        return arrayList;
-    }
-
-    @Override // org.telegram.messenger.a0.d
-    public void didReceivedNotification(int i, int i2, Object... objArr) {
-        Handler handler;
-        if (i == a0.M2 && (handler = this.a) != null) {
-            handler.post(new Runnable() { // from class: zv4
-                @Override // java.lang.Runnable
-                public final void run() {
-                    LocationSharingService.this.e();
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        handler = new Handler();
+        runnable = () -> {
+            handler.postDelayed(runnable, 1000);
+            Utilities.stageQueue.postRunnable(() -> {
+                for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
+                    LocationController.getInstance(a).update();
                 }
             });
-        }
+        };
+        handler.postDelayed(runnable, 1000);
     }
 
-    public final void h(boolean z) {
-        String U;
-        String B0;
-        if (this.f12212a == null) {
-            return;
-        }
-        ArrayList d = d();
-        if (d.size() == 1) {
-            v.d dVar = (v.d) d.get(0);
-            long k0 = dVar.f13243a.k0();
-            int i = dVar.f13243a.k;
-            if (ic2.k(k0)) {
-                U = xla.a(y.u8(i).R8(Long.valueOf(k0)));
-                B0 = u.B0("AttachLiveLocationIsSharing", org.telegram.mdgram.R.string.AttachLiveLocationIsSharing);
-            } else {
-                fm9 S7 = y.u8(i).S7(Long.valueOf(-k0));
-                if (S7 != null) {
-                    U = S7.f5602a;
-                } else {
-                    U = "";
-                }
-                B0 = u.B0("AttachLiveLocationIsSharingChat", org.telegram.mdgram.R.string.AttachLiveLocationIsSharingChat);
-            }
-        } else {
-            U = u.U("Chats", d.size(), new Object[0]);
-            B0 = u.B0("AttachLiveLocationIsSharingChats", org.telegram.mdgram.R.string.AttachLiveLocationIsSharingChats);
-        }
-        String format = String.format(B0, u.B0("AttachLiveLocation", org.telegram.mdgram.R.string.AttachLiveLocation), U);
-        this.f12212a.L(format);
-        this.f12212a.p(format);
-        if (z) {
-            ql6.e(b.f12514a).g(6, this.f12212a.d());
-        }
-    }
-
-    @Override // android.app.Service
-    public IBinder onBind(Intent intent) {
+    public IBinder onBind(Intent arg2) {
         return null;
     }
 
-    @Override // android.app.Service
-    public void onCreate() {
-        super.onCreate();
-        this.a = new Handler();
-        Runnable runnable = new Runnable() { // from class: yv4
-            @Override // java.lang.Runnable
-            public final void run() {
-                LocationSharingService.this.g();
-            }
-        };
-        this.f12211a = runnable;
-        this.a.postDelayed(runnable, 1000L);
-    }
-
-    @Override // android.app.Service
     public void onDestroy() {
         super.onDestroy();
-        Handler handler = this.a;
         if (handler != null) {
-            handler.removeCallbacks(this.f12211a);
+            handler.removeCallbacks(runnable);
         }
         stopForeground(true);
-        ql6.e(b.f12514a).b(6);
-        a0.j().v(this, a0.M2);
+        NotificationManagerCompat.from(ApplicationLoader.applicationContext).cancel(6);
+        NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.liveLocationsChanged);
     }
 
-    @Override // android.app.Service
-    public int onStartCommand(Intent intent, int i, int i2) {
-        if (d().isEmpty()) {
+    @Override
+    public void didReceivedNotification(int id, int account, Object... args) {
+        if (id == NotificationCenter.liveLocationsChanged) {
+            if (handler != null) {
+                handler.post(() -> {
+                    ArrayList<LocationController.SharingLocationInfo> infos = getInfos();
+                    if (infos.isEmpty()) {
+                        stopSelf();
+                    } else {
+                        updateNotification(true);
+                    }
+                });
+            }
+        }
+    }
+
+    private ArrayList<LocationController.SharingLocationInfo> getInfos() {
+        ArrayList<LocationController.SharingLocationInfo> infos = new ArrayList<>();
+        for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
+            ArrayList<LocationController.SharingLocationInfo> arrayList = LocationController.getInstance(a).sharingLocationsUI;
+            if (!arrayList.isEmpty()) {
+                infos.addAll(arrayList);
+            }
+        }
+        return infos;
+    }
+
+    private void updateNotification(boolean post) {
+        if (builder == null) {
+            return;
+        }
+        String param;
+        ArrayList<LocationController.SharingLocationInfo> infos = getInfos();
+        String str;
+        if (infos.size() == 1) {
+            LocationController.SharingLocationInfo info = infos.get(0);
+            long dialogId = info.messageObject.getDialogId();
+            int currentAccount = info.messageObject.currentAccount;
+            if (DialogObject.isUserDialog(dialogId)) {
+                TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(dialogId);
+                param = UserObject.getFirstName(user);
+                str = LocaleController.getString("AttachLiveLocationIsSharing", R.string.AttachLiveLocationIsSharing);
+            } else {
+                TLRPC.Chat chat = MessagesController.getInstance(currentAccount).getChat(-dialogId);
+                if (chat != null) {
+                    param = chat.title;
+                } else {
+                    param = "";
+                }
+                str = LocaleController.getString("AttachLiveLocationIsSharingChat", R.string.AttachLiveLocationIsSharingChat);
+            }
+        } else {
+            param = LocaleController.formatPluralString("Chats", infos.size());
+            str = LocaleController.getString("AttachLiveLocationIsSharingChats", R.string.AttachLiveLocationIsSharingChats);
+        }
+        String text = String.format(str, LocaleController.getString("AttachLiveLocation", R.string.AttachLiveLocation), param);
+        builder.setTicker(text);
+        builder.setContentText(text);
+        if (post) {
+            NotificationManagerCompat.from(ApplicationLoader.applicationContext).notify(6, builder.build());
+        }
+    }
+
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if (getInfos().isEmpty()) {
             stopSelf();
         }
         try {
-            if (this.f12212a == null) {
-                Intent intent2 = new Intent(b.f12514a, LaunchActivity.class);
+            if (builder == null) {
+                Intent intent2 = new Intent(ApplicationLoader.applicationContext, LaunchActivity.class);
                 intent2.setAction("org.tmessages.openlocations");
-                intent2.addCategory("android.intent.category.LAUNCHER");
-                PendingIntent activity = PendingIntent.getActivity(b.f12514a, 0, intent2, 167772160);
-                mk6.f fVar = new mk6.f(b.f12514a);
-                this.f12212a = fVar;
-                fVar.O(System.currentTimeMillis());
-                this.f12212a.F(org.telegram.mdgram.R.drawable.live_loc);
-                this.f12212a.o(activity);
-                rn6.V();
-                this.f12212a.m(rn6.b);
-                this.f12212a.q(u.B0("AppName", org.telegram.mdgram.R.string.AppName));
-                this.f12212a.a(0, u.B0("StopLiveLocation", org.telegram.mdgram.R.string.StopLiveLocation), PendingIntent.getBroadcast(b.f12514a, 2, new Intent(b.f12514a, StopLiveLocationReceiver.class), 167772160));
+                intent2.addCategory(Intent.CATEGORY_LAUNCHER);
+                PendingIntent contentIntent = PendingIntent.getActivity(ApplicationLoader.applicationContext, 0, intent2, PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+
+                builder = new NotificationCompat.Builder(ApplicationLoader.applicationContext);
+                builder.setWhen(System.currentTimeMillis());
+                builder.setSmallIcon(R.drawable.live_loc);
+                builder.setContentIntent(contentIntent);
+                NotificationsController.checkOtherNotificationsChannel();
+                builder.setChannelId(NotificationsController.OTHER_NOTIFICATIONS_CHANNEL);
+                builder.setContentTitle(LocaleController.getString("AppName", R.string.AppName));
+                Intent stopIntent = new Intent(ApplicationLoader.applicationContext, StopLiveLocationReceiver.class);
+                builder.addAction(0, LocaleController.getString("StopLiveLocation", R.string.StopLiveLocation), PendingIntent.getBroadcast(ApplicationLoader.applicationContext, 2, stopIntent, PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT));
             }
-            h(false);
-            startForeground(6, this.f12212a.d());
-        } catch (Throwable th) {
-            l.p(th);
+
+            updateNotification(false);
+            startForeground(6, builder.build());
+        } catch (Throwable e) {
+            FileLog.e(e);
         }
-        return 2;
+        return Service.START_NOT_STICKY;
     }
 }

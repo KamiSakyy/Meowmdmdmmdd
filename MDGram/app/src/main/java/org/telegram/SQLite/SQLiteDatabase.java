@@ -1,93 +1,118 @@
+/*
+ * This is the source code of Telegram for Android v. 5.x.x.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Nikolai Kudashov, 2013-2018.
+ */
+
 package org.telegram.SQLite;
 
-import org.telegram.messenger.b;
-import org.telegram.messenger.l;
-/* loaded from: classes2.dex */
+import org.telegram.messenger.BuildVars;
+import org.telegram.messenger.FileLog;
+import org.telegram.messenger.ApplicationLoader;
+
 public class SQLiteDatabase {
-    public final long a;
 
-    /* renamed from: a  reason: collision with other field name */
-    public boolean f12134a = true;
-    public boolean b;
+	private final long sqliteHandle;
 
-    public SQLiteDatabase(String str) {
-        this.a = opendb(str, b.k().getPath());
+	private boolean isOpen;
+    private boolean inTransaction;
+
+	public long getSQLiteHandle() {
+		return sqliteHandle;
+	}
+
+	public SQLiteDatabase(String fileName) throws SQLiteException {
+		sqliteHandle = opendb(fileName, ApplicationLoader.getFilesDirFixed().getPath());
+		isOpen = true;
+	}
+
+	public boolean tableExists(String tableName) throws SQLiteException {
+		checkOpened();
+		String s = "SELECT rowid FROM sqlite_master WHERE type='table' AND name=?;";
+		return executeInt(s, tableName) != null;
+	}
+
+    public SQLitePreparedStatement executeFast(String sql) throws SQLiteException {
+        return new SQLitePreparedStatement(this, sql);
     }
 
-    public void a() {
-        if (!this.b) {
-            this.b = true;
-            beginTransaction(this.a);
-            return;
-        }
-        throw new SQLiteException("database already in transaction");
-    }
+	public Integer executeInt(String sql, Object... args) throws SQLiteException {
+		checkOpened();
+		SQLiteCursor cursor = queryFinalized(sql, args);
+		try {
+			if (!cursor.next()) {
+				return null;
+			}
+			return cursor.intValue(0);
+		} finally {
+			cursor.dispose();
+		}
+	}
 
-    public void b() {
-        if (this.f12134a) {
-            return;
-        }
-        throw new SQLiteException("Database closed");
-    }
-
-    public native void beginTransaction(long j);
-
-    public void c() {
-        if (this.f12134a) {
-            try {
-                d();
-                closedb(this.a);
-            } catch (SQLiteException e) {
-                if (s60.f18613b) {
-                    l.o(e.getMessage(), e);
-                }
+	public void explainQuery(String sql, Object... args) throws SQLiteException {
+		checkOpened();
+		SQLiteCursor cursor = new SQLitePreparedStatement(this, "EXPLAIN QUERY PLAN " + sql).query(args);
+		while (cursor.next()) {
+			int count = cursor.getColumnCount();
+			StringBuilder builder = new StringBuilder();
+			for (int a = 0; a < count; a++) {
+			    builder.append(cursor.stringValue(a)).append(", ");
             }
-            this.f12134a = false;
-        }
-    }
+            FileLog.d("EXPLAIN QUERY PLAN " + builder.toString());
+		}
+		cursor.dispose();
+	}
 
-    public native void closedb(long j);
+	public SQLiteCursor queryFinalized(String sql, Object... args) throws SQLiteException {
+		checkOpened();
+		return new SQLitePreparedStatement(this, sql).query(args);
+	}
 
-    public native void commitTransaction(long j);
+	public void close() {
+		if (isOpen) {
+			try {
+                commitTransaction();
+				closedb(sqliteHandle);
+			} catch (SQLiteException e) {
+				if (BuildVars.LOGS_ENABLED) {
+					FileLog.e(e.getMessage(), e);
+				}
+			}
+			isOpen = false;
+		}
+	}
 
-    public void d() {
-        if (!this.b) {
-            return;
-        }
-        this.b = false;
-        commitTransaction(this.a);
-    }
+	void checkOpened() throws SQLiteException {
+		if (!isOpen) {
+			throw new SQLiteException("Database closed");
+		}
+	}
 
-    public SQLitePreparedStatement e(String str) {
-        return new SQLitePreparedStatement(this, str);
-    }
-
-    public Integer f(String str, Object... objArr) {
-        b();
-        SQLiteCursor h = h(str, objArr);
-        try {
-            if (!h.j()) {
-                return null;
-            }
-            return Integer.valueOf(h.g(0));
-        } finally {
-            h.d();
-        }
-    }
-
-    public void finalize() {
+	public void finalize() throws Throwable {
         super.finalize();
-        c();
+		close();
+	}
+
+    public void beginTransaction() throws SQLiteException {
+        if (inTransaction) {
+            throw new SQLiteException("database already in transaction");
+        }
+        inTransaction = true;
+        beginTransaction(sqliteHandle);
     }
 
-    public long g() {
-        return this.a;
+    public void commitTransaction() {
+        if (!inTransaction) {
+            return;
+        }
+        inTransaction = false;
+        commitTransaction(sqliteHandle);
     }
 
-    public SQLiteCursor h(String str, Object... objArr) {
-        b();
-        return new SQLitePreparedStatement(this, str).k(objArr);
-    }
-
-    public native long opendb(String str, String str2);
+	native long opendb(String fileName, String tempDir) throws SQLiteException;
+	native void closedb(long sqliteHandle) throws SQLiteException;
+    native void beginTransaction(long sqliteHandle);
+    native void commitTransaction(long sqliteHandle);
 }

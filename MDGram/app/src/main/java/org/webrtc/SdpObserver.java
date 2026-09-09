@@ -1,15 +1,26 @@
+/*
+ *  Copyright 2013 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
-/* loaded from: classes3.dex */
+
+/** Interface for observing SDP-related events. */
 public interface SdpObserver {
-    @CalledByNative
-    void onCreateFailure(String str);
+  /** Called on success of Create{Offer,Answer}(). */
+  @CalledByNative void onCreateSuccess(SessionDescription sdp);
 
-    @CalledByNative
-    void onCreateSuccess(SessionDescription sessionDescription);
+  /** Called on success of Set{Local,Remote}Description(). */
+  @CalledByNative void onSetSuccess();
 
-    @CalledByNative
-    void onSetFailure(String str);
+  /** Called on error of Create{Offer,Answer}(). */
+  @CalledByNative void onCreateFailure(String error);
 
-    @CalledByNative
-    void onSetSuccess();
+  /** Called on error of Set{Local,Remote}Description(). */
+  @CalledByNative void onSetFailure(String error);
 }

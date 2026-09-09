@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:theme="@style/Theme.TMessages.AppWidget" android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/TMessages.AppWidget.Background"
-  xmlns:android="http://schemas.android.com/apk/res/android">
-    <include android:theme="@style/Theme.TMessages.AppWidget.Preview" layout="@layout/shortcut_widget_item" />
-    <include android:theme="@style/Theme.TMessages.AppWidget.Preview2" layout="@layout/shortcut_widget_item" />
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/TMessages.AppWidget.Background"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:theme="@style/Theme.TMessages.AppWidget"
+    tools:ignore="UnusedAttribute">
+
+    <include
+        layout="@layout/shortcut_widget_item"
+        android:theme="@style/Theme.TMessages.AppWidget.Preview" />
+
+    <include
+        layout="@layout/shortcut_widget_item"
+        android:theme="@style/Theme.TMessages.AppWidget.Preview2" />
+
 </LinearLayout>

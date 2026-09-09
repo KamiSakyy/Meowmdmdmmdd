@@ -1,26 +1,38 @@
+/*
+ *  Copyright 2017 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
-/* loaded from: classes3.dex */
+
+/** BitrateAdjuster that tracks bitrate and framerate but does not adjust them. */
 class BaseBitrateAdjuster implements BitrateAdjuster {
-    public int targetBitrateBps;
-    public int targetFps;
+  protected int targetBitrateBps;
+  protected int targetFps;
 
-    @Override // org.webrtc.BitrateAdjuster
-    public int getAdjustedBitrateBps() {
-        return this.targetBitrateBps;
-    }
+  @Override
+  public void setTargets(int targetBitrateBps, int targetFps) {
+    this.targetBitrateBps = targetBitrateBps;
+    this.targetFps = targetFps;
+  }
 
-    @Override // org.webrtc.BitrateAdjuster
-    public int getCodecConfigFramerate() {
-        return this.targetFps;
-    }
+  @Override
+  public void reportEncodedFrame(int size) {
+    // No op.
+  }
 
-    @Override // org.webrtc.BitrateAdjuster
-    public void reportEncodedFrame(int i) {
-    }
+  @Override
+  public int getAdjustedBitrateBps() {
+    return targetBitrateBps;
+  }
 
-    @Override // org.webrtc.BitrateAdjuster
-    public void setTargets(int i, int i2) {
-        this.targetBitrateBps = i;
-        this.targetFps = i2;
-    }
+  @Override
+  public int getCodecConfigFramerate() {
+    return targetFps;
+  }
 }

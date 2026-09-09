@@ -1,222 +1,247 @@
+/*
+ *  Copyright 2017 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
 
 import android.graphics.Matrix;
 import android.os.Handler;
+
+import org.telegram.messenger.FileLog;
+
 import java.nio.ByteBuffer;
-import java.util.concurrent.Callable;
-import org.telegram.messenger.l;
-import org.webrtc.JniCommon;
-import org.webrtc.TextureBufferImpl;
-import org.webrtc.VideoFrame;
-/* loaded from: classes3.dex */
+
+import androidx.annotation.Nullable;
+
+/**
+ * Android texture buffer that glues together the necessary information together with a generic
+ * release callback. ToI420() is implemented by providing a Handler and a YuvConverter.
+ */
 public class TextureBufferImpl implements VideoFrame.TextureBuffer {
-    private final int height;
-    private final int id;
-    private final RefCountDelegate refCountDelegate;
-    private final RefCountMonitor refCountMonitor;
-    private final Handler toI420Handler;
-    private final Matrix transformMatrix;
-    private final VideoFrame.TextureBuffer.Type type;
-    private final int unscaledHeight;
-    private final int unscaledWidth;
-    private final int width;
-    private final YuvConverter yuvConverter;
+  interface RefCountMonitor {
+    void onRetain(TextureBufferImpl textureBuffer);
+    void onRelease(TextureBufferImpl textureBuffer);
+    void onDestroy(TextureBufferImpl textureBuffer);
+  }
 
-    /* loaded from: classes3.dex */
-    public interface RefCountMonitor {
-        void onDestroy(TextureBufferImpl textureBufferImpl);
+  // This is the full resolution the texture has in memory after applying the transformation matrix
+  // that might include cropping. This resolution is useful to know when sampling the texture to
+  // avoid downscaling artifacts.
+  private final int unscaledWidth;
+  private final int unscaledHeight;
+  // This is the resolution that has been applied after cropAndScale().
+  private final int width;
+  private final int height;
+  private final Type type;
+  private final int id;
+  private final Matrix transformMatrix;
+  private final Handler toI420Handler;
+  private final YuvConverter yuvConverter;
+  private final RefCountDelegate refCountDelegate;
+  private final RefCountMonitor refCountMonitor;
 
-        void onRelease(TextureBufferImpl textureBufferImpl);
+  public TextureBufferImpl(int width, int height, Type type, int id, Matrix transformMatrix,
+      Handler toI420Handler, YuvConverter yuvConverter, @Nullable Runnable releaseCallback) {
+    this(width, height, width, height, type, id, transformMatrix, toI420Handler, yuvConverter,
+        new RefCountMonitor() {
+          @Override
+          public void onRetain(TextureBufferImpl textureBuffer) {}
 
-        void onRetain(TextureBufferImpl textureBufferImpl);
-    }
+          @Override
+          public void onRelease(TextureBufferImpl textureBuffer) {}
 
-    public TextureBufferImpl(int i, int i2, VideoFrame.TextureBuffer.Type type, int i3, Matrix matrix, Handler handler, YuvConverter yuvConverter, final Runnable runnable) {
-        this(i, i2, i, i2, type, i3, matrix, handler, yuvConverter, new RefCountMonitor() { // from class: org.webrtc.TextureBufferImpl.1
-            @Override // org.webrtc.TextureBufferImpl.RefCountMonitor
-            public void onDestroy(TextureBufferImpl textureBufferImpl) {
-                Runnable runnable2 = runnable;
-                if (runnable2 != null) {
-                    runnable2.run();
-                }
+          @Override
+          public void onDestroy(TextureBufferImpl textureBuffer) {
+            if (releaseCallback != null) {
+              releaseCallback.run();
             }
-
-            @Override // org.webrtc.TextureBufferImpl.RefCountMonitor
-            public void onRelease(TextureBufferImpl textureBufferImpl) {
-            }
-
-            @Override // org.webrtc.TextureBufferImpl.RefCountMonitor
-            public void onRetain(TextureBufferImpl textureBufferImpl) {
-            }
+          }
         });
+  }
+
+  TextureBufferImpl(int width, int height, Type type, int id, Matrix transformMatrix,
+      Handler toI420Handler, YuvConverter yuvConverter, RefCountMonitor refCountMonitor) {
+    this(width, height, width, height, type, id, transformMatrix, toI420Handler, yuvConverter,
+        refCountMonitor);
+  }
+
+  private TextureBufferImpl(int unscaledWidth, int unscaledHeight, int width, int height, Type type,
+      int id, Matrix transformMatrix, Handler toI420Handler, YuvConverter yuvConverter,
+      RefCountMonitor refCountMonitor) {
+    this.unscaledWidth = unscaledWidth;
+    this.unscaledHeight = unscaledHeight;
+    this.width = width;
+    this.height = height;
+    this.type = type;
+    this.id = id;
+    this.transformMatrix = transformMatrix;
+    this.toI420Handler = toI420Handler;
+    this.yuvConverter = yuvConverter;
+    this.refCountDelegate = new RefCountDelegate(() -> refCountMonitor.onDestroy(this));
+    this.refCountMonitor = refCountMonitor;
+  }
+
+  @Override
+  public VideoFrame.TextureBuffer.Type getType() {
+    return type;
+  }
+
+  @Override
+  public int getTextureId() {
+    return id;
+  }
+
+  @Override
+  public Matrix getTransformMatrix() {
+    return transformMatrix;
+  }
+
+  @Override
+  public int getWidth() {
+    return width;
+  }
+
+  @Override
+  public int getHeight() {
+    return height;
+  }
+
+  @Override
+  public VideoFrame.I420Buffer toI420() {
+    try {
+      return ThreadUtils.invokeAtFrontUninterruptibly(
+              toI420Handler, () -> yuvConverter.convert(this));
+    } catch (Throwable e) {
+      FileLog.e(e);
+      //don't crash if something fails
+      final int frameWidth = getWidth();
+      final int frameHeight = getHeight();
+      final int stride = ((frameWidth + 7) / 8) * 8;
+      final int uvHeight = (frameHeight + 1) / 2;
+
+      final int totalHeight = frameHeight + uvHeight;
+      final ByteBuffer i420ByteBuffer = JniCommon.nativeAllocateByteBuffer(stride * totalHeight);
+
+      while (i420ByteBuffer.hasRemaining()) {
+        i420ByteBuffer.put((byte) 0);
+      }
+
+      final int viewportWidth = stride / 4;
+
+      final int yPos = 0;
+      final int uPos = yPos + stride * frameHeight;
+      final int vPos = uPos + stride / 2;
+
+      i420ByteBuffer.position(yPos);
+      i420ByteBuffer.limit(yPos + stride * frameHeight);
+      final ByteBuffer dataY = i420ByteBuffer.slice();
+
+      i420ByteBuffer.position(uPos);
+      // The last row does not have padding.
+      final int uvSize = stride * (uvHeight - 1) + stride / 2;
+      i420ByteBuffer.limit(uPos + uvSize);
+      final ByteBuffer dataU = i420ByteBuffer.slice();
+
+      i420ByteBuffer.position(vPos);
+      i420ByteBuffer.limit(vPos + uvSize);
+      final ByteBuffer dataV = i420ByteBuffer.slice();
+
+
+      return JavaI420Buffer.wrap(frameWidth, frameHeight, dataY, stride, dataU, stride, dataV, stride,
+              () -> JniCommon.nativeFreeByteBuffer(i420ByteBuffer));
     }
+  }
 
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void lambda$new$0(RefCountMonitor refCountMonitor) {
-        refCountMonitor.onDestroy(this);
-    }
+  @Override
+  public void retain() {
+    refCountMonitor.onRetain(this);
+    refCountDelegate.retain();
+  }
 
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ VideoFrame.I420Buffer lambda$toI420$1() {
-        return this.yuvConverter.convert(this);
-    }
+  @Override
+  public void release() {
+    refCountMonitor.onRelease(this);
+    refCountDelegate.release();
+  }
 
-    public TextureBufferImpl applyTransformMatrix(Matrix matrix, int i, int i2) {
-        return applyTransformMatrix(matrix, i, i2, i, i2);
-    }
+  @Override
+  public VideoFrame.Buffer cropAndScale(
+      int cropX, int cropY, int cropWidth, int cropHeight, int scaleWidth, int scaleHeight) {
+    final Matrix cropAndScaleMatrix = new Matrix();
+    // In WebRTC, Y=0 is the top row, while in OpenGL Y=0 is the bottom row. This means that the Y
+    // direction is effectively reversed.
+    final int cropYFromBottom = height - (cropY + cropHeight);
+    cropAndScaleMatrix.preTranslate(cropX / (float) width, cropYFromBottom / (float) height);
+    cropAndScaleMatrix.preScale(cropWidth / (float) width, cropHeight / (float) height);
 
-    @Override // org.webrtc.VideoFrame.Buffer
-    public VideoFrame.Buffer cropAndScale(int i, int i2, int i3, int i4, int i5, int i6) {
-        Matrix matrix = new Matrix();
-        int i7 = this.height;
-        matrix.preTranslate(i / this.width, (i7 - (i2 + i4)) / i7);
-        matrix.preScale(i3 / this.width, i4 / this.height);
-        return applyTransformMatrix(matrix, Math.round((this.unscaledWidth * i3) / this.width), Math.round((this.unscaledHeight * i4) / this.height), i5, i6);
-    }
+    return applyTransformMatrix(cropAndScaleMatrix,
+        (int) Math.round(unscaledWidth * cropWidth / (float) width),
+        (int) Math.round(unscaledHeight * cropHeight / (float) height), scaleWidth, scaleHeight);
+  }
 
-    @Override // org.webrtc.VideoFrame.Buffer
-    public /* synthetic */ int getBufferType() {
-        return qoa.a(this);
-    }
+  /**
+   * Returns the width of the texture in memory. This should only be used for downscaling, and you
+   * should still respect the width from getWidth().
+   */
+  public int getUnscaledWidth() {
+    return unscaledWidth;
+  }
 
-    @Override // org.webrtc.VideoFrame.Buffer
-    public int getHeight() {
-        return this.height;
-    }
+  /**
+   * Returns the height of the texture in memory. This should only be used for downscaling, and you
+   * should still respect the height from getHeight().
+   */
+  public int getUnscaledHeight() {
+    return unscaledHeight;
+  }
 
-    @Override // org.webrtc.VideoFrame.TextureBuffer
-    public int getTextureId() {
-        return this.id;
-    }
+  public Handler getToI420Handler() {
+    return toI420Handler;
+  }
 
-    public Handler getToI420Handler() {
-        return this.toI420Handler;
-    }
+  public YuvConverter getYuvConverter() {
+    return yuvConverter;
+  }
 
-    @Override // org.webrtc.VideoFrame.TextureBuffer
-    public Matrix getTransformMatrix() {
-        return this.transformMatrix;
-    }
+  /**
+   * Create a new TextureBufferImpl with an applied transform matrix and a new size. The
+   * existing buffer is unchanged. The given transform matrix is applied first when texture
+   * coordinates are still in the unmodified [0, 1] range.
+   */
+  public TextureBufferImpl applyTransformMatrix(
+      Matrix transformMatrix, int newWidth, int newHeight) {
+    return applyTransformMatrix(transformMatrix, /* unscaledWidth= */ newWidth,
+        /* unscaledHeight= */ newHeight, /* scaledWidth= */ newWidth,
+        /* scaledHeight= */ newHeight);
+  }
 
-    @Override // org.webrtc.VideoFrame.TextureBuffer
-    public VideoFrame.TextureBuffer.Type getType() {
-        return this.type;
-    }
+  private TextureBufferImpl applyTransformMatrix(Matrix transformMatrix, int unscaledWidth,
+      int unscaledHeight, int scaledWidth, int scaledHeight) {
+    final Matrix newMatrix = new Matrix(this.transformMatrix);
+    newMatrix.preConcat(transformMatrix);
+    retain();
+    return new TextureBufferImpl(unscaledWidth, unscaledHeight, scaledWidth, scaledHeight, type, id,
+        newMatrix, toI420Handler, yuvConverter, new RefCountMonitor() {
+          @Override
+          public void onRetain(TextureBufferImpl textureBuffer) {
+            refCountMonitor.onRetain(TextureBufferImpl.this);
+          }
 
-    public int getUnscaledHeight() {
-        return this.unscaledHeight;
-    }
+          @Override
+          public void onRelease(TextureBufferImpl textureBuffer) {
+            refCountMonitor.onRelease(TextureBufferImpl.this);
+          }
 
-    public int getUnscaledWidth() {
-        return this.unscaledWidth;
-    }
-
-    @Override // org.webrtc.VideoFrame.Buffer
-    public int getWidth() {
-        return this.width;
-    }
-
-    public YuvConverter getYuvConverter() {
-        return this.yuvConverter;
-    }
-
-    @Override // org.webrtc.VideoFrame.Buffer, org.webrtc.RefCounted
-    public void release() {
-        this.refCountMonitor.onRelease(this);
-        this.refCountDelegate.release();
-    }
-
-    @Override // org.webrtc.VideoFrame.Buffer, org.webrtc.RefCounted
-    public void retain() {
-        this.refCountMonitor.onRetain(this);
-        this.refCountDelegate.retain();
-    }
-
-    @Override // org.webrtc.VideoFrame.Buffer
-    public VideoFrame.I420Buffer toI420() {
-        try {
-            return (VideoFrame.I420Buffer) ThreadUtils.invokeAtFrontUninterruptibly(this.toI420Handler, new Callable() { // from class: mx9
-                @Override // java.util.concurrent.Callable
-                public final Object call() {
-                    VideoFrame.I420Buffer lambda$toI420$1;
-                    lambda$toI420$1 = TextureBufferImpl.this.lambda$toI420$1();
-                    return lambda$toI420$1;
-                }
-            });
-        } catch (Throwable th) {
-            l.p(th);
-            int width = getWidth();
-            int height = getHeight();
-            int i = ((width + 7) / 8) * 8;
-            int i2 = (height + 1) / 2;
-            final ByteBuffer nativeAllocateByteBuffer = JniCommon.nativeAllocateByteBuffer((height + i2) * i);
-            while (nativeAllocateByteBuffer.hasRemaining()) {
-                nativeAllocateByteBuffer.put((byte) 0);
-            }
-            int i3 = i / 4;
-            int i4 = (i * height) + 0;
-            int i5 = i / 2;
-            int i6 = i4 + i5;
-            nativeAllocateByteBuffer.position(0);
-            nativeAllocateByteBuffer.limit(i4);
-            ByteBuffer slice = nativeAllocateByteBuffer.slice();
-            nativeAllocateByteBuffer.position(i4);
-            int i7 = ((i2 - 1) * i) + i5;
-            nativeAllocateByteBuffer.limit(i4 + i7);
-            ByteBuffer slice2 = nativeAllocateByteBuffer.slice();
-            nativeAllocateByteBuffer.position(i6);
-            nativeAllocateByteBuffer.limit(i6 + i7);
-            return JavaI420Buffer.wrap(width, height, slice, i, slice2, i, nativeAllocateByteBuffer.slice(), i, new Runnable() { // from class: nx9
-                @Override // java.lang.Runnable
-                public final void run() {
-                    JniCommon.nativeFreeByteBuffer(nativeAllocateByteBuffer);
-                }
-            });
-        }
-    }
-
-    public TextureBufferImpl(int i, int i2, VideoFrame.TextureBuffer.Type type, int i3, Matrix matrix, Handler handler, YuvConverter yuvConverter, RefCountMonitor refCountMonitor) {
-        this(i, i2, i, i2, type, i3, matrix, handler, yuvConverter, refCountMonitor);
-    }
-
-    private TextureBufferImpl applyTransformMatrix(Matrix matrix, int i, int i2, int i3, int i4) {
-        Matrix matrix2 = new Matrix(this.transformMatrix);
-        matrix2.preConcat(matrix);
-        retain();
-        return new TextureBufferImpl(i, i2, i3, i4, this.type, this.id, matrix2, this.toI420Handler, this.yuvConverter, new RefCountMonitor() { // from class: org.webrtc.TextureBufferImpl.2
-            @Override // org.webrtc.TextureBufferImpl.RefCountMonitor
-            public void onDestroy(TextureBufferImpl textureBufferImpl) {
-                TextureBufferImpl.this.release();
-            }
-
-            @Override // org.webrtc.TextureBufferImpl.RefCountMonitor
-            public void onRelease(TextureBufferImpl textureBufferImpl) {
-                TextureBufferImpl.this.refCountMonitor.onRelease(TextureBufferImpl.this);
-            }
-
-            @Override // org.webrtc.TextureBufferImpl.RefCountMonitor
-            public void onRetain(TextureBufferImpl textureBufferImpl) {
-                TextureBufferImpl.this.refCountMonitor.onRetain(TextureBufferImpl.this);
-            }
+          @Override
+          public void onDestroy(TextureBufferImpl textureBuffer) {
+            release();
+          }
         });
-    }
-
-    private TextureBufferImpl(int i, int i2, int i3, int i4, VideoFrame.TextureBuffer.Type type, int i5, Matrix matrix, Handler handler, YuvConverter yuvConverter, final RefCountMonitor refCountMonitor) {
-        this.unscaledWidth = i;
-        this.unscaledHeight = i2;
-        this.width = i3;
-        this.height = i4;
-        this.type = type;
-        this.id = i5;
-        this.transformMatrix = matrix;
-        this.toI420Handler = handler;
-        this.yuvConverter = yuvConverter;
-        this.refCountDelegate = new RefCountDelegate(new Runnable() { // from class: org.webrtc.i
-            @Override // java.lang.Runnable
-            public final void run() {
-                TextureBufferImpl.this.lambda$new$0(refCountMonitor);
-            }
-        });
-        this.refCountMonitor = refCountMonitor;
-    }
+  }
 }

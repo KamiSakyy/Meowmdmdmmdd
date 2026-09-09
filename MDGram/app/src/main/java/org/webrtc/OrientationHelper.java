@@ -1,63 +1,69 @@
 package org.webrtc;
 
 import android.view.OrientationEventListener;
-/* loaded from: classes3.dex */
+
+import org.telegram.messenger.ApplicationLoader;
+
 public class OrientationHelper {
+
     private static final int ORIENTATION_HYSTERESIS = 5;
-    public static volatile int cameraOrientation;
-    public static volatile int cameraRotation;
-    private OrientationEventListener orientationEventListener = new OrientationEventListener(org.telegram.messenger.b.f12514a) { // from class: org.webrtc.OrientationHelper.1
-        @Override // android.view.OrientationEventListener
-        public void onOrientationChanged(int i) {
-            if (OrientationHelper.this.orientationEventListener != null && i != -1) {
-                OrientationHelper orientationHelper = OrientationHelper.this;
-                int roundOrientation = orientationHelper.roundOrientation(i, orientationHelper.rotation);
-                if (roundOrientation != OrientationHelper.this.rotation) {
-                    OrientationHelper orientationHelper2 = OrientationHelper.this;
-                    orientationHelper2.rotation = roundOrientation;
-                    orientationHelper2.onOrientationUpdate(roundOrientation);
-                }
-            }
-        }
-    };
+    private OrientationEventListener orientationEventListener;
     private int rotation;
 
-    /* JADX INFO: Access modifiers changed from: private */
-    public int roundOrientation(int i, int i2) {
-        boolean z = true;
-        if (i2 != -1) {
-            int abs = Math.abs(i - i2);
-            if (Math.min(abs, 360 - abs) < 50) {
-                z = false;
+    public static volatile int cameraRotation;
+    public static volatile int cameraOrientation;
+
+    private int roundOrientation(int orientation, int orientationHistory) {
+        boolean changeOrientation;
+        if (orientationHistory == OrientationEventListener.ORIENTATION_UNKNOWN) {
+            changeOrientation = true;
+        } else {
+            int dist = Math.abs(orientation - orientationHistory);
+            dist = Math.min(dist, 360 - dist);
+            changeOrientation = (dist >= 45 + ORIENTATION_HYSTERESIS);
+        }
+        if (changeOrientation) {
+            return ((orientation + 45) / 90 * 90) % 360;
+        }
+        return orientationHistory;
+    }
+
+    public OrientationHelper() {
+        orientationEventListener = new OrientationEventListener(ApplicationLoader.applicationContext) {
+            @Override
+            public void onOrientationChanged(int orientation) {
+                if (orientationEventListener == null || orientation == ORIENTATION_UNKNOWN) {
+                    return;
+                }
+                int newOrietation = roundOrientation(orientation, rotation);
+                if (newOrietation != rotation) {
+                    onOrientationUpdate(rotation = newOrietation);
+                }
             }
-        }
-        if (z) {
-            return (((i + 45) / 90) * 90) % 360;
-        }
-        return i2;
+        };
     }
 
-    public int getOrientation() {
-        return this.rotation;
-    }
+    protected void onOrientationUpdate(int orientation) {
 
-    public void onOrientationUpdate(int i) {
     }
 
     public void start() {
-        if (this.orientationEventListener.canDetectOrientation()) {
-            this.orientationEventListener.enable();
-            return;
+        if (orientationEventListener.canDetectOrientation()) {
+            orientationEventListener.enable();
+        } else {
+            orientationEventListener.disable();
+            orientationEventListener = null;
         }
-        this.orientationEventListener.disable();
-        this.orientationEventListener = null;
     }
 
     public void stop() {
-        OrientationEventListener orientationEventListener = this.orientationEventListener;
         if (orientationEventListener != null) {
             orientationEventListener.disable();
-            this.orientationEventListener = null;
+            orientationEventListener = null;
         }
+    }
+
+    public int getOrientation() {
+        return rotation;
     }
 }

@@ -1,121 +1,115 @@
+/*
+ * This is the source code of Telegram for Android v. 5.x.x.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Nikolai Kudashov, 2013-2018.
+ */
+
 package org.telegram.messenger;
 
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import defpackage.mk6;
-import org.telegram.messenger.a0;
-/* loaded from: classes2.dex */
-public class VideoEncodingService extends Service implements a0.d {
-    public int a;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
-    /* renamed from: a  reason: collision with other field name */
-    public String f12444a;
+public class VideoEncodingService extends Service implements NotificationCenter.NotificationCenterDelegate {
 
-    /* renamed from: a  reason: collision with other field name */
-    public mk6.f f12445a;
-    public int b;
+    private NotificationCompat.Builder builder;
+    private String path;
+    private int currentProgress;
+    private int currentAccount;
 
     public VideoEncodingService() {
-        a0.j().d(this, a0.n2);
+        super();
+        NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.stopEncodingService);
     }
 
-    @Override // org.telegram.messenger.a0.d
-    public void didReceivedNotification(int i, int i2, Object... objArr) {
-        String str;
-        boolean z = true;
-        if (i == a0.u1) {
-            String str2 = (String) objArr[0];
-            if (i2 == this.b && (str = this.f12444a) != null && str.equals(str2)) {
-                float min = Math.min(1.0f, ((float) ((Long) objArr[1]).longValue()) / ((float) ((Long) objArr[2]).longValue()));
-                Boolean bool = (Boolean) objArr[3];
-                int i3 = (int) (min * 100.0f);
-                this.a = i3;
-                mk6.f fVar = this.f12445a;
-                if (i3 != 0) {
-                    z = false;
-                }
-                fVar.C(100, i3, z);
-                try {
-                    ql6.e(b.f12514a).g(4, this.f12445a.d());
-                } catch (Throwable th) {
-                    l.p(th);
-                }
-            }
-        } else if (i == a0.n2) {
-            String str3 = (String) objArr[0];
-            if (((Integer) objArr[1]).intValue() == this.b) {
-                if (str3 == null || str3.equals(this.f12444a)) {
-                    stopSelf();
-                }
-            }
-        }
-    }
-
-    @Override // android.app.Service
-    public IBinder onBind(Intent intent) {
+    public IBinder onBind(Intent arg2) {
         return null;
     }
 
-    @Override // android.app.Service
     public void onDestroy() {
         super.onDestroy();
         try {
             stopForeground(true);
-        } catch (Throwable unused) {
+        } catch (Throwable ignore) {
+
         }
-        ql6.e(b.f12514a).b(4);
-        a0.j().v(this, a0.n2);
-        a0.k(this.b).v(this, a0.u1);
-        if (s60.f18613b) {
-            l.k("destroy video service");
+        NotificationManagerCompat.from(ApplicationLoader.applicationContext).cancel(4);
+        NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.stopEncodingService);
+        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.fileUploadProgressChanged);
+        if (BuildVars.LOGS_ENABLED) {
+            FileLog.d("destroy video service");
         }
     }
 
-    @Override // android.app.Service
-    public int onStartCommand(Intent intent, int i, int i2) {
-        this.f12444a = intent.getStringExtra("path");
-        int i3 = this.b;
-        int intExtra = intent.getIntExtra("currentAccount", tla.o);
-        this.b = intExtra;
-        if (!tla.y(intExtra)) {
-            stopSelf();
-            return 2;
-        }
-        if (i3 != this.b) {
-            a0 k = a0.k(i3);
-            int i4 = a0.u1;
-            k.v(this, i4);
-            a0.k(this.b).d(this, i4);
-        }
-        boolean booleanExtra = intent.getBooleanExtra("gif", false);
-        if (this.f12444a == null) {
-            stopSelf();
-            return 2;
-        }
-        if (s60.f18613b) {
-            l.k("start video service");
-        }
-        if (this.f12445a == null) {
-            rn6.V();
-            mk6.f fVar = new mk6.f(b.f12514a);
-            this.f12445a = fVar;
-            fVar.F(17301640);
-            this.f12445a.O(System.currentTimeMillis());
-            this.f12445a.m(rn6.b);
-            this.f12445a.q(u.B0("AppName", org.telegram.mdgram.R.string.AppName));
-            if (booleanExtra) {
-                this.f12445a.L(u.B0("SendingGif", org.telegram.mdgram.R.string.SendingGif));
-                this.f12445a.p(u.B0("SendingGif", org.telegram.mdgram.R.string.SendingGif));
-            } else {
-                this.f12445a.L(u.B0("SendingVideo", org.telegram.mdgram.R.string.SendingVideo));
-                this.f12445a.p(u.B0("SendingVideo", org.telegram.mdgram.R.string.SendingVideo));
+    @Override
+    public void didReceivedNotification(int id, int account, Object... args) {
+        if (id == NotificationCenter.fileUploadProgressChanged) {
+            String fileName = (String) args[0];
+            if (account == currentAccount && path != null && path.equals(fileName)) {
+                Long loadedSize = (Long) args[1];
+                Long totalSize = (Long) args[2];
+                float progress = Math.min(1f, loadedSize / (float) totalSize);
+                Boolean enc = (Boolean) args[3];
+                currentProgress = (int) (progress * 100);
+                builder.setProgress(100, currentProgress, currentProgress == 0);
+                try {
+                    NotificationManagerCompat.from(ApplicationLoader.applicationContext).notify(4, builder.build());
+                } catch (Throwable e) {
+                    FileLog.e(e);
+                }
+            }
+        } else if (id == NotificationCenter.stopEncodingService) {
+            String filepath = (String) args[0];
+            account = (Integer) args[1];
+            if (account == currentAccount && (filepath == null || filepath.equals(path))) {
+                stopSelf();
             }
         }
-        this.a = 0;
-        this.f12445a.C(100, 0, true);
-        startForeground(4, this.f12445a.d());
-        ql6.e(b.f12514a).g(4, this.f12445a.d());
-        return 2;
+    }
+
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        path = intent.getStringExtra("path");
+        int oldAccount = currentAccount;
+        currentAccount = intent.getIntExtra("currentAccount", UserConfig.selectedAccount);
+        if (!UserConfig.isValidAccount(currentAccount)) {
+            stopSelf();
+            return Service.START_NOT_STICKY;
+        }
+        if (oldAccount != currentAccount) {
+            NotificationCenter.getInstance(oldAccount).removeObserver(this, NotificationCenter.fileUploadProgressChanged);
+            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.fileUploadProgressChanged);
+        }
+        boolean isGif = intent.getBooleanExtra("gif", false);
+        if (path == null) {
+            stopSelf();
+            return Service.START_NOT_STICKY;
+        }
+        if (BuildVars.LOGS_ENABLED) {
+            FileLog.d("start video service");
+        }
+        if (builder == null) {
+            NotificationsController.checkOtherNotificationsChannel();
+            builder = new NotificationCompat.Builder(ApplicationLoader.applicationContext);
+            builder.setSmallIcon(android.R.drawable.stat_sys_upload);
+            builder.setWhen(System.currentTimeMillis());
+            builder.setChannelId(NotificationsController.OTHER_NOTIFICATIONS_CHANNEL);
+            builder.setContentTitle(LocaleController.getString("AppName", R.string.AppName));
+            if (isGif) {
+                builder.setTicker(LocaleController.getString("SendingGif", R.string.SendingGif));
+                builder.setContentText(LocaleController.getString("SendingGif", R.string.SendingGif));
+            } else {
+                builder.setTicker(LocaleController.getString("SendingVideo", R.string.SendingVideo));
+                builder.setContentText(LocaleController.getString("SendingVideo", R.string.SendingVideo));
+            }
+        }
+        currentProgress = 0;
+        builder.setProgress(100, currentProgress, true);
+        startForeground(4, builder.build());
+        NotificationManagerCompat.from(ApplicationLoader.applicationContext).notify(4, builder.build());
+        return Service.START_NOT_STICKY;
     }
 }

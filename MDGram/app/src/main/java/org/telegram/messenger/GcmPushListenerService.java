@@ -1,36 +1,43 @@
+/*
+ * This is the source code of Telegram for Android v. 5.x.x.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Nikolai Kudashov, 2013-2018.
+ */
+
 package org.telegram.messenger;
 
+import androidx.annotation.NonNull;
+
 import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
+
 import java.util.Map;
-import org.telegram.messenger.GcmPushListenerService;
-/* loaded from: classes2.dex */
+
 public class GcmPushListenerService extends FirebaseMessagingService {
-    public static /* synthetic */ void w(String str) {
-        if (s60.f18613b) {
-            l.k("Refreshed FCM token: " + str);
+
+    @Override
+    public void onMessageReceived(RemoteMessage message) {
+        String from = message.getFrom();
+        Map<String, String> data = message.getData();
+        long time = message.getSentTime();
+
+        if (BuildVars.LOGS_ENABLED) {
+            FileLog.d("FCM received data: " + data + " from: " + from);
         }
-        b.C();
-        b0.v(2, str);
+
+        PushListenerController.processRemoteMessage(PushListenerController.PUSH_TYPE_FIREBASE, data.get("p"), time);
     }
 
-    @Override // com.google.firebase.messaging.FirebaseMessagingService
-    public void q(com.google.firebase.messaging.d dVar) {
-        String s0 = dVar.s0();
-        Map r0 = dVar.r0();
-        long t0 = dVar.t0();
-        if (s60.f18613b) {
-            l.k("FCM received data: " + r0 + " from: " + s0);
-        }
-        b0.u(2, (String) r0.get("p"), t0);
-    }
-
-    @Override // com.google.firebase.messaging.FirebaseMessagingService
-    public void s(final String str) {
-        a.m3(new Runnable() { // from class: vh3
-            @Override // java.lang.Runnable
-            public final void run() {
-                GcmPushListenerService.w(str);
+    @Override
+    public void onNewToken(@NonNull String token) {
+        AndroidUtilities.runOnUIThread(() -> {
+            if (BuildVars.LOGS_ENABLED) {
+                FileLog.d("Refreshed FCM token: " + token);
             }
+            ApplicationLoader.postInitApplication();
+            PushListenerController.sendRegistrationToServer(PushListenerController.PUSH_TYPE_FIREBASE, token);
         });
     }
 }

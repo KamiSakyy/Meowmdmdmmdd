@@ -1,69 +1,38 @@
+/*
+ *  Copyright 2016 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
 
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.hardware.camera2.CameraManager;
-import org.webrtc.CameraSession;
-import org.webrtc.CameraVideoCapturer;
+import androidx.annotation.Nullable;
+
 @TargetApi(21)
-/* loaded from: classes3.dex */
 public class Camera2Capturer extends CameraCapturer {
-    private final CameraManager cameraManager;
-    private final Context context;
+  private final Context context;
+  @Nullable private final CameraManager cameraManager;
 
-    public Camera2Capturer(Context context, String str, CameraVideoCapturer.CameraEventsHandler cameraEventsHandler) {
-        super(str, cameraEventsHandler, new Camera2Enumerator(context));
-        this.context = context;
-        this.cameraManager = (CameraManager) context.getSystemService("camera");
-    }
+  public Camera2Capturer(Context context, String cameraName, CameraEventsHandler eventsHandler) {
+    super(cameraName, eventsHandler, new Camera2Enumerator(context));
 
-    @Override // org.webrtc.CameraCapturer, org.webrtc.VideoCapturer
-    public /* bridge */ /* synthetic */ void changeCaptureFormat(int i, int i2, int i3) {
-        super.changeCaptureFormat(i, i2, i3);
-    }
+    this.context = context;
+    cameraManager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
+  }
 
-    @Override // org.webrtc.CameraCapturer
-    public void createCameraSession(CameraSession.CreateSessionCallback createSessionCallback, CameraSession.Events events, Context context, SurfaceTextureHelper surfaceTextureHelper, String str, int i, int i2, int i3) {
-        Camera2Session.create(createSessionCallback, events, context, this.cameraManager, surfaceTextureHelper, str, i, i2, i3);
-    }
-
-    @Override // org.webrtc.CameraCapturer, org.webrtc.VideoCapturer
-    public /* bridge */ /* synthetic */ void dispose() {
-        super.dispose();
-    }
-
-    @Override // org.webrtc.CameraCapturer, org.webrtc.VideoCapturer
-    public /* bridge */ /* synthetic */ void initialize(SurfaceTextureHelper surfaceTextureHelper, Context context, CapturerObserver capturerObserver) {
-        super.initialize(surfaceTextureHelper, context, capturerObserver);
-    }
-
-    @Override // org.webrtc.CameraCapturer, org.webrtc.VideoCapturer
-    public /* bridge */ /* synthetic */ boolean isScreencast() {
-        return super.isScreencast();
-    }
-
-    @Override // org.webrtc.CameraCapturer
-    public /* bridge */ /* synthetic */ void printStackTrace() {
-        super.printStackTrace();
-    }
-
-    @Override // org.webrtc.CameraCapturer, org.webrtc.VideoCapturer
-    public /* bridge */ /* synthetic */ void startCapture(int i, int i2, int i3) {
-        super.startCapture(i, i2, i3);
-    }
-
-    @Override // org.webrtc.CameraCapturer, org.webrtc.VideoCapturer
-    public /* bridge */ /* synthetic */ void stopCapture() {
-        super.stopCapture();
-    }
-
-    @Override // org.webrtc.CameraCapturer, org.webrtc.CameraVideoCapturer
-    public /* bridge */ /* synthetic */ void switchCamera(CameraVideoCapturer.CameraSwitchHandler cameraSwitchHandler) {
-        super.switchCamera(cameraSwitchHandler);
-    }
-
-    @Override // org.webrtc.CameraCapturer, org.webrtc.CameraVideoCapturer
-    public /* bridge */ /* synthetic */ void switchCamera(CameraVideoCapturer.CameraSwitchHandler cameraSwitchHandler, String str) {
-        super.switchCamera(cameraSwitchHandler, str);
-    }
+  @Override
+  protected void createCameraSession(CameraSession.CreateSessionCallback createSessionCallback,
+      CameraSession.Events events, Context applicationContext,
+      SurfaceTextureHelper surfaceTextureHelper, String cameraName, int width, int height,
+      int framerate) {
+    Camera2Session.create(createSessionCallback, events, applicationContext, cameraManager,
+        surfaceTextureHelper, cameraName, width, height, framerate);
+  }
 }

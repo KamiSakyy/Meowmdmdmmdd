@@ -1,304 +1,769 @@
+/*
+ * Copyright (C) 2016 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.google.android.exoplayer2.source.smoothstreaming;
 
 import android.net.Uri;
 import android.os.Handler;
 import android.os.SystemClock;
-import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
-import com.google.android.exoplayer2.source.smoothstreaming.a;
-import com.google.android.exoplayer2.source.smoothstreaming.b;
-import defpackage.a62;
-import defpackage.aw6;
-import defpackage.fa9;
-import defpackage.jn5;
-import defpackage.ym5;
-import defpackage.yq4;
-import defpackage.zq4;
+import androidx.annotation.Nullable;
+import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.ExoPlayerLibraryInfo;
+import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.drm.DrmSession;
+import com.google.android.exoplayer2.drm.DrmSessionManager;
+import com.google.android.exoplayer2.offline.FilteringManifestParser;
+import com.google.android.exoplayer2.offline.StreamKey;
+import com.google.android.exoplayer2.source.BaseMediaSource;
+import com.google.android.exoplayer2.source.CompositeSequenceableLoaderFactory;
+import com.google.android.exoplayer2.source.DefaultCompositeSequenceableLoaderFactory;
+import com.google.android.exoplayer2.source.MediaPeriod;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.MediaSourceEventListener;
+import com.google.android.exoplayer2.source.MediaSourceEventListener.EventDispatcher;
+import com.google.android.exoplayer2.source.MediaSourceFactory;
+import com.google.android.exoplayer2.source.SequenceableLoader;
+import com.google.android.exoplayer2.source.SinglePeriodTimeline;
+import com.google.android.exoplayer2.source.smoothstreaming.manifest.SsManifest;
+import com.google.android.exoplayer2.source.smoothstreaming.manifest.SsManifest.StreamElement;
+import com.google.android.exoplayer2.source.smoothstreaming.manifest.SsManifestParser;
+import com.google.android.exoplayer2.source.smoothstreaming.manifest.SsUtil;
+import com.google.android.exoplayer2.upstream.Allocator;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DefaultLoadErrorHandlingPolicy;
+import com.google.android.exoplayer2.upstream.LoadErrorHandlingPolicy;
+import com.google.android.exoplayer2.upstream.Loader;
+import com.google.android.exoplayer2.upstream.Loader.LoadErrorAction;
+import com.google.android.exoplayer2.upstream.LoaderErrorThrower;
+import com.google.android.exoplayer2.upstream.ParsingLoadable;
+import com.google.android.exoplayer2.upstream.TransferListener;
+import com.google.android.exoplayer2.util.Assertions;
 import java.io.IOException;
 import java.util.ArrayList;
-/* loaded from: classes.dex */
-public final class SsMediaSource extends gx implements yq4.a {
-    public final long a;
+import java.util.List;
 
-    /* renamed from: a  reason: collision with other field name */
-    public final a62.a f2901a;
+/** A SmoothStreaming {@link MediaSource}. */
+public final class SsMediaSource extends BaseMediaSource
+    implements Loader.Callback<ParsingLoadable<SsManifest>> {
 
-    /* renamed from: a  reason: collision with other field name */
-    public a62 f2902a;
+  static {
+    ExoPlayerLibraryInfo.registerModule("goog.exo.smoothstreaming");
+  }
 
-    /* renamed from: a  reason: collision with other field name */
-    public final Uri f2903a;
+  /** Factory for {@link SsMediaSource}. */
+  public static final class Factory implements MediaSourceFactory {
 
-    /* renamed from: a  reason: collision with other field name */
-    public Handler f2904a;
+    private final SsChunkSource.Factory chunkSourceFactory;
+    @Nullable private final DataSource.Factory manifestDataSourceFactory;
 
-    /* renamed from: a  reason: collision with other field name */
-    public final aw6.a f2905a;
+    @Nullable private ParsingLoadable.Parser<? extends SsManifest> manifestParser;
+    @Nullable private List<StreamKey> streamKeys;
+    private CompositeSequenceableLoaderFactory compositeSequenceableLoaderFactory;
+    private DrmSessionManager<?> drmSessionManager;
+    private LoadErrorHandlingPolicy loadErrorHandlingPolicy;
+    private long livePresentationDelayMs;
+    private boolean isCreateCalled;
+    @Nullable private Object tag;
 
-    /* renamed from: a  reason: collision with other field name */
-    public final bs1 f2906a;
-
-    /* renamed from: a  reason: collision with other field name */
-    public final b.a f2907a;
-
-    /* renamed from: a  reason: collision with other field name */
-    public fa9 f2908a;
-
-    /* renamed from: a  reason: collision with other field name */
-    public final Object f2909a;
-
-    /* renamed from: a  reason: collision with other field name */
-    public final jl2 f2910a;
-
-    /* renamed from: a  reason: collision with other field name */
-    public final vq4 f2911a;
-
-    /* renamed from: a  reason: collision with other field name */
-    public yq4 f2912a;
-
-    /* renamed from: a  reason: collision with other field name */
-    public z9a f2913a;
-
-    /* renamed from: a  reason: collision with other field name */
-    public zq4 f2914a;
-
-    /* renamed from: a  reason: collision with other field name */
-    public final boolean f2915a;
-    public long b;
-
-    /* renamed from: b  reason: collision with other field name */
-    public final ArrayList f2916b;
-
-    /* renamed from: b  reason: collision with other field name */
-    public final jn5.a f2917b;
-
-    /* loaded from: classes.dex */
-    public static final class Factory {
-        public long a;
-
-        /* renamed from: a  reason: collision with other field name */
-        public final a62.a f2918a;
-
-        /* renamed from: a  reason: collision with other field name */
-        public bs1 f2919a;
-
-        /* renamed from: a  reason: collision with other field name */
-        public final b.a f2920a;
-
-        /* renamed from: a  reason: collision with other field name */
-        public jl2 f2921a;
-
-        /* renamed from: a  reason: collision with other field name */
-        public vq4 f2922a;
-
-        public Factory(a62.a aVar) {
-            this(new a.C0032a(aVar), aVar);
-        }
-
-        public Factory(b.a aVar, a62.a aVar2) {
-            this.f2920a = (b.a) tn.e(aVar);
-            this.f2918a = aVar2;
-            this.f2921a = il2.d();
-            this.f2922a = new j92();
-            this.a = 30000L;
-            this.f2919a = new c82();
-        }
+    /**
+     * Creates a new factory for {@link SsMediaSource}s.
+     *
+     * @param dataSourceFactory A factory for {@link DataSource} instances that will be used to load
+     *     manifest and media data.
+     */
+    public Factory(DataSource.Factory dataSourceFactory) {
+      this(new DefaultSsChunkSource.Factory(dataSourceFactory), dataSourceFactory);
     }
 
-    static {
-        ay2.a("goog.exo.smoothstreaming");
+    /**
+     * Creates a new factory for {@link SsMediaSource}s.
+     *
+     * @param chunkSourceFactory A factory for {@link SsChunkSource} instances.
+     * @param manifestDataSourceFactory A factory for {@link DataSource} instances that will be used
+     *     to load (and refresh) the manifest. May be {@code null} if the factory will only ever be
+     *     used to create create media sources with sideloaded manifests via {@link
+     *     #createMediaSource(SsManifest, Handler, MediaSourceEventListener)}.
+     */
+    public Factory(
+        SsChunkSource.Factory chunkSourceFactory,
+        @Nullable DataSource.Factory manifestDataSourceFactory) {
+      this.chunkSourceFactory = Assertions.checkNotNull(chunkSourceFactory);
+      this.manifestDataSourceFactory = manifestDataSourceFactory;
+      drmSessionManager = DrmSessionManager.getDummyDrmSessionManager();
+      loadErrorHandlingPolicy = new DefaultLoadErrorHandlingPolicy();
+      livePresentationDelayMs = DEFAULT_LIVE_PRESENTATION_DELAY_MS;
+      compositeSequenceableLoaderFactory = new DefaultCompositeSequenceableLoaderFactory();
     }
 
-    public SsMediaSource(Uri uri, a62.a aVar, b.a aVar2, Handler handler, jn5 jn5Var) {
-        this(uri, aVar, aVar2, 3, 30000L, handler, jn5Var);
+    /**
+     * Sets a tag for the media source which will be published in the {@link Timeline} of the source
+     * as {@link Timeline.Window#tag}.
+     *
+     * @param tag A tag for the media source.
+     * @return This factory, for convenience.
+     * @throws IllegalStateException If one of the {@code create} methods has already been called.
+     */
+    public Factory setTag(@Nullable Object tag) {
+      Assertions.checkState(!isCreateCalled);
+      this.tag = tag;
+      return this;
     }
 
-    @Override // defpackage.yq4.a
-    /* renamed from: A */
-    public yq4.b i(aw6 aw6Var, long j, long j2, IOException iOException, int i) {
-        yq4.b h;
-        long b = this.f2911a.b(4, j2, iOException, i);
-        if (b == -9223372036854775807L) {
-            h = yq4.d;
-        } else {
-            h = yq4.h(false, b);
-        }
-        this.f2917b.D(aw6Var.f1600a, aw6Var.f(), aw6Var.d(), aw6Var.a, j, j2, aw6Var.a(), iOException, !h.c());
-        return h;
+    /**
+     * Sets the minimum number of times to retry if a loading error occurs. See {@link
+     * #setLoadErrorHandlingPolicy} for the default value.
+     *
+     * <p>Calling this method is equivalent to calling {@link #setLoadErrorHandlingPolicy} with
+     * {@link DefaultLoadErrorHandlingPolicy#DefaultLoadErrorHandlingPolicy(int)
+     * DefaultLoadErrorHandlingPolicy(minLoadableRetryCount)}
+     *
+     * @param minLoadableRetryCount The minimum number of times to retry if a loading error occurs.
+     * @return This factory, for convenience.
+     * @throws IllegalStateException If one of the {@code create} methods has already been called.
+     * @deprecated Use {@link #setLoadErrorHandlingPolicy(LoadErrorHandlingPolicy)} instead.
+     */
+    @Deprecated
+    public Factory setMinLoadableRetryCount(int minLoadableRetryCount) {
+      return setLoadErrorHandlingPolicy(new DefaultLoadErrorHandlingPolicy(minLoadableRetryCount));
     }
 
-    public final void B() {
-        fa9.b[] bVarArr;
-        long j;
-        q69 q69Var;
-        long j2;
-        for (int i = 0; i < this.f2916b.size(); i++) {
-            ((c) this.f2916b.get(i)).w(this.f2908a);
-        }
-        long j3 = Long.MIN_VALUE;
-        long j4 = Long.MAX_VALUE;
-        for (fa9.b bVar : this.f2908a.f5366a) {
-            if (bVar.f > 0) {
-                j4 = Math.min(j4, bVar.e(0));
-                j3 = Math.max(j3, bVar.e(bVar.f - 1) + bVar.c(bVar.f - 1));
-            }
-        }
-        if (j4 == Long.MAX_VALUE) {
-            if (this.f2908a.f5365a) {
-                j2 = -9223372036854775807L;
-            } else {
-                j2 = 0;
-            }
-            fa9 fa9Var = this.f2908a;
-            boolean z = fa9Var.f5365a;
-            q69Var = new q69(j2, 0L, 0L, 0L, true, z, z, fa9Var, this.f2909a);
-        } else {
-            fa9 fa9Var2 = this.f2908a;
-            if (fa9Var2.f5365a) {
-                long j5 = fa9Var2.f5367b;
-                if (j5 != -9223372036854775807L && j5 > 0) {
-                    j4 = Math.max(j4, j3 - j5);
-                }
-                long j6 = j4;
-                long j7 = j3 - j6;
-                long a = j7 - v80.a(this.a);
-                if (a < 5000000) {
-                    a = Math.min(5000000L, j7 / 2);
-                }
-                q69Var = new q69(-9223372036854775807L, j7, j6, a, true, true, true, this.f2908a, this.f2909a);
-            } else {
-                long j8 = fa9Var2.f5363a;
-                if (j8 != -9223372036854775807L) {
-                    j = j8;
-                } else {
-                    j = j3 - j4;
-                }
-                q69Var = new q69(j4 + j, j, j4, 0L, true, false, false, this.f2908a, this.f2909a);
-            }
-        }
-        v(q69Var);
+    /**
+     * Sets the {@link LoadErrorHandlingPolicy}. The default value is created by calling {@link
+     * DefaultLoadErrorHandlingPolicy#DefaultLoadErrorHandlingPolicy()}.
+     *
+     * <p>Calling this method overrides any calls to {@link #setMinLoadableRetryCount(int)}.
+     *
+     * @param loadErrorHandlingPolicy A {@link LoadErrorHandlingPolicy}.
+     * @return This factory, for convenience.
+     * @throws IllegalStateException If one of the {@code create} methods has already been called.
+     */
+    public Factory setLoadErrorHandlingPolicy(LoadErrorHandlingPolicy loadErrorHandlingPolicy) {
+      Assertions.checkState(!isCreateCalled);
+      this.loadErrorHandlingPolicy = loadErrorHandlingPolicy;
+      return this;
     }
 
-    public final void C() {
-        if (!this.f2908a.f5365a) {
-            return;
-        }
-        this.f2904a.postDelayed(new Runnable() { // from class: ha9
-            @Override // java.lang.Runnable
-            public final void run() {
-                SsMediaSource.this.D();
-            }
-        }, Math.max(0L, (this.b + 5000) - SystemClock.elapsedRealtime()));
+    /**
+     * Sets the duration in milliseconds by which the default start position should precede the end
+     * of the live window for live playbacks. The default value is {@link
+     * #DEFAULT_LIVE_PRESENTATION_DELAY_MS}.
+     *
+     * @param livePresentationDelayMs For live playbacks, the duration in milliseconds by which the
+     *     default start position should precede the end of the live window.
+     * @return This factory, for convenience.
+     * @throws IllegalStateException If one of the {@code create} methods has already been called.
+     */
+    public Factory setLivePresentationDelayMs(long livePresentationDelayMs) {
+      Assertions.checkState(!isCreateCalled);
+      this.livePresentationDelayMs = livePresentationDelayMs;
+      return this;
     }
 
-    public final void D() {
-        if (this.f2912a.i()) {
-            return;
-        }
-        aw6 aw6Var = new aw6(this.f2902a, this.f2903a, 4, this.f2905a);
-        this.f2917b.G(aw6Var.f1600a, aw6Var.a, this.f2912a.n(aw6Var, this, this.f2911a.a(aw6Var.a)));
+    /**
+     * Sets the manifest parser to parse loaded manifest data when loading a manifest URI.
+     *
+     * @param manifestParser A parser for loaded manifest data.
+     * @return This factory, for convenience.
+     * @throws IllegalStateException If one of the {@code create} methods has already been called.
+     */
+    public Factory setManifestParser(ParsingLoadable.Parser<? extends SsManifest> manifestParser) {
+      Assertions.checkState(!isCreateCalled);
+      this.manifestParser = Assertions.checkNotNull(manifestParser);
+      return this;
     }
 
-    @Override // defpackage.ym5
-    public tm5 b(ym5.a aVar, xb xbVar, long j) {
-        c cVar = new c(this.f2908a, this.f2907a, this.f2913a, this.f2906a, this.f2910a, this.f2911a, n(aVar), this.f2914a, xbVar);
-        this.f2916b.add(cVar);
-        return cVar;
+    /**
+     * Sets the factory to create composite {@link SequenceableLoader}s for when this media source
+     * loads data from multiple streams (video, audio etc.). The default is an instance of {@link
+     * DefaultCompositeSequenceableLoaderFactory}.
+     *
+     * @param compositeSequenceableLoaderFactory A factory to create composite {@link
+     *     SequenceableLoader}s for when this media source loads data from multiple streams (video,
+     *     audio etc.).
+     * @return This factory, for convenience.
+     * @throws IllegalStateException If one of the {@code create} methods has already been called.
+     */
+    public Factory setCompositeSequenceableLoaderFactory(
+        CompositeSequenceableLoaderFactory compositeSequenceableLoaderFactory) {
+      Assertions.checkState(!isCreateCalled);
+      this.compositeSequenceableLoaderFactory =
+          Assertions.checkNotNull(compositeSequenceableLoaderFactory);
+      return this;
     }
 
-    @Override // defpackage.ym5
-    public void d() {
-        this.f2914a.a();
+    /**
+     * Returns a new {@link SsMediaSource} using the current parameters and the specified sideloaded
+     * manifest.
+     *
+     * @param manifest The manifest. {@link SsManifest#isLive} must be false.
+     * @return The new {@link SsMediaSource}.
+     * @throws IllegalArgumentException If {@link SsManifest#isLive} is true.
+     */
+    public SsMediaSource createMediaSource(SsManifest manifest) {
+      Assertions.checkArgument(!manifest.isLive);
+      isCreateCalled = true;
+      if (streamKeys != null && !streamKeys.isEmpty()) {
+        manifest = manifest.copy(streamKeys);
+      }
+      return new SsMediaSource(
+          manifest,
+          /* manifestUri= */ null,
+          /* manifestDataSourceFactory= */ null,
+          /* manifestParser= */ null,
+          chunkSourceFactory,
+          compositeSequenceableLoaderFactory,
+          drmSessionManager,
+          loadErrorHandlingPolicy,
+          livePresentationDelayMs,
+          tag);
     }
 
-    @Override // defpackage.ym5
-    public void h(tm5 tm5Var) {
-        ((c) tm5Var).v();
-        this.f2916b.remove(tm5Var);
+    /**
+     * @deprecated Use {@link #createMediaSource(SsManifest)} and {@link #addEventListener(Handler,
+     *     MediaSourceEventListener)} instead.
+     */
+    @Deprecated
+    public SsMediaSource createMediaSource(
+        SsManifest manifest,
+        @Nullable Handler eventHandler,
+        @Nullable MediaSourceEventListener eventListener) {
+      SsMediaSource mediaSource = createMediaSource(manifest);
+      if (eventHandler != null && eventListener != null) {
+        mediaSource.addEventListener(eventHandler, eventListener);
+      }
+      return mediaSource;
     }
 
-    @Override // defpackage.gx
-    public void u(z9a z9aVar) {
-        this.f2913a = z9aVar;
-        this.f2910a.a();
-        if (this.f2915a) {
-            this.f2914a = new zq4.a();
-            B();
-            return;
-        }
-        this.f2902a = this.f2901a.a();
-        yq4 yq4Var = new yq4("Loader:Manifest");
-        this.f2912a = yq4Var;
-        this.f2914a = yq4Var;
-        this.f2904a = new Handler();
-        D();
+    /**
+     * @deprecated Use {@link #createMediaSource(Uri)} and {@link #addEventListener(Handler,
+     *     MediaSourceEventListener)} instead.
+     */
+    @Deprecated
+    public SsMediaSource createMediaSource(
+        Uri manifestUri,
+        @Nullable Handler eventHandler,
+        @Nullable MediaSourceEventListener eventListener) {
+      SsMediaSource mediaSource = createMediaSource(manifestUri);
+      if (eventHandler != null && eventListener != null) {
+        mediaSource.addEventListener(eventHandler, eventListener);
+      }
+      return mediaSource;
     }
 
-    @Override // defpackage.gx
-    public void w() {
-        fa9 fa9Var;
-        if (this.f2915a) {
-            fa9Var = this.f2908a;
-        } else {
-            fa9Var = null;
-        }
-        this.f2908a = fa9Var;
-        this.f2902a = null;
-        this.b = 0L;
-        yq4 yq4Var = this.f2912a;
-        if (yq4Var != null) {
-            yq4Var.l();
-            this.f2912a = null;
-        }
-        Handler handler = this.f2904a;
-        if (handler != null) {
-            handler.removeCallbacksAndMessages(null);
-            this.f2904a = null;
-        }
-        this.f2910a.release();
+    /**
+     * Sets the {@link DrmSessionManager} to use for acquiring {@link DrmSession DrmSessions}. The
+     * default value is {@link DrmSessionManager#DUMMY}.
+     *
+     * @param drmSessionManager The {@link DrmSessionManager}.
+     * @return This factory, for convenience.
+     * @throws IllegalStateException If one of the {@code create} methods has already been called.
+     */
+    @Override
+    public Factory setDrmSessionManager(DrmSessionManager<?> drmSessionManager) {
+      Assertions.checkState(!isCreateCalled);
+      this.drmSessionManager =
+          drmSessionManager != null
+              ? drmSessionManager
+              : DrmSessionManager.getDummyDrmSessionManager();
+      return this;
     }
 
-    @Override // defpackage.yq4.a
-    /* renamed from: y */
-    public void o(aw6 aw6Var, long j, long j2, boolean z) {
-        this.f2917b.x(aw6Var.f1600a, aw6Var.f(), aw6Var.d(), aw6Var.a, j, j2, aw6Var.a());
+    /**
+     * Returns a new {@link SsMediaSource} using the current parameters.
+     *
+     * @param manifestUri The manifest {@link Uri}.
+     * @return The new {@link SsMediaSource}.
+     */
+    @Override
+    public SsMediaSource createMediaSource(Uri manifestUri) {
+      isCreateCalled = true;
+      if (manifestParser == null) {
+        manifestParser = new SsManifestParser();
+      }
+      if (streamKeys != null) {
+        manifestParser = new FilteringManifestParser<>(manifestParser, streamKeys);
+      }
+      return new SsMediaSource(
+          /* manifest= */ null,
+          Assertions.checkNotNull(manifestUri),
+          manifestDataSourceFactory,
+          manifestParser,
+          chunkSourceFactory,
+          compositeSequenceableLoaderFactory,
+          drmSessionManager,
+          loadErrorHandlingPolicy,
+          livePresentationDelayMs,
+          tag);
     }
 
-    @Override // defpackage.yq4.a
-    /* renamed from: z */
-    public void p(aw6 aw6Var, long j, long j2) {
-        this.f2917b.A(aw6Var.f1600a, aw6Var.f(), aw6Var.d(), aw6Var.a, j, j2, aw6Var.a());
-        this.f2908a = (fa9) aw6Var.e();
-        this.b = j - j2;
-        B();
-        C();
+    @Override
+    public Factory setStreamKeys(List<StreamKey> streamKeys) {
+      Assertions.checkState(!isCreateCalled);
+      this.streamKeys = streamKeys;
+      return this;
     }
 
-    public SsMediaSource(Uri uri, a62.a aVar, b.a aVar2, int i, long j, Handler handler, jn5 jn5Var) {
-        this(uri, aVar, new ga9(), aVar2, i, j, handler, jn5Var);
+    @Override
+    public int[] getSupportedTypes() {
+      return new int[] {C.TYPE_SS};
     }
 
-    public SsMediaSource(Uri uri, a62.a aVar, aw6.a aVar2, b.a aVar3, int i, long j, Handler handler, jn5 jn5Var) {
-        this(null, uri, aVar, aVar2, aVar3, new c82(), il2.d(), new j92(i), j, null);
-        if (handler == null || jn5Var == null) {
-            return;
-        }
-        a(handler, jn5Var);
+  }
+
+  /**
+   * The default presentation delay for live streams. The presentation delay is the duration by
+   * which the default start position precedes the end of the live window.
+   */
+  public static final long DEFAULT_LIVE_PRESENTATION_DELAY_MS = 30000;
+
+  /**
+   * The minimum period between manifest refreshes.
+   */
+  private static final int MINIMUM_MANIFEST_REFRESH_PERIOD_MS = 5000;
+  /**
+   * The minimum default start position for live streams, relative to the start of the live window.
+   */
+  private static final long MIN_LIVE_DEFAULT_START_POSITION_US = 5000000;
+
+  private final boolean sideloadedManifest;
+  private final Uri manifestUri;
+  private final DataSource.Factory manifestDataSourceFactory;
+  private final SsChunkSource.Factory chunkSourceFactory;
+  private final CompositeSequenceableLoaderFactory compositeSequenceableLoaderFactory;
+  private final DrmSessionManager<?> drmSessionManager;
+  private final LoadErrorHandlingPolicy loadErrorHandlingPolicy;
+  private final long livePresentationDelayMs;
+  private final EventDispatcher manifestEventDispatcher;
+  private final ParsingLoadable.Parser<? extends SsManifest> manifestParser;
+  private final ArrayList<SsMediaPeriod> mediaPeriods;
+  @Nullable private final Object tag;
+
+  private DataSource manifestDataSource;
+  private Loader manifestLoader;
+  private LoaderErrorThrower manifestLoaderErrorThrower;
+  @Nullable private TransferListener mediaTransferListener;
+
+  private long manifestLoadStartTimestamp;
+  private SsManifest manifest;
+
+  private Handler manifestRefreshHandler;
+
+  /**
+   * Constructs an instance to play a given {@link SsManifest}, which must not be live.
+   *
+   * @param manifest The manifest. {@link SsManifest#isLive} must be false.
+   * @param chunkSourceFactory A factory for {@link SsChunkSource} instances.
+   * @param eventHandler A handler for events. May be null if delivery of events is not required.
+   * @param eventListener A listener of events. May be null if delivery of events is not required.
+   * @deprecated Use {@link Factory} instead.
+   */
+  @Deprecated
+  @SuppressWarnings("deprecation")
+  public SsMediaSource(
+      SsManifest manifest,
+      SsChunkSource.Factory chunkSourceFactory,
+      @Nullable Handler eventHandler,
+      @Nullable MediaSourceEventListener eventListener) {
+    this(
+        manifest,
+        chunkSourceFactory,
+        DefaultLoadErrorHandlingPolicy.DEFAULT_MIN_LOADABLE_RETRY_COUNT,
+        eventHandler,
+        eventListener);
+  }
+
+  /**
+   * Constructs an instance to play a given {@link SsManifest}, which must not be live.
+   *
+   * @param manifest The manifest. {@link SsManifest#isLive} must be false.
+   * @param chunkSourceFactory A factory for {@link SsChunkSource} instances.
+   * @param minLoadableRetryCount The minimum number of times to retry if a loading error occurs.
+   * @param eventHandler A handler for events. May be null if delivery of events is not required.
+   * @param eventListener A listener of events. May be null if delivery of events is not required.
+   * @deprecated Use {@link Factory} instead.
+   */
+  @Deprecated
+  public SsMediaSource(
+      SsManifest manifest,
+      SsChunkSource.Factory chunkSourceFactory,
+      int minLoadableRetryCount,
+      @Nullable Handler eventHandler,
+      @Nullable MediaSourceEventListener eventListener) {
+    this(
+        manifest,
+        /* manifestUri= */ null,
+        /* manifestDataSourceFactory= */ null,
+        /* manifestParser= */ null,
+        chunkSourceFactory,
+        new DefaultCompositeSequenceableLoaderFactory(),
+        DrmSessionManager.getDummyDrmSessionManager(),
+        new DefaultLoadErrorHandlingPolicy(minLoadableRetryCount),
+        DEFAULT_LIVE_PRESENTATION_DELAY_MS,
+        /* tag= */ null);
+    if (eventHandler != null && eventListener != null) {
+      addEventListener(eventHandler, eventListener);
+    }
+  }
+
+  /**
+   * Constructs an instance to play the manifest at a given {@link Uri}, which may be live or
+   * on-demand.
+   *
+   * @param manifestUri The manifest {@link Uri}.
+   * @param manifestDataSourceFactory A factory for {@link DataSource} instances that will be used
+   *     to load (and refresh) the manifest.
+   * @param chunkSourceFactory A factory for {@link SsChunkSource} instances.
+   * @param eventHandler A handler for events. May be null if delivery of events is not required.
+   * @param eventListener A listener of events. May be null if delivery of events is not required.
+   * @deprecated Use {@link Factory} instead.
+   */
+  @Deprecated
+  @SuppressWarnings("deprecation")
+  public SsMediaSource(
+      Uri manifestUri,
+      DataSource.Factory manifestDataSourceFactory,
+      SsChunkSource.Factory chunkSourceFactory,
+      @Nullable Handler eventHandler,
+      @Nullable MediaSourceEventListener eventListener) {
+    this(
+        manifestUri,
+        manifestDataSourceFactory,
+        chunkSourceFactory,
+        DefaultLoadErrorHandlingPolicy.DEFAULT_MIN_LOADABLE_RETRY_COUNT,
+        DEFAULT_LIVE_PRESENTATION_DELAY_MS,
+        eventHandler,
+        eventListener);
+  }
+
+  /**
+   * Constructs an instance to play the manifest at a given {@link Uri}, which may be live or
+   * on-demand.
+   *
+   * @param manifestUri The manifest {@link Uri}.
+   * @param manifestDataSourceFactory A factory for {@link DataSource} instances that will be used
+   *     to load (and refresh) the manifest.
+   * @param chunkSourceFactory A factory for {@link SsChunkSource} instances.
+   * @param minLoadableRetryCount The minimum number of times to retry if a loading error occurs.
+   * @param livePresentationDelayMs For live playbacks, the duration in milliseconds by which the
+   *     default start position should precede the end of the live window.
+   * @param eventHandler A handler for events. May be null if delivery of events is not required.
+   * @param eventListener A listener of events. May be null if delivery of events is not required.
+   * @deprecated Use {@link Factory} instead.
+   */
+  @Deprecated
+  @SuppressWarnings("deprecation")
+  public SsMediaSource(
+      Uri manifestUri,
+      DataSource.Factory manifestDataSourceFactory,
+      SsChunkSource.Factory chunkSourceFactory,
+      int minLoadableRetryCount,
+      long livePresentationDelayMs,
+      @Nullable Handler eventHandler,
+      @Nullable MediaSourceEventListener eventListener) {
+    this(manifestUri, manifestDataSourceFactory, new SsManifestParser(), chunkSourceFactory,
+        minLoadableRetryCount, livePresentationDelayMs, eventHandler, eventListener);
+  }
+
+  /**
+   * Constructs an instance to play the manifest at a given {@link Uri}, which may be live or
+   * on-demand.
+   *
+   * @param manifestUri The manifest {@link Uri}.
+   * @param manifestDataSourceFactory A factory for {@link DataSource} instances that will be used
+   *     to load (and refresh) the manifest.
+   * @param manifestParser A parser for loaded manifest data.
+   * @param chunkSourceFactory A factory for {@link SsChunkSource} instances.
+   * @param minLoadableRetryCount The minimum number of times to retry if a loading error occurs.
+   * @param livePresentationDelayMs For live playbacks, the duration in milliseconds by which the
+   *     default start position should precede the end of the live window.
+   * @param eventHandler A handler for events. May be null if delivery of events is not required.
+   * @param eventListener A listener of events. May be null if delivery of events is not required.
+   * @deprecated Use {@link Factory} instead.
+   */
+  @Deprecated
+  public SsMediaSource(
+      Uri manifestUri,
+      DataSource.Factory manifestDataSourceFactory,
+      ParsingLoadable.Parser<? extends SsManifest> manifestParser,
+      SsChunkSource.Factory chunkSourceFactory,
+      int minLoadableRetryCount,
+      long livePresentationDelayMs,
+      @Nullable Handler eventHandler,
+      @Nullable MediaSourceEventListener eventListener) {
+    this(
+        /* manifest= */ null,
+        manifestUri,
+        manifestDataSourceFactory,
+        manifestParser,
+        chunkSourceFactory,
+        new DefaultCompositeSequenceableLoaderFactory(),
+        DrmSessionManager.getDummyDrmSessionManager(),
+        new DefaultLoadErrorHandlingPolicy(minLoadableRetryCount),
+        livePresentationDelayMs,
+        /* tag= */ null);
+    if (eventHandler != null && eventListener != null) {
+      addEventListener(eventHandler, eventListener);
+    }
+  }
+
+  private SsMediaSource(
+      @Nullable SsManifest manifest,
+      @Nullable Uri manifestUri,
+      @Nullable DataSource.Factory manifestDataSourceFactory,
+      @Nullable ParsingLoadable.Parser<? extends SsManifest> manifestParser,
+      SsChunkSource.Factory chunkSourceFactory,
+      CompositeSequenceableLoaderFactory compositeSequenceableLoaderFactory,
+      DrmSessionManager<?> drmSessionManager,
+      LoadErrorHandlingPolicy loadErrorHandlingPolicy,
+      long livePresentationDelayMs,
+      @Nullable Object tag) {
+    Assertions.checkState(manifest == null || !manifest.isLive);
+    this.manifest = manifest;
+    this.manifestUri = manifestUri == null ? null : SsUtil.fixManifestUri(manifestUri);
+    this.manifestDataSourceFactory = manifestDataSourceFactory;
+    this.manifestParser = manifestParser;
+    this.chunkSourceFactory = chunkSourceFactory;
+    this.compositeSequenceableLoaderFactory = compositeSequenceableLoaderFactory;
+    this.drmSessionManager = drmSessionManager;
+    this.loadErrorHandlingPolicy = loadErrorHandlingPolicy;
+    this.livePresentationDelayMs = livePresentationDelayMs;
+    this.manifestEventDispatcher = createEventDispatcher(/* mediaPeriodId= */ null);
+    this.tag = tag;
+    sideloadedManifest = manifest != null;
+    mediaPeriods = new ArrayList<>();
+  }
+
+  // MediaSource implementation.
+
+  @Override
+  @Nullable
+  public Object getTag() {
+    return tag;
+  }
+
+  @Override
+  protected void prepareSourceInternal(@Nullable TransferListener mediaTransferListener) {
+    this.mediaTransferListener = mediaTransferListener;
+    drmSessionManager.prepare();
+    if (sideloadedManifest) {
+      manifestLoaderErrorThrower = new LoaderErrorThrower.Dummy();
+      processManifest();
+    } else {
+      manifestDataSource = manifestDataSourceFactory.createDataSource();
+      manifestLoader = new Loader("Loader:Manifest");
+      manifestLoaderErrorThrower = manifestLoader;
+      manifestRefreshHandler = new Handler();
+      startLoadingManifest();
+    }
+  }
+
+  @Override
+  public void maybeThrowSourceInfoRefreshError() throws IOException {
+    manifestLoaderErrorThrower.maybeThrowError();
+  }
+
+  @Override
+  public MediaPeriod createPeriod(MediaPeriodId id, Allocator allocator, long startPositionUs) {
+    EventDispatcher eventDispatcher = createEventDispatcher(id);
+    SsMediaPeriod period =
+        new SsMediaPeriod(
+            manifest,
+            chunkSourceFactory,
+            mediaTransferListener,
+            compositeSequenceableLoaderFactory,
+            drmSessionManager,
+            loadErrorHandlingPolicy,
+            eventDispatcher,
+            manifestLoaderErrorThrower,
+            allocator);
+    mediaPeriods.add(period);
+    return period;
+  }
+
+  @Override
+  public void releasePeriod(MediaPeriod period) {
+    ((SsMediaPeriod) period).release();
+    mediaPeriods.remove(period);
+  }
+
+  @Override
+  protected void releaseSourceInternal() {
+    manifest = sideloadedManifest ? manifest : null;
+    manifestDataSource = null;
+    manifestLoadStartTimestamp = 0;
+    if (manifestLoader != null) {
+      manifestLoader.release();
+      manifestLoader = null;
+    }
+    if (manifestRefreshHandler != null) {
+      manifestRefreshHandler.removeCallbacksAndMessages(null);
+      manifestRefreshHandler = null;
+    }
+    drmSessionManager.release();
+  }
+
+  // Loader.Callback implementation
+
+  @Override
+  public void onLoadCompleted(ParsingLoadable<SsManifest> loadable, long elapsedRealtimeMs,
+      long loadDurationMs) {
+    manifestEventDispatcher.loadCompleted(
+        loadable.dataSpec,
+        loadable.getUri(),
+        loadable.getResponseHeaders(),
+        loadable.type,
+        elapsedRealtimeMs,
+        loadDurationMs,
+        loadable.bytesLoaded());
+    manifest = loadable.getResult();
+    manifestLoadStartTimestamp = elapsedRealtimeMs - loadDurationMs;
+    processManifest();
+    scheduleManifestRefresh();
+  }
+
+  @Override
+  public void onLoadCanceled(ParsingLoadable<SsManifest> loadable, long elapsedRealtimeMs,
+      long loadDurationMs, boolean released) {
+    manifestEventDispatcher.loadCanceled(
+        loadable.dataSpec,
+        loadable.getUri(),
+        loadable.getResponseHeaders(),
+        loadable.type,
+        elapsedRealtimeMs,
+        loadDurationMs,
+        loadable.bytesLoaded());
+  }
+
+  @Override
+  public LoadErrorAction onLoadError(
+      ParsingLoadable<SsManifest> loadable,
+      long elapsedRealtimeMs,
+      long loadDurationMs,
+      IOException error,
+      int errorCount) {
+    long retryDelayMs =
+        loadErrorHandlingPolicy.getRetryDelayMsFor(
+            C.DATA_TYPE_MANIFEST, loadDurationMs, error, errorCount);
+    LoadErrorAction loadErrorAction =
+        retryDelayMs == C.TIME_UNSET
+            ? Loader.DONT_RETRY_FATAL
+            : Loader.createRetryAction(/* resetErrorCount= */ false, retryDelayMs);
+    manifestEventDispatcher.loadError(
+        loadable.dataSpec,
+        loadable.getUri(),
+        loadable.getResponseHeaders(),
+        loadable.type,
+        elapsedRealtimeMs,
+        loadDurationMs,
+        loadable.bytesLoaded(),
+        error,
+        !loadErrorAction.isRetry());
+    return loadErrorAction;
+  }
+
+  // Internal methods
+
+  private void processManifest() {
+    for (int i = 0; i < mediaPeriods.size(); i++) {
+      mediaPeriods.get(i).updateManifest(manifest);
     }
 
-    public SsMediaSource(fa9 fa9Var, Uri uri, a62.a aVar, aw6.a aVar2, b.a aVar3, bs1 bs1Var, jl2 jl2Var, vq4 vq4Var, long j, Object obj) {
-        tn.f(fa9Var == null || !fa9Var.f5365a);
-        this.f2908a = fa9Var;
-        this.f2903a = uri == null ? null : ia9.a(uri);
-        this.f2901a = aVar;
-        this.f2905a = aVar2;
-        this.f2907a = aVar3;
-        this.f2906a = bs1Var;
-        this.f2910a = jl2Var;
-        this.f2911a = vq4Var;
-        this.a = j;
-        this.f2917b = n(null);
-        this.f2909a = obj;
-        this.f2915a = fa9Var != null;
-        this.f2916b = new ArrayList();
+    long startTimeUs = Long.MAX_VALUE;
+    long endTimeUs = Long.MIN_VALUE;
+    for (StreamElement element : manifest.streamElements) {
+      if (element.chunkCount > 0) {
+        startTimeUs = Math.min(startTimeUs, element.getStartTimeUs(0));
+        endTimeUs = Math.max(endTimeUs, element.getStartTimeUs(element.chunkCount - 1)
+            + element.getChunkDurationUs(element.chunkCount - 1));
+      }
     }
+
+    Timeline timeline;
+    if (startTimeUs == Long.MAX_VALUE) {
+      long periodDurationUs = manifest.isLive ? C.TIME_UNSET : 0;
+      timeline =
+          new SinglePeriodTimeline(
+              periodDurationUs,
+              /* windowDurationUs= */ 0,
+              /* windowPositionInPeriodUs= */ 0,
+              /* windowDefaultStartPositionUs= */ 0,
+              /* isSeekable= */ true,
+              /* isDynamic= */ manifest.isLive,
+              /* isLive= */ manifest.isLive,
+              manifest,
+              tag);
+    } else if (manifest.isLive) {
+      if (manifest.dvrWindowLengthUs != C.TIME_UNSET && manifest.dvrWindowLengthUs > 0) {
+        startTimeUs = Math.max(startTimeUs, endTimeUs - manifest.dvrWindowLengthUs);
+      }
+      long durationUs = endTimeUs - startTimeUs;
+      long defaultStartPositionUs = durationUs - C.msToUs(livePresentationDelayMs);
+      if (defaultStartPositionUs < MIN_LIVE_DEFAULT_START_POSITION_US) {
+        // The default start position is too close to the start of the live window. Set it to the
+        // minimum default start position provided the window is at least twice as big. Else set
+        // it to the middle of the window.
+        defaultStartPositionUs = Math.min(MIN_LIVE_DEFAULT_START_POSITION_US, durationUs / 2);
+      }
+      timeline =
+          new SinglePeriodTimeline(
+              /* periodDurationUs= */ C.TIME_UNSET,
+              durationUs,
+              startTimeUs,
+              defaultStartPositionUs,
+              /* isSeekable= */ true,
+              /* isDynamic= */ true,
+              /* isLive= */ true,
+              manifest,
+              tag);
+    } else {
+      long durationUs = manifest.durationUs != C.TIME_UNSET ? manifest.durationUs
+          : endTimeUs - startTimeUs;
+      timeline =
+          new SinglePeriodTimeline(
+              startTimeUs + durationUs,
+              durationUs,
+              startTimeUs,
+              /* windowDefaultStartPositionUs= */ 0,
+              /* isSeekable= */ true,
+              /* isDynamic= */ false,
+              /* isLive= */ false,
+              manifest,
+              tag);
+    }
+    refreshSourceInfo(timeline);
+  }
+
+  private void scheduleManifestRefresh() {
+    if (!manifest.isLive) {
+      return;
+    }
+    long nextLoadTimestamp = manifestLoadStartTimestamp + MINIMUM_MANIFEST_REFRESH_PERIOD_MS;
+    long delayUntilNextLoad = Math.max(0, nextLoadTimestamp - SystemClock.elapsedRealtime());
+    manifestRefreshHandler.postDelayed(this::startLoadingManifest, delayUntilNextLoad);
+  }
+
+  private void startLoadingManifest() {
+    if (manifestLoader.hasFatalError()) {
+      return;
+    }
+    ParsingLoadable<SsManifest> loadable = new ParsingLoadable<>(manifestDataSource,
+        manifestUri, C.DATA_TYPE_MANIFEST, manifestParser);
+    long elapsedRealtimeMs =
+        manifestLoader.startLoading(
+            loadable, this, loadErrorHandlingPolicy.getMinimumLoadableRetryCount(loadable.type));
+    manifestEventDispatcher.loadStarted(loadable.dataSpec, loadable.type, elapsedRealtimeMs);
+  }
+
 }

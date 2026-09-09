@@ -1,151 +1,113 @@
+/*
+ * This is the source code of Telegram for Android v. 5.x.x.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Nikolai Kudashov, 2013-2018.
+ */
+
 package org.telegram.ui.Cells;
 
+import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.util.Property;
+import androidx.annotation.Keep;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
-import androidx.annotation.Keep;
-import com.blankj.utilcode.constant.MemoryConstants;
+import android.widget.TextView;
+
+import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.LocaleController;
+import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.Components.LayoutHelper;
+
 import java.util.ArrayList;
-import org.telegram.mdgram.Views.TextView;
-import org.telegram.messenger.u;
-import org.telegram.ui.ActionBar.l;
-/* loaded from: classes2.dex */
+
 public class TextColorCell extends FrameLayout {
-    private static Paint colorPaint;
-    public static final int[] colors = {-1031100, -29183, -12769, -8792480, -12521994, -12140801, -2984711, -45162, -4473925};
-    public static final int[] colorsToSave = {-65536, -29183, -256, -16711936, -16711681, -16776961, -2984711, -65281, -1};
-    private float alpha;
-    private int currentColor;
-    private boolean needDivider;
-    private l.r resourcesProvider;
+
+    private Theme.ResourcesProvider resourcesProvider;
     private TextView textView;
+    private boolean needDivider;
+    private int currentColor;
+    private float alpha = 1.0f;
+
+    private static Paint colorPaint;
+
+    public final static int[] colors = new int[] {0xfff04444, 0xffff8e01, 0xffffce1f, 0xff79d660, 0xff40edf6, 0xff46beff, 0xffd274f9, 0xffff4f96, 0xffbbbbbb};
+    public final static int[] colorsToSave = new int[] {0xffff0000, 0xffff8e01, 0xffffff00, 0xff00ff00, 0xff00ffff, 0xff0000ff, 0xffd274f9, 0xffff00ff, 0xffffffff};
 
     public TextColorCell(Context context) {
         this(context, null);
     }
 
-    public void a(boolean z, ArrayList arrayList) {
-        float f;
-        float f2;
-        super.setEnabled(z);
-        float f3 = 1.0f;
-        if (arrayList != null) {
-            TextView textView = this.textView;
-            Property property = View.ALPHA;
-            float[] fArr = new float[1];
-            if (z) {
-                f2 = 1.0f;
-            } else {
-                f2 = 0.5f;
-            }
-            fArr[0] = f2;
-            arrayList.add(ObjectAnimator.ofFloat(textView, property, fArr));
-            Property property2 = View.ALPHA;
-            float[] fArr2 = new float[1];
-            if (!z) {
-                f3 = 0.5f;
-            }
-            fArr2[0] = f3;
-            arrayList.add(ObjectAnimator.ofFloat(this, property2, fArr2));
-            return;
-        }
-        TextView textView2 = this.textView;
-        if (z) {
-            f = 1.0f;
-        } else {
-            f = 0.5f;
-        }
-        textView2.setAlpha(f);
-        if (!z) {
-            f3 = 0.5f;
-        }
-        setAlpha(f3);
-    }
-
-    public void b(String str, int i, boolean z) {
-        boolean z2;
-        this.textView.setText(str);
-        this.needDivider = z;
-        this.currentColor = i;
-        if (!z && i == 0) {
-            z2 = true;
-        } else {
-            z2 = false;
-        }
-        setWillNotDraw(z2);
-        invalidate();
-    }
-
-    @Override // android.view.View
-    @Keep
-    public float getAlpha() {
-        return this.alpha;
-    }
-
-    @Override // android.view.View
-    public void onDraw(Canvas canvas) {
-        int measuredWidth;
-        float e0;
-        int i;
-        if (this.needDivider) {
-            if (u.d) {
-                e0 = 0.0f;
-            } else {
-                e0 = org.telegram.messenger.a.e0(20.0f);
-            }
-            float measuredHeight = getMeasuredHeight() - 1;
-            int measuredWidth2 = getMeasuredWidth();
-            if (u.d) {
-                i = org.telegram.messenger.a.e0(20.0f);
-            } else {
-                i = 0;
-            }
-            canvas.drawLine(e0, measuredHeight, measuredWidth2 - i, getMeasuredHeight() - 1, l.f15835b);
-        }
-        int i2 = this.currentColor;
-        if (i2 != 0) {
-            colorPaint.setColor(i2);
-            colorPaint.setAlpha((int) (this.alpha * 255.0f));
-            if (u.d) {
-                measuredWidth = org.telegram.messenger.a.e0(33.0f);
-            } else {
-                measuredWidth = getMeasuredWidth() - org.telegram.messenger.a.e0(33.0f);
-            }
-            canvas.drawCircle(measuredWidth, getMeasuredHeight() / 2, org.telegram.messenger.a.e0(10.0f), colorPaint);
-        }
-    }
-
-    @Override // android.widget.FrameLayout, android.view.View
-    public void onMeasure(int i, int i2) {
-        super.onMeasure(View.MeasureSpec.makeMeasureSpec(View.MeasureSpec.getSize(i), MemoryConstants.GB), View.MeasureSpec.makeMeasureSpec(org.telegram.messenger.a.e0(50.0f) + (this.needDivider ? 1 : 0), MemoryConstants.GB));
-    }
-
-    @Override // android.view.View
-    @Keep
-    public void setAlpha(float f) {
-        this.alpha = f;
-        invalidate();
-    }
-
-    public TextColorCell(Context context, l.r rVar) {
+    public TextColorCell(Context context, Theme.ResourcesProvider resourcesProvider) {
         super(context);
-        this.alpha = 1.0f;
-        this.resourcesProvider = rVar;
+        this.resourcesProvider = resourcesProvider;
+
         if (colorPaint == null) {
-            colorPaint = new Paint(1);
+            colorPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         }
-        TextView textView = new TextView(context);
-        this.textView = textView;
-        textView.setTextColor(l.C1("windowBackgroundWhiteBlackText", rVar));
-        this.textView.setTextSize(1, 16.0f);
-        this.textView.setLines(1);
-        this.textView.setMaxLines(1);
-        this.textView.setSingleLine(true);
-        this.textView.setGravity((u.d ? 5 : 3) | 16);
-        addView(this.textView, cn4.c(-1, -1.0f, (u.d ? 5 : 3) | 48, 21.0f, 0.0f, 21.0f, 0.0f));
+
+        textView = new TextView(context);
+        textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+        textView.setLines(1);
+        textView.setMaxLines(1);
+        textView.setSingleLine(true);
+        textView.setGravity((LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.CENTER_VERTICAL);
+        addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, 21, 0, 21, 0));
+    }
+
+    @Keep
+    @Override
+    public void setAlpha(float value) {
+        alpha = value;
+        invalidate();
+    }
+
+    @Keep
+    @Override
+    public float getAlpha() {
+        return alpha;
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(AndroidUtilities.dp(50) + (needDivider ? 1 : 0), MeasureSpec.EXACTLY));
+    }
+
+    public void setTextAndColor(String text, int color, boolean divider) {
+        textView.setText(text);
+        needDivider = divider;
+        currentColor = color;
+        setWillNotDraw(!needDivider && currentColor == 0);
+        invalidate();
+    }
+
+    public void setEnabled(boolean value, ArrayList<Animator> animators) {
+        super.setEnabled(value);
+        if (animators != null) {
+            animators.add(ObjectAnimator.ofFloat(textView, View.ALPHA, value ? 1.0f : 0.5f));
+            animators.add(ObjectAnimator.ofFloat(this, View.ALPHA, value ? 1.0f : 0.5f));
+        } else {
+            textView.setAlpha(value ? 1.0f : 0.5f);
+            setAlpha(value ? 1.0f : 0.5f);
+        }
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        if (needDivider) {
+            canvas.drawLine(LocaleController.isRTL ? 0 : AndroidUtilities.dp(20), getMeasuredHeight() - 1, getMeasuredWidth() - (LocaleController.isRTL ? AndroidUtilities.dp(20) : 0), getMeasuredHeight() - 1, Theme.dividerPaint);
+        }
+        if (currentColor != 0) {
+            colorPaint.setColor(currentColor);
+            colorPaint.setAlpha((int) (255 * alpha));
+            canvas.drawCircle(LocaleController.isRTL ? AndroidUtilities.dp(33) : getMeasuredWidth() - AndroidUtilities.dp(33), getMeasuredHeight() / 2, AndroidUtilities.dp(10), colorPaint);
+        }
     }
 }

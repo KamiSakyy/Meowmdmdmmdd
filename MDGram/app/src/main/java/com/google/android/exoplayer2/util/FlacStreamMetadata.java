@@ -1,213 +1,384 @@
+/*
+ * Copyright (C) 2016 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.google.android.exoplayer2.util;
 
+import androidx.annotation.Nullable;
+import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.Format;
+import com.google.android.exoplayer2.metadata.Metadata;
 import com.google.android.exoplayer2.metadata.flac.PictureFrame;
+import com.google.android.exoplayer2.metadata.flac.VorbisComment;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.h2.api.ErrorCode;
-/* loaded from: classes.dex */
+
+/**
+ * Holder for FLAC metadata.
+ *
+ * @see <a href="https://xiph.org/flac/format.html#metadata_block_streaminfo">FLAC format
+ *     METADATA_BLOCK_STREAMINFO</a>
+ * @see <a href="https://xiph.org/flac/format.html#metadata_block_seektable">FLAC format
+ *     METADATA_BLOCK_SEEKTABLE</a>
+ * @see <a href="https://xiph.org/flac/format.html#metadata_block_vorbis_comment">FLAC format
+ *     METADATA_BLOCK_VORBIS_COMMENT</a>
+ * @see <a href="https://xiph.org/flac/format.html#metadata_block_picture">FLAC format
+ *     METADATA_BLOCK_PICTURE</a>
+ */
 public final class FlacStreamMetadata {
-    public static final int NOT_IN_LOOKUP_TABLE = -1;
-    private static final String SEPARATOR = "=";
-    private static final String TAG = "FlacStreamMetadata";
-    public final int bitsPerSample;
-    public final int bitsPerSampleLookupKey;
-    public final int channels;
-    public final int maxBlockSizeSamples;
-    public final int maxFrameSize;
-    private final mf6 metadata;
-    public final int minBlockSizeSamples;
-    public final int minFrameSize;
-    public final int sampleRate;
-    public final int sampleRateLookupKey;
-    public final a seekTable;
-    public final long totalSamples;
 
-    /* loaded from: classes.dex */
-    public static class a {
-        public final long[] a;
-        public final long[] b;
+  /** A FLAC seek table. */
+  public static class SeekTable {
+    /** Seek points sample numbers. */
+    public final long[] pointSampleNumbers;
+    /** Seek points byte offsets from the first frame. */
+    public final long[] pointOffsets;
 
-        public a(long[] jArr, long[] jArr2) {
-            this.a = jArr;
-            this.b = jArr2;
-        }
+    public SeekTable(long[] pointSampleNumbers, long[] pointOffsets) {
+      this.pointSampleNumbers = pointSampleNumbers;
+      this.pointOffsets = pointOffsets;
     }
+  }
 
-    public FlacStreamMetadata(byte[] bArr, int i) {
-        uv6 uv6Var = new uv6(bArr);
-        uv6Var.o(i * 8);
-        this.minBlockSizeSamples = uv6Var.h(16);
-        this.maxBlockSizeSamples = uv6Var.h(16);
-        this.minFrameSize = uv6Var.h(24);
-        this.maxFrameSize = uv6Var.h(24);
-        int h = uv6Var.h(20);
-        this.sampleRate = h;
-        this.sampleRateLookupKey = getSampleRateLookupKey(h);
-        this.channels = uv6Var.h(3) + 1;
-        int h2 = uv6Var.h(5) + 1;
-        this.bitsPerSample = h2;
-        this.bitsPerSampleLookupKey = getBitsPerSampleLookupKey(h2);
-        this.totalSamples = uv6Var.j(36);
-        this.seekTable = null;
-        this.metadata = null;
+  private static final String TAG = "FlacStreamMetadata";
+
+  /** Indicates that a value is not in the corresponding lookup table. */
+  public static final int NOT_IN_LOOKUP_TABLE = -1;
+  /** Separator between the field name of a Vorbis comment and the corresponding value. */
+  private static final String SEPARATOR = "=";
+
+  /** Minimum number of samples per block. */
+  public final int minBlockSizeSamples;
+  /** Maximum number of samples per block. */
+  public final int maxBlockSizeSamples;
+  /** Minimum frame size in bytes, or 0 if the value is unknown. */
+  public final int minFrameSize;
+  /** Maximum frame size in bytes, or 0 if the value is unknown. */
+  public final int maxFrameSize;
+  /** Sample rate in Hertz. */
+  public final int sampleRate;
+  /**
+   * Lookup key corresponding to the stream sample rate, or {@link #NOT_IN_LOOKUP_TABLE} if it is
+   * not in the lookup table.
+   *
+   * <p>This key is used to indicate the sample rate in the frame header for the most common values.
+   *
+   * <p>The sample rate lookup table is described in https://xiph.org/flac/format.html#frame_header.
+   */
+  public final int sampleRateLookupKey;
+  /** Number of audio channels. */
+  public final int channels;
+  /** Number of bits per sample. */
+  public final int bitsPerSample;
+  /**
+   * Lookup key corresponding to the number of bits per sample of the stream, or {@link
+   * #NOT_IN_LOOKUP_TABLE} if it is not in the lookup table.
+   *
+   * <p>This key is used to indicate the number of bits per sample in the frame header for the most
+   * common values.
+   *
+   * <p>The sample size lookup table is described in https://xiph.org/flac/format.html#frame_header.
+   */
+  public final int bitsPerSampleLookupKey;
+  /** Total number of samples, or 0 if the value is unknown. */
+  public final long totalSamples;
+  /** Seek table, or {@code null} if it is not provided. */
+  @Nullable public final SeekTable seekTable;
+  /** Content metadata, or {@code null} if it is not provided. */
+  @Nullable private final Metadata metadata;
+
+  /**
+   * Parses binary FLAC stream info metadata.
+   *
+   * @param data An array containing binary FLAC stream info block.
+   * @param offset The offset of the stream info block in {@code data}, excluding the header (i.e.
+   *     the offset points to the first byte of the minimum block size).
+   */
+  public FlacStreamMetadata(byte[] data, int offset) {
+    ParsableBitArray scratch = new ParsableBitArray(data);
+    scratch.setPosition(offset * 8);
+    minBlockSizeSamples = scratch.readBits(16);
+    maxBlockSizeSamples = scratch.readBits(16);
+    minFrameSize = scratch.readBits(24);
+    maxFrameSize = scratch.readBits(24);
+    sampleRate = scratch.readBits(20);
+    sampleRateLookupKey = getSampleRateLookupKey(sampleRate);
+    channels = scratch.readBits(3) + 1;
+    bitsPerSample = scratch.readBits(5) + 1;
+    bitsPerSampleLookupKey = getBitsPerSampleLookupKey(bitsPerSample);
+    totalSamples = scratch.readBitsToLong(36);
+    seekTable = null;
+    metadata = null;
+  }
+
+  // Used in native code.
+  public FlacStreamMetadata(
+      int minBlockSizeSamples,
+      int maxBlockSizeSamples,
+      int minFrameSize,
+      int maxFrameSize,
+      int sampleRate,
+      int channels,
+      int bitsPerSample,
+      long totalSamples,
+      ArrayList<String> vorbisComments,
+      ArrayList<PictureFrame> pictureFrames) {
+    this(
+        minBlockSizeSamples,
+        maxBlockSizeSamples,
+        minFrameSize,
+        maxFrameSize,
+        sampleRate,
+        channels,
+        bitsPerSample,
+        totalSamples,
+        /* seekTable= */ null,
+        buildMetadata(vorbisComments, pictureFrames));
+  }
+
+  private FlacStreamMetadata(
+      int minBlockSizeSamples,
+      int maxBlockSizeSamples,
+      int minFrameSize,
+      int maxFrameSize,
+      int sampleRate,
+      int channels,
+      int bitsPerSample,
+      long totalSamples,
+      @Nullable SeekTable seekTable,
+      @Nullable Metadata metadata) {
+    this.minBlockSizeSamples = minBlockSizeSamples;
+    this.maxBlockSizeSamples = maxBlockSizeSamples;
+    this.minFrameSize = minFrameSize;
+    this.maxFrameSize = maxFrameSize;
+    this.sampleRate = sampleRate;
+    this.sampleRateLookupKey = getSampleRateLookupKey(sampleRate);
+    this.channels = channels;
+    this.bitsPerSample = bitsPerSample;
+    this.bitsPerSampleLookupKey = getBitsPerSampleLookupKey(bitsPerSample);
+    this.totalSamples = totalSamples;
+    this.seekTable = seekTable;
+    this.metadata = metadata;
+  }
+
+  /** Returns the maximum size for a decoded frame from the FLAC stream. */
+  public int getMaxDecodedFrameSize() {
+    return maxBlockSizeSamples * channels * (bitsPerSample / 8);
+  }
+
+  /** Returns the bit-rate of the FLAC stream. */
+  public int getBitRate() {
+    return bitsPerSample * sampleRate * channels;
+  }
+
+  /**
+   * Returns the duration of the FLAC stream in microseconds, or {@link C#TIME_UNSET} if the total
+   * number of samples if unknown.
+   */
+  public long getDurationUs() {
+    return totalSamples == 0 ? C.TIME_UNSET : totalSamples * C.MICROS_PER_SECOND / sampleRate;
+  }
+
+  /**
+   * Returns the sample number of the sample at a given time.
+   *
+   * @param timeUs Time position in microseconds in the FLAC stream.
+   * @return The sample number corresponding to the time position.
+   */
+  public long getSampleNumber(long timeUs) {
+    long sampleNumber = (timeUs * sampleRate) / C.MICROS_PER_SECOND;
+    return Util.constrainValue(sampleNumber, /* min= */ 0, totalSamples - 1);
+  }
+
+  /** Returns the approximate number of bytes per frame for the current FLAC stream. */
+  public long getApproxBytesPerFrame() {
+    long approxBytesPerFrame;
+    if (maxFrameSize > 0) {
+      approxBytesPerFrame = ((long) maxFrameSize + minFrameSize) / 2 + 1;
+    } else {
+      // Uses the stream's block-size if it's a known fixed block-size stream, otherwise uses the
+      // default value for FLAC block-size, which is 4096.
+      long blockSizeSamples =
+          (minBlockSizeSamples == maxBlockSizeSamples && minBlockSizeSamples > 0)
+              ? minBlockSizeSamples
+              : 4096;
+      approxBytesPerFrame = (blockSizeSamples * channels * bitsPerSample) / 8 + 64;
     }
+    return approxBytesPerFrame;
+  }
 
-    private static mf6 buildMetadata(List<String> list, List<PictureFrame> list2) {
-        if (list.isEmpty() && list2.isEmpty()) {
-            return null;
-        }
-        ArrayList arrayList = new ArrayList();
-        for (int i = 0; i < list.size(); i++) {
-            String str = list.get(i);
-            String[] t0 = tma.t0(str, SEPARATOR);
-            if (t0.length != 2) {
-                ew4.h(TAG, "Failed to parse Vorbis comment: " + str);
-            } else {
-                arrayList.add(new a2b(t0[0], t0[1]));
-            }
-        }
-        arrayList.addAll(list2);
-        if (arrayList.isEmpty()) {
-            return null;
-        }
-        return new mf6(arrayList);
-    }
+  /**
+   * Returns a {@link Format} extracted from the FLAC stream metadata.
+   *
+   * <p>{@code streamMarkerAndInfoBlock} is updated to set the bit corresponding to the stream info
+   * last metadata block flag to true.
+   *
+   * @param streamMarkerAndInfoBlock An array containing the FLAC stream marker followed by the
+   *     stream info block.
+   * @param id3Metadata The ID3 metadata of the stream, or {@code null} if there is no such data.
+   * @return The extracted {@link Format}.
+   */
+  public Format getFormat(byte[] streamMarkerAndInfoBlock, @Nullable Metadata id3Metadata) {
+    // Set the last metadata block flag, ignore the other blocks.
+    streamMarkerAndInfoBlock[4] = (byte) 0x80;
+    int maxInputSize = maxFrameSize > 0 ? maxFrameSize : Format.NO_VALUE;
+    @Nullable Metadata metadataWithId3 = getMetadataCopyWithAppendedEntriesFrom(id3Metadata);
 
-    private static int getBitsPerSampleLookupKey(int i) {
-        if (i != 8) {
-            if (i != 12) {
-                if (i != 16) {
-                    if (i != 20) {
-                        return i != 24 ? -1 : 6;
-                    }
-                    return 5;
-                }
-                return 4;
-            }
-            return 2;
-        }
+    return Format.createAudioSampleFormat(
+        /* id= */ null,
+        MimeTypes.AUDIO_FLAC,
+        /* codecs= */ null,
+        getBitRate(),
+        maxInputSize,
+        channels,
+        sampleRate,
+        /* pcmEncoding= */ Format.NO_VALUE,
+        /* encoderDelay= */ 0,
+        /* encoderPadding= */ 0,
+        /* initializationData= */ Collections.singletonList(streamMarkerAndInfoBlock),
+        /* drmInitData= */ null,
+        /* selectionFlags= */ 0,
+        /* language= */ null,
+        metadataWithId3);
+  }
+
+  /** Returns a copy of the content metadata with entries from {@code other} appended. */
+  @Nullable
+  public Metadata getMetadataCopyWithAppendedEntriesFrom(@Nullable Metadata other) {
+    return metadata == null ? other : metadata.copyWithAppendedEntriesFrom(other);
+  }
+
+  /** Returns a copy of {@code this} with the seek table replaced by the one given. */
+  public FlacStreamMetadata copyWithSeekTable(@Nullable SeekTable seekTable) {
+    return new FlacStreamMetadata(
+        minBlockSizeSamples,
+        maxBlockSizeSamples,
+        minFrameSize,
+        maxFrameSize,
+        sampleRate,
+        channels,
+        bitsPerSample,
+        totalSamples,
+        seekTable,
+        metadata);
+  }
+
+  /** Returns a copy of {@code this} with the given Vorbis comments added to the metadata. */
+  public FlacStreamMetadata copyWithVorbisComments(List<String> vorbisComments) {
+    @Nullable
+    Metadata appendedMetadata =
+        getMetadataCopyWithAppendedEntriesFrom(
+            buildMetadata(vorbisComments, Collections.emptyList()));
+    return new FlacStreamMetadata(
+        minBlockSizeSamples,
+        maxBlockSizeSamples,
+        minFrameSize,
+        maxFrameSize,
+        sampleRate,
+        channels,
+        bitsPerSample,
+        totalSamples,
+        seekTable,
+        appendedMetadata);
+  }
+
+  /** Returns a copy of {@code this} with the given picture frames added to the metadata. */
+  public FlacStreamMetadata copyWithPictureFrames(List<PictureFrame> pictureFrames) {
+    @Nullable
+    Metadata appendedMetadata =
+        getMetadataCopyWithAppendedEntriesFrom(
+            buildMetadata(Collections.emptyList(), pictureFrames));
+    return new FlacStreamMetadata(
+        minBlockSizeSamples,
+        maxBlockSizeSamples,
+        minFrameSize,
+        maxFrameSize,
+        sampleRate,
+        channels,
+        bitsPerSample,
+        totalSamples,
+        seekTable,
+        appendedMetadata);
+  }
+
+  private static int getSampleRateLookupKey(int sampleRate) {
+    switch (sampleRate) {
+      case 88200:
         return 1;
+      case 176400:
+        return 2;
+      case 192000:
+        return 3;
+      case 8000:
+        return 4;
+      case 16000:
+        return 5;
+      case 22050:
+        return 6;
+      case 24000:
+        return 7;
+      case 32000:
+        return 8;
+      case 44100:
+        return 9;
+      case 48000:
+        return 10;
+      case 96000:
+        return 11;
+      default:
+        return NOT_IN_LOOKUP_TABLE;
+    }
+  }
+
+  private static int getBitsPerSampleLookupKey(int bitsPerSample) {
+    switch (bitsPerSample) {
+      case 8:
+        return 1;
+      case 12:
+        return 2;
+      case 16:
+        return 4;
+      case 20:
+        return 5;
+      case 24:
+        return 6;
+      default:
+        return NOT_IN_LOOKUP_TABLE;
+    }
+  }
+
+  @Nullable
+  private static Metadata buildMetadata(
+      List<String> vorbisComments, List<PictureFrame> pictureFrames) {
+    if (vorbisComments.isEmpty() && pictureFrames.isEmpty()) {
+      return null;
     }
 
-    private static int getSampleRateLookupKey(int i) {
-        switch (i) {
-            case ErrorCode.ERROR_OPENING_DATABASE_1 /* 8000 */:
-                return 4;
-            case 16000:
-                return 5;
-            case 22050:
-                return 6;
-            case 24000:
-                return 7;
-            case 32000:
-                return 8;
-            case 44100:
-                return 9;
-            case 48000:
-                return 10;
-            case 88200:
-                return 1;
-            case 96000:
-                return 11;
-            case 176400:
-                return 2;
-            case 192000:
-                return 3;
-            default:
-                return -1;
-        }
+    ArrayList<Metadata.Entry> metadataEntries = new ArrayList<>();
+    for (int i = 0; i < vorbisComments.size(); i++) {
+      String vorbisComment = vorbisComments.get(i);
+      String[] keyAndValue = Util.splitAtFirst(vorbisComment, SEPARATOR);
+      if (keyAndValue.length != 2) {
+        Log.w(TAG, "Failed to parse Vorbis comment: " + vorbisComment);
+      } else {
+        VorbisComment entry = new VorbisComment(keyAndValue[0], keyAndValue[1]);
+        metadataEntries.add(entry);
+      }
     }
+    metadataEntries.addAll(pictureFrames);
 
-    public FlacStreamMetadata copyWithPictureFrames(List<PictureFrame> list) {
-        return new FlacStreamMetadata(this.minBlockSizeSamples, this.maxBlockSizeSamples, this.minFrameSize, this.maxFrameSize, this.sampleRate, this.channels, this.bitsPerSample, this.totalSamples, this.seekTable, getMetadataCopyWithAppendedEntriesFrom(buildMetadata(Collections.emptyList(), list)));
-    }
-
-    public FlacStreamMetadata copyWithSeekTable(a aVar) {
-        return new FlacStreamMetadata(this.minBlockSizeSamples, this.maxBlockSizeSamples, this.minFrameSize, this.maxFrameSize, this.sampleRate, this.channels, this.bitsPerSample, this.totalSamples, aVar, this.metadata);
-    }
-
-    public FlacStreamMetadata copyWithVorbisComments(List<String> list) {
-        return new FlacStreamMetadata(this.minBlockSizeSamples, this.maxBlockSizeSamples, this.minFrameSize, this.maxFrameSize, this.sampleRate, this.channels, this.bitsPerSample, this.totalSamples, this.seekTable, getMetadataCopyWithAppendedEntriesFrom(buildMetadata(list, Collections.emptyList())));
-    }
-
-    public long getApproxBytesPerFrame() {
-        long j;
-        long j2;
-        long j3;
-        int i = this.maxFrameSize;
-        if (i > 0) {
-            j2 = (i + this.minFrameSize) / 2;
-            j3 = 1;
-        } else {
-            int i2 = this.minBlockSizeSamples;
-            if (i2 == this.maxBlockSizeSamples && i2 > 0) {
-                j = i2;
-            } else {
-                j = 4096;
-            }
-            j2 = ((j * this.channels) * this.bitsPerSample) / 8;
-            j3 = 64;
-        }
-        return j2 + j3;
-    }
-
-    public int getBitRate() {
-        return this.bitsPerSample * this.sampleRate * this.channels;
-    }
-
-    public long getDurationUs() {
-        long j = this.totalSamples;
-        if (j == 0) {
-            return -9223372036854775807L;
-        }
-        return (j * 1000000) / this.sampleRate;
-    }
-
-    public jd3 getFormat(byte[] bArr, mf6 mf6Var) {
-        mf6 mf6Var2;
-        int i;
-        bArr[4] = Byte.MIN_VALUE;
-        int i2 = this.maxFrameSize;
-        if (i2 > 0) {
-            i = i2;
-            mf6Var2 = mf6Var;
-        } else {
-            mf6Var2 = mf6Var;
-            i = -1;
-        }
-        return jd3.q(null, "audio/flac", null, getBitRate(), i, this.channels, this.sampleRate, -1, 0, 0, Collections.singletonList(bArr), null, 0, null, getMetadataCopyWithAppendedEntriesFrom(mf6Var2));
-    }
-
-    public int getMaxDecodedFrameSize() {
-        return this.maxBlockSizeSamples * this.channels * (this.bitsPerSample / 8);
-    }
-
-    public mf6 getMetadataCopyWithAppendedEntriesFrom(mf6 mf6Var) {
-        mf6 mf6Var2 = this.metadata;
-        return mf6Var2 == null ? mf6Var : mf6Var2.b(mf6Var);
-    }
-
-    public long getSampleNumber(long j) {
-        return tma.q((j * this.sampleRate) / 1000000, 0L, this.totalSamples - 1);
-    }
-
-    public FlacStreamMetadata(int i, int i2, int i3, int i4, int i5, int i6, int i7, long j, ArrayList<String> arrayList, ArrayList<PictureFrame> arrayList2) {
-        this(i, i2, i3, i4, i5, i6, i7, j, (a) null, buildMetadata(arrayList, arrayList2));
-    }
-
-    private FlacStreamMetadata(int i, int i2, int i3, int i4, int i5, int i6, int i7, long j, a aVar, mf6 mf6Var) {
-        this.minBlockSizeSamples = i;
-        this.maxBlockSizeSamples = i2;
-        this.minFrameSize = i3;
-        this.maxFrameSize = i4;
-        this.sampleRate = i5;
-        this.sampleRateLookupKey = getSampleRateLookupKey(i5);
-        this.channels = i6;
-        this.bitsPerSample = i7;
-        this.bitsPerSampleLookupKey = getBitsPerSampleLookupKey(i7);
-        this.totalSamples = j;
-        this.seekTable = aVar;
-        this.metadata = mf6Var;
-    }
+    return metadataEntries.isEmpty() ? null : new Metadata(metadataEntries);
+  }
 }

@@ -4,108 +4,84 @@ import android.app.Activity;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
-import org.telegram.messenger.a0;
-import org.telegram.messenger.voip.VoIPPendingCall;
-import org.telegram.messenger.y;
-/* loaded from: classes2.dex */
+
+import org.telegram.messenger.AccountInstance;
+import org.telegram.messenger.MessagesController;
+import org.telegram.messenger.NotificationCenter;
+import org.telegram.messenger.UserConfig;
+import org.telegram.tgnet.ConnectionsManager;
+import org.telegram.tgnet.TLRPC;
+import org.telegram.ui.Components.voip.VoIPHelper;
+
 public final class VoIPPendingCall {
-    private q2 accountInstance;
-    private final Activity activity;
-    private Handler handler;
-    private a0 notificationCenter;
-    private final a0.d observer;
-    private final Runnable releaseRunnable;
-    private boolean released;
+
+    public static VoIPPendingCall startOrSchedule(Activity activity, long userId, boolean video, AccountInstance accountInstance) {
+        return new VoIPPendingCall(activity, userId, video, 1000, accountInstance);
+    }
+
+    private final NotificationCenter.NotificationCenterDelegate observer = (id, account, args) -> {
+        if (id == NotificationCenter.didUpdateConnectionState) {
+            onConnectionStateUpdated(false);
+        }
+    };
+
+    private final Runnable releaseRunnable = () -> onConnectionStateUpdated(true);
+
     private final long userId;
     private final boolean video;
+    private final Activity activity;
 
-    private VoIPPendingCall(Activity activity, long j, boolean z, long j2, q2 q2Var) {
-        a0.d dVar = new a0.d() { // from class: xwa
-            @Override // org.telegram.messenger.a0.d
-            public final void didReceivedNotification(int i, int i2, Object[] objArr) {
-                VoIPPendingCall.this.lambda$new$0(i, i2, objArr);
-            }
-        };
-        this.observer = dVar;
-        Runnable runnable = new Runnable() { // from class: ywa
-            @Override // java.lang.Runnable
-            public final void run() {
-                VoIPPendingCall.this.lambda$new$1();
-            }
-        };
-        this.releaseRunnable = runnable;
+    private Handler handler;
+    private NotificationCenter notificationCenter;
+    private boolean released;
+    private AccountInstance accountInstance;
+
+    private VoIPPendingCall(Activity activity, long userId, boolean video, long expirationTime, AccountInstance accountInstance) {
         this.activity = activity;
-        this.userId = j;
-        this.video = z;
-        this.accountInstance = q2Var;
+        this.userId = userId;
+        this.video = video;
+        this.accountInstance = accountInstance;
         if (!onConnectionStateUpdated(false)) {
-            a0 k = a0.k(tla.o);
-            this.notificationCenter = k;
-            k.d(dVar, a0.r1);
-            Handler handler = new Handler(Looper.myLooper());
-            this.handler = handler;
-            handler.postDelayed(runnable, j2);
+            notificationCenter = NotificationCenter.getInstance(UserConfig.selectedAccount);
+            notificationCenter.addObserver(observer, NotificationCenter.didUpdateConnectionState);
+            handler = new Handler(Looper.myLooper());
+            handler.postDelayed(releaseRunnable, expirationTime);
         }
+    }
+
+    private boolean onConnectionStateUpdated(boolean force) {
+        if (!released && (force || isConnected(accountInstance) || isAirplaneMode())) {
+            final MessagesController messagesController = accountInstance.getMessagesController();
+            final TLRPC.User user = messagesController.getUser(userId);
+            if (user != null) {
+                final TLRPC.UserFull userFull = messagesController.getUserFull(user.id);
+                VoIPHelper.startCall(user, video, userFull != null && userFull.video_calls_available, activity, userFull, accountInstance);
+            } else if (isAirplaneMode()) {
+                VoIPHelper.startCall(null, video, false, activity, null, accountInstance);
+            }
+            release();
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isConnected(AccountInstance accountInstance) {
+        return accountInstance.getConnectionsManager().getConnectionState() == ConnectionsManager.ConnectionStateConnected;
     }
 
     private boolean isAirplaneMode() {
-        return Settings.System.getInt(this.activity.getContentResolver(), "airplane_mode_on", 0) != 0;
-    }
-
-    private boolean isConnected(q2 q2Var) {
-        return q2Var.b().getConnectionState() == 3;
-    }
-
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void lambda$new$0(int i, int i2, Object[] objArr) {
-        if (i == a0.r1) {
-            onConnectionStateUpdated(false);
-        }
-    }
-
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void lambda$new$1() {
-        onConnectionStateUpdated(true);
-    }
-
-    private boolean onConnectionStateUpdated(boolean z) {
-        boolean z2;
-        if (this.released || (!z && !isConnected(this.accountInstance) && !isAirplaneMode())) {
-            return false;
-        }
-        y l = this.accountInstance.l();
-        mq9 R8 = l.R8(Long.valueOf(this.userId));
-        if (R8 != null) {
-            nq9 S8 = l.S8(R8.f10557a);
-            boolean z3 = this.video;
-            if (S8 != null && S8.f) {
-                z2 = true;
-            } else {
-                z2 = false;
-            }
-            pwa.i0(R8, z3, z2, this.activity, S8, this.accountInstance);
-        } else if (isAirplaneMode()) {
-            pwa.i0(null, this.video, false, this.activity, null, this.accountInstance);
-        }
-        release();
-        return true;
-    }
-
-    public static VoIPPendingCall startOrSchedule(Activity activity, long j, boolean z, q2 q2Var) {
-        return new VoIPPendingCall(activity, j, z, 1000L, q2Var);
+        return Settings.System.getInt(activity.getContentResolver(), Settings.System.AIRPLANE_MODE_ON, 0) != 0;
     }
 
     public void release() {
-        if (!this.released) {
-            a0 a0Var = this.notificationCenter;
-            if (a0Var != null) {
-                a0Var.v(this.observer, a0.r1);
+        if (!released) {
+            if (notificationCenter != null) {
+                notificationCenter.removeObserver(observer, NotificationCenter.didUpdateConnectionState);
             }
-            Handler handler = this.handler;
             if (handler != null) {
-                handler.removeCallbacks(this.releaseRunnable);
+                handler.removeCallbacks(releaseRunnable);
             }
-            this.released = true;
+            released = true;
         }
     }
 }

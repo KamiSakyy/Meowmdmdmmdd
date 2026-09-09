@@ -1,82 +1,128 @@
+/*
+ *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc.audio;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
-import org.h2.api.ErrorCode;
-import org.webrtc.CalledByNative;
+import android.os.Build;
 import org.webrtc.Logging;
-import org.webrtc.MediaStreamTrack;
-/* JADX INFO: Access modifiers changed from: package-private */
-/* loaded from: classes3.dex */
-public class WebRtcAudioManager {
-    private static final int BITS_PER_SAMPLE = 16;
-    private static final int DEFAULT_FRAME_PER_BUFFER = 256;
-    private static final int DEFAULT_SAMPLE_RATE_HZ = 16000;
-    private static final String TAG = "WebRtcAudioManagerExternal";
+import org.webrtc.CalledByNative;
 
-    @CalledByNative
-    public static AudioManager getAudioManager(Context context) {
-        return (AudioManager) context.getSystemService(MediaStreamTrack.AUDIO_TRACK_KIND);
-    }
+/**
+ * This class contains static functions to query sample rate and input/output audio buffer sizes.
+ */
+class WebRtcAudioManager {
+  private static final String TAG = "WebRtcAudioManagerExternal";
 
-    @CalledByNative
-    public static int getInputBufferSize(Context context, AudioManager audioManager, int i, int i2) {
-        if (isLowLatencyInputSupported(context)) {
-            return getLowLatencyFramesPerBuffer(audioManager);
-        }
-        return getMinInputFrameSize(i, i2);
-    }
+  private static final int DEFAULT_SAMPLE_RATE_HZ = 16000;
 
-    private static int getLowLatencyFramesPerBuffer(AudioManager audioManager) {
-        String property = audioManager.getProperty("android.media.property.OUTPUT_FRAMES_PER_BUFFER");
-        if (property == null) {
-            return 256;
-        }
-        return Integer.parseInt(property);
-    }
+  // Default audio data format is PCM 16 bit per sample.
+  // Guaranteed to be supported by all devices.
+  private static final int BITS_PER_SAMPLE = 16;
 
-    private static int getMinInputFrameSize(int i, int i2) {
-        return AudioRecord.getMinBufferSize(i, i2 == 1 ? 16 : 12, 2) / (i2 * 2);
-    }
+  private static final int DEFAULT_FRAME_PER_BUFFER = 256;
 
-    private static int getMinOutputFrameSize(int i, int i2) {
-        return AudioTrack.getMinBufferSize(i, i2 == 1 ? 4 : 12, 2) / (i2 * 2);
-    }
+  @CalledByNative
+  static AudioManager getAudioManager(Context context) {
+    return (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+  }
 
-    @CalledByNative
-    public static int getOutputBufferSize(Context context, AudioManager audioManager, int i, int i2) {
-        if (isLowLatencyOutputSupported(context)) {
-            return getLowLatencyFramesPerBuffer(audioManager);
-        }
-        return getMinOutputFrameSize(i, i2);
-    }
+  @CalledByNative
+  static int getOutputBufferSize(
+      Context context, AudioManager audioManager, int sampleRate, int numberOfOutputChannels) {
+    return isLowLatencyOutputSupported(context)
+        ? getLowLatencyFramesPerBuffer(audioManager)
+        : getMinOutputFrameSize(sampleRate, numberOfOutputChannels);
+  }
 
-    @CalledByNative
-    public static int getSampleRate(AudioManager audioManager) {
-        if (WebRtcAudioUtils.runningOnEmulator()) {
-            Logging.d(TAG, "Running emulator, overriding sample rate to 8 kHz.");
-            return ErrorCode.ERROR_OPENING_DATABASE_1;
-        }
-        int sampleRateForApiLevel = getSampleRateForApiLevel(audioManager);
-        Logging.d(TAG, "Sample rate is set to " + sampleRateForApiLevel + " Hz");
-        return sampleRateForApiLevel;
-    }
+  @CalledByNative
+  static int getInputBufferSize(
+      Context context, AudioManager audioManager, int sampleRate, int numberOfInputChannels) {
+    return isLowLatencyInputSupported(context)
+        ? getLowLatencyFramesPerBuffer(audioManager)
+        : getMinInputFrameSize(sampleRate, numberOfInputChannels);
+  }
 
-    private static int getSampleRateForApiLevel(AudioManager audioManager) {
-        String property = audioManager.getProperty("android.media.property.OUTPUT_SAMPLE_RATE");
-        if (property == null) {
-            return DEFAULT_SAMPLE_RATE_HZ;
-        }
-        return Integer.parseInt(property);
-    }
+  private static boolean isLowLatencyOutputSupported(Context context) {
+    return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_AUDIO_LOW_LATENCY);
+  }
 
-    private static boolean isLowLatencyInputSupported(Context context) {
-        return isLowLatencyOutputSupported(context);
-    }
+  private static boolean isLowLatencyInputSupported(Context context) {
+    // TODO(henrika): investigate if some sort of device list is needed here
+    // as well. The NDK doc states that: "As of API level 21, lower latency
+    // audio input is supported on select devices. To take advantage of this
+    // feature, first confirm that lower latency output is available".
+    return Build.VERSION.SDK_INT >= 21 && isLowLatencyOutputSupported(context);
+  }
 
-    private static boolean isLowLatencyOutputSupported(Context context) {
-        return context.getPackageManager().hasSystemFeature("android.hardware.audio.low_latency");
+  /**
+   * Returns the native input/output sample rate for this device's output stream.
+   */
+  @CalledByNative
+  static int getSampleRate(AudioManager audioManager) {
+    // Override this if we're running on an old emulator image which only
+    // supports 8 kHz and doesn't support PROPERTY_OUTPUT_SAMPLE_RATE.
+    if (WebRtcAudioUtils.runningOnEmulator()) {
+      Logging.d(TAG, "Running emulator, overriding sample rate to 8 kHz.");
+      return 8000;
     }
+    // Deliver best possible estimate based on default Android AudioManager APIs.
+    final int sampleRateHz = getSampleRateForApiLevel(audioManager);
+    Logging.d(TAG, "Sample rate is set to " + sampleRateHz + " Hz");
+    return sampleRateHz;
+  }
+
+  private static int getSampleRateForApiLevel(AudioManager audioManager) {
+    if (Build.VERSION.SDK_INT < 17) {
+      return DEFAULT_SAMPLE_RATE_HZ;
+    }
+    String sampleRateString = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
+    return (sampleRateString == null) ? DEFAULT_SAMPLE_RATE_HZ : Integer.parseInt(sampleRateString);
+  }
+
+  // Returns the native output buffer size for low-latency output streams.
+  private static int getLowLatencyFramesPerBuffer(AudioManager audioManager) {
+    if (Build.VERSION.SDK_INT < 17) {
+      return DEFAULT_FRAME_PER_BUFFER;
+    }
+    String framesPerBuffer =
+        audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
+    return framesPerBuffer == null ? DEFAULT_FRAME_PER_BUFFER : Integer.parseInt(framesPerBuffer);
+  }
+
+  // Returns the minimum output buffer size for Java based audio (AudioTrack).
+  // This size can also be used for OpenSL ES implementations on devices that
+  // lacks support of low-latency output.
+  private static int getMinOutputFrameSize(int sampleRateInHz, int numChannels) {
+    final int bytesPerFrame = numChannels * (BITS_PER_SAMPLE / 8);
+    final int channelConfig =
+        (numChannels == 1 ? AudioFormat.CHANNEL_OUT_MONO : AudioFormat.CHANNEL_OUT_STEREO);
+    return AudioTrack.getMinBufferSize(
+               sampleRateInHz, channelConfig, AudioFormat.ENCODING_PCM_16BIT)
+        / bytesPerFrame;
+  }
+
+  // Returns the minimum input buffer size for Java based audio (AudioRecord).
+  // This size can calso be used for OpenSL ES implementations on devices that
+  // lacks support of low-latency input.
+  private static int getMinInputFrameSize(int sampleRateInHz, int numChannels) {
+    final int bytesPerFrame = numChannels * (BITS_PER_SAMPLE / 8);
+    final int channelConfig =
+        (numChannels == 1 ? AudioFormat.CHANNEL_IN_MONO : AudioFormat.CHANNEL_IN_STEREO);
+    return AudioRecord.getMinBufferSize(
+               sampleRateInHz, channelConfig, AudioFormat.ENCODING_PCM_16BIT)
+        / bytesPerFrame;
+  }
 }

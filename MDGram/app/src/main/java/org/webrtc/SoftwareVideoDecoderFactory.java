@@ -1,41 +1,58 @@
+/*
+ *  Copyright 2017 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
 
+import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
-/* loaded from: classes3.dex */
+import java.util.List;
+
 public class SoftwareVideoDecoderFactory implements VideoDecoderFactory {
-    public static VideoCodecInfo[] supportedCodecs() {
-        ArrayList arrayList = new ArrayList();
-        arrayList.add(new VideoCodecInfo("VP8", new HashMap()));
-        if (LibvpxVp9Decoder.nativeIsSupported()) {
-            arrayList.add(new VideoCodecInfo("VP9", new HashMap()));
-        }
-        arrayList.add(new VideoCodecInfo("H264", new HashMap()));
-        return (VideoCodecInfo[]) arrayList.toArray(new VideoCodecInfo[arrayList.size()]);
+  @Deprecated
+  @Nullable
+  @Override
+  public VideoDecoder createDecoder(String codecType) {
+    return createDecoder(new VideoCodecInfo(codecType, new HashMap<>()));
+  }
+
+  @Nullable
+  @Override
+  public VideoDecoder createDecoder(VideoCodecInfo codecType) {
+    if (codecType.getName().equalsIgnoreCase("VP8")) {
+      return new LibvpxVp8Decoder();
+    }
+    if (codecType.getName().equalsIgnoreCase("VP9") && LibvpxVp9Decoder.nativeIsSupported()) {
+      return new LibvpxVp9Decoder();
+    }
+    if (codecType.getName().equalsIgnoreCase("H264")) {
+      return new OpenH264Decoder();
     }
 
-    @Override // org.webrtc.VideoDecoderFactory
-    @Deprecated
-    public VideoDecoder createDecoder(String str) {
-        return createDecoder(new VideoCodecInfo(str, new HashMap()));
-    }
+    return null;
+  }
 
-    @Override // org.webrtc.VideoDecoderFactory
-    public VideoCodecInfo[] getSupportedCodecs() {
-        return supportedCodecs();
-    }
+  @Override
+  public VideoCodecInfo[] getSupportedCodecs() {
+    return supportedCodecs();
+  }
 
-    @Override // org.webrtc.VideoDecoderFactory
-    public VideoDecoder createDecoder(VideoCodecInfo videoCodecInfo) {
-        if (videoCodecInfo.getName().equalsIgnoreCase("VP8")) {
-            return new LibvpxVp8Decoder();
-        }
-        if (videoCodecInfo.getName().equalsIgnoreCase("VP9") && LibvpxVp9Decoder.nativeIsSupported()) {
-            return new LibvpxVp9Decoder();
-        }
-        if (videoCodecInfo.getName().equalsIgnoreCase("H264")) {
-            return new OpenH264Decoder();
-        }
-        return null;
+  static VideoCodecInfo[] supportedCodecs() {
+    List<VideoCodecInfo> codecs = new ArrayList<VideoCodecInfo>();
+
+    codecs.add(new VideoCodecInfo("VP8", new HashMap<>()));
+    if (LibvpxVp9Decoder.nativeIsSupported()) {
+      codecs.add(new VideoCodecInfo("VP9", new HashMap<>()));
     }
+    codecs.add(new VideoCodecInfo("H264", new HashMap<>()));
+
+    return codecs.toArray(new VideoCodecInfo[codecs.size()]);
+  }
 }

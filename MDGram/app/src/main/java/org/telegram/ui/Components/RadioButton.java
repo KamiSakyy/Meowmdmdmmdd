@@ -1,3 +1,11 @@
+/*
+ * This is the source code of Telegram for Android v. 5.x.x.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Nikolai Kudashov, 2013-2018.
+ */
+
 package org.telegram.ui.Components;
 
 import android.animation.ObjectAnimator;
@@ -8,188 +16,177 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
-import android.view.View;
 import androidx.annotation.Keep;
-/* loaded from: classes3.dex */
+import android.view.View;
+
+import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.FileLog;
+
 public class RadioButton extends View {
-    private static Paint checkedPaint;
-    private static Paint eraser;
-    private static Paint paint;
-    private boolean attachedToWindow;
+
     private Bitmap bitmap;
     private Canvas bitmapCanvas;
-    private ObjectAnimator checkAnimator;
+    private static Paint paint;
+    private static Paint eraser;
+    private static Paint checkedPaint;
+
     private int checkedColor;
     private int color;
-    private boolean isChecked;
+
     private float progress;
-    private int size;
+    private ObjectAnimator checkAnimator;
+
+    private boolean attachedToWindow;
+    private boolean isChecked;
+    private int size = AndroidUtilities.dp(16);
 
     public RadioButton(Context context) {
         super(context);
-        this.size = org.telegram.messenger.a.e0(16.0f);
         if (paint == null) {
-            Paint paint2 = new Paint(1);
-            paint = paint2;
-            paint2.setStrokeWidth(org.telegram.messenger.a.e0(2.0f));
+            paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            paint.setStrokeWidth(AndroidUtilities.dp(2));
             paint.setStyle(Paint.Style.STROKE);
-            checkedPaint = new Paint(1);
-            Paint paint3 = new Paint(1);
-            eraser = paint3;
-            paint3.setColor(0);
+            checkedPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            eraser = new Paint(Paint.ANTI_ALIAS_FLAG);
+            eraser.setColor(0);
             eraser.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
         }
+
         try {
-            this.bitmap = Bitmap.createBitmap(org.telegram.messenger.a.e0(this.size), org.telegram.messenger.a.e0(this.size), Bitmap.Config.ARGB_4444);
-            this.bitmapCanvas = new Canvas(this.bitmap);
-        } catch (Throwable th) {
-            org.telegram.messenger.l.p(th);
+            bitmap = Bitmap.createBitmap(AndroidUtilities.dp(size), AndroidUtilities.dp(size), Bitmap.Config.ARGB_4444);
+            bitmapCanvas = new Canvas(bitmap);
+        } catch (Throwable e) {
+            FileLog.e(e);
         }
     }
 
-    public final void a(boolean z) {
-        float f;
-        float[] fArr = new float[1];
-        if (z) {
-            f = 1.0f;
-        } else {
-            f = 0.0f;
-        }
-        fArr[0] = f;
-        ObjectAnimator ofFloat = ObjectAnimator.ofFloat(this, "progress", fArr);
-        this.checkAnimator = ofFloat;
-        ofFloat.setDuration(200L);
-        this.checkAnimator.start();
-    }
-
-    public final void b() {
-        ObjectAnimator objectAnimator = this.checkAnimator;
-        if (objectAnimator != null) {
-            objectAnimator.cancel();
-        }
-    }
-
-    public boolean c() {
-        return this.isChecked;
-    }
-
-    public void d(boolean z, boolean z2) {
-        float f;
-        if (z == this.isChecked) {
+    @Keep
+    public void setProgress(float value) {
+        if (progress == value) {
             return;
         }
-        this.isChecked = z;
-        if (this.attachedToWindow && z2) {
-            a(z);
-            return;
-        }
-        b();
-        if (z) {
-            f = 1.0f;
-        } else {
-            f = 0.0f;
-        }
-        setProgress(f);
-    }
-
-    public void e(int i, int i2) {
-        this.color = i;
-        this.checkedColor = i2;
+        progress = value;
         invalidate();
-    }
-
-    public int getColor() {
-        return this.color;
     }
 
     @Keep
     public float getProgress() {
-        return this.progress;
+        return progress;
     }
 
-    @Override // android.view.View
-    public void onAttachedToWindow() {
+    public void setSize(int value) {
+        if (size == value) {
+            return;
+        }
+        size = value;
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color1, int color2) {
+        color = color1;
+        checkedColor = color2;
+        invalidate();
+    }
+
+    public void setBackgroundColor(int color1) {
+        color = color1;
+        invalidate();
+    }
+
+    public void setCheckedColor(int color2) {
+        checkedColor = color2;
+        invalidate();
+    }
+
+    private void cancelCheckAnimator() {
+        if (checkAnimator != null) {
+            checkAnimator.cancel();
+        }
+    }
+
+    private void animateToCheckedState(boolean newCheckedState) {
+        checkAnimator = ObjectAnimator.ofFloat(this, "progress", newCheckedState ? 1 : 0);
+        checkAnimator.setDuration(200);
+        checkAnimator.start();
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        this.attachedToWindow = true;
+        attachedToWindow = true;
     }
 
-    @Override // android.view.View
-    public void onDetachedFromWindow() {
+    @Override
+    protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        this.attachedToWindow = false;
+        attachedToWindow = false;
     }
 
-    @Override // android.view.View
-    public void onDraw(Canvas canvas) {
-        float f;
-        Bitmap bitmap = this.bitmap;
+    public void setChecked(boolean checked, boolean animated) {
+        if (checked == isChecked) {
+            return;
+        }
+        isChecked = checked;
+
+        if (attachedToWindow && animated) {
+            animateToCheckedState(checked);
+        } else {
+            cancelCheckAnimator();
+            setProgress(checked ? 1.0f : 0.0f);
+        }
+    }
+
+    public boolean isChecked() {
+        return isChecked;
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
         if (bitmap == null || bitmap.getWidth() != getMeasuredWidth()) {
-            Bitmap bitmap2 = this.bitmap;
-            if (bitmap2 != null) {
-                bitmap2.recycle();
-                this.bitmap = null;
+            if (bitmap != null) {
+                bitmap.recycle();
+                bitmap = null;
             }
             try {
-                this.bitmap = Bitmap.createBitmap(getMeasuredWidth(), getMeasuredHeight(), Bitmap.Config.ARGB_8888);
-                this.bitmapCanvas = new Canvas(this.bitmap);
-            } catch (Throwable th) {
-                org.telegram.messenger.l.p(th);
+                bitmap = Bitmap.createBitmap(getMeasuredWidth(), getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+                bitmapCanvas = new Canvas(bitmap);
+            } catch (Throwable e) {
+                FileLog.e(e);
             }
         }
-        float f2 = this.progress;
-        if (f2 <= 0.5f) {
-            paint.setColor(this.color);
-            checkedPaint.setColor(this.color);
-            f = this.progress / 0.5f;
+        float circleProgress;
+        float innerRad;
+        if (progress <= 0.5f) {
+            paint.setColor(color);
+            checkedPaint.setColor(color);
+            circleProgress = progress / 0.5f;
         } else {
-            f = 2.0f - (f2 / 0.5f);
-            int red = Color.red(this.color);
-            float f3 = 1.0f - f;
-            int green = Color.green(this.color);
-            int blue = Color.blue(this.color);
-            int rgb = Color.rgb(red + ((int) ((Color.red(this.checkedColor) - red) * f3)), green + ((int) ((Color.green(this.checkedColor) - green) * f3)), blue + ((int) ((Color.blue(this.checkedColor) - blue) * f3)));
-            paint.setColor(rgb);
-            checkedPaint.setColor(rgb);
+            circleProgress = 2.0f - progress / 0.5f;
+            int r1 = Color.red(color);
+            int rD = (int) ((Color.red(checkedColor) - r1) * (1.0f - circleProgress));
+            int g1 = Color.green(color);
+            int gD = (int) ((Color.green(checkedColor) - g1) * (1.0f - circleProgress));
+            int b1 = Color.blue(color);
+            int bD = (int) ((Color.blue(checkedColor) - b1) * (1.0f - circleProgress));
+            int c = Color.rgb(r1 + rD, g1 + gD, b1 + bD);
+            paint.setColor(c);
+            checkedPaint.setColor(c);
         }
-        Bitmap bitmap3 = this.bitmap;
-        if (bitmap3 != null) {
-            bitmap3.eraseColor(0);
-            float f4 = (this.size / 2) - ((f + 1.0f) * org.telegram.messenger.a.b);
-            this.bitmapCanvas.drawCircle(getMeasuredWidth() / 2, getMeasuredHeight() / 2, f4, paint);
-            if (this.progress <= 0.5f) {
-                this.bitmapCanvas.drawCircle(getMeasuredWidth() / 2, getMeasuredHeight() / 2, f4 - org.telegram.messenger.a.e0(1.0f), checkedPaint);
-                this.bitmapCanvas.drawCircle(getMeasuredWidth() / 2, getMeasuredHeight() / 2, (f4 - org.telegram.messenger.a.e0(1.0f)) * (1.0f - f), eraser);
+        if (bitmap != null) {
+            bitmap.eraseColor(0);
+            float rad = size / 2 - (1 + circleProgress) * AndroidUtilities.density;
+            bitmapCanvas.drawCircle(getMeasuredWidth() / 2, getMeasuredHeight() / 2, rad, paint);
+            if (progress <= 0.5f) {
+                bitmapCanvas.drawCircle(getMeasuredWidth() / 2, getMeasuredHeight() / 2, (rad - AndroidUtilities.dp(1)), checkedPaint);
+                bitmapCanvas.drawCircle(getMeasuredWidth() / 2, getMeasuredHeight() / 2, (rad - AndroidUtilities.dp(1)) * (1.0f - circleProgress), eraser);
             } else {
-                this.bitmapCanvas.drawCircle(getMeasuredWidth() / 2, getMeasuredHeight() / 2, (this.size / 4) + (((f4 - org.telegram.messenger.a.e0(1.0f)) - (this.size / 4)) * f), checkedPaint);
+                bitmapCanvas.drawCircle(getMeasuredWidth() / 2, getMeasuredHeight() / 2, size / 4 + (rad - AndroidUtilities.dp(1) - size / 4) * circleProgress, checkedPaint);
             }
-            canvas.drawBitmap(this.bitmap, 0.0f, 0.0f, (Paint) null);
+
+            canvas.drawBitmap(bitmap, 0, 0, null);
         }
-    }
-
-    @Override // android.view.View
-    public void setBackgroundColor(int i) {
-        this.color = i;
-        invalidate();
-    }
-
-    public void setCheckedColor(int i) {
-        this.checkedColor = i;
-        invalidate();
-    }
-
-    @Keep
-    public void setProgress(float f) {
-        if (this.progress == f) {
-            return;
-        }
-        this.progress = f;
-        invalidate();
-    }
-
-    public void setSize(int i) {
-        if (this.size == i) {
-            return;
-        }
-        this.size = i;
     }
 }

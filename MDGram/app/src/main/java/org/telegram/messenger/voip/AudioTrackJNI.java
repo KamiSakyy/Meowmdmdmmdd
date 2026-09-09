@@ -1,153 +1,125 @@
 package org.telegram.messenger.voip;
 
+import android.media.AudioFormat;
+import android.media.AudioManager;
 import android.media.AudioTrack;
+
 import java.nio.ByteBuffer;
-import org.telegram.messenger.voip.AudioTrackJNI;
-/* loaded from: classes2.dex */
+
+/**
+ * Created by grishka on 20.12.16.
+ */
+
 public class AudioTrackJNI {
-    private AudioTrack audioTrack;
-    private byte[] buffer = new byte[1920];
-    private long nativeInst;
-    private boolean needResampling;
-    private boolean running;
-    private Thread thread;
+	private AudioTrack audioTrack;
+	private byte[] buffer = new byte[960 * 2];
+	private boolean running;
+	private Thread thread;
+	private boolean needResampling;
 
-    public AudioTrackJNI(long j) {
-        this.nativeInst = j;
-    }
+	private long nativeInst;
 
-    private int getBufferSize(int i, int i2) {
-        return Math.max(AudioTrack.getMinBufferSize(i2, 4, 2), i);
-    }
+	public AudioTrackJNI(long ptr) {
+		nativeInst = ptr;
+	}
 
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void lambda$startThread$0() {
-        ByteBuffer byteBuffer;
-        try {
-            this.audioTrack.play();
-            ByteBuffer byteBuffer2 = null;
-            if (this.needResampling) {
-                byteBuffer = ByteBuffer.allocateDirect(1920);
-            } else {
-                byteBuffer = null;
-            }
-            if (this.needResampling) {
-                byteBuffer2 = ByteBuffer.allocateDirect(1764);
-            }
-            while (this.running) {
-                try {
-                    if (this.needResampling) {
-                        nativeCallback(this.buffer);
-                        byteBuffer.rewind();
-                        byteBuffer.put(this.buffer);
-                        Resampler.convert48to44(byteBuffer, byteBuffer2);
-                        byteBuffer2.rewind();
-                        byteBuffer2.get(this.buffer, 0, 1764);
-                        this.audioTrack.write(this.buffer, 0, 1764);
-                    } else {
-                        nativeCallback(this.buffer);
-                        this.audioTrack.write(this.buffer, 0, 1920);
-                    }
-                } catch (Exception e) {
-                    VLog.e(e);
-                }
-                if (!this.running) {
-                    this.audioTrack.stop();
-                    break;
-                }
-                continue;
-            }
-            VLog.i("audiotrack thread exits");
-        } catch (Exception e2) {
-            VLog.e("error starting AudioTrack", e2);
-        }
-    }
+	private int getBufferSize(int min, int sampleRate) {
+		return Math.max(AudioTrack.getMinBufferSize(sampleRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT), min);
+	}
 
-    private native void nativeCallback(byte[] bArr);
+	public void init(int sampleRate, int bitsPerSample, int channels, int bufferSize) {
+		if (audioTrack != null) {
+			throw new IllegalStateException("already inited");
+		}
+		int size = getBufferSize(bufferSize, 48000);
+		audioTrack = new AudioTrack(AudioManager.STREAM_VOICE_CALL, 48000, channels == 1 ? AudioFormat.CHANNEL_OUT_MONO : AudioFormat.CHANNEL_OUT_STEREO, AudioFormat.ENCODING_PCM_16BIT, size, AudioTrack.MODE_STREAM);
+		if (audioTrack.getState() != AudioTrack.STATE_INITIALIZED) {
+			VLog.w("Error initializing AudioTrack with 48k, trying 44.1k with resampling");
+			try {
+				audioTrack.release();
+			} catch (Throwable ignore) {
+			}
+			size = getBufferSize(bufferSize * 6, 44100);
+			VLog.d("buffer size: " + size);
+			audioTrack = new AudioTrack(AudioManager.STREAM_VOICE_CALL, 44100, channels == 1 ? AudioFormat.CHANNEL_OUT_MONO : AudioFormat.CHANNEL_OUT_STEREO, AudioFormat.ENCODING_PCM_16BIT, size, AudioTrack.MODE_STREAM);
+			needResampling = true;
+		}
+	}
 
-    private void startThread() {
-        if (this.thread == null) {
-            this.running = true;
-            Thread thread = new Thread(new Runnable() { // from class: nq
-                @Override // java.lang.Runnable
-                public final void run() {
-                    AudioTrackJNI.this.lambda$startThread$0();
-                }
-            });
-            this.thread = thread;
-            thread.start();
-            return;
-        }
-        throw new IllegalStateException("thread already started");
-    }
+	public void stop() {
+		if (audioTrack != null) {
+			try {
+				audioTrack.stop();
+			} catch (Exception ignore) {
 
-    public void init(int i, int i2, int i3, int i4) {
-        int i5;
-        int i6;
-        if (this.audioTrack == null) {
-            int bufferSize = getBufferSize(i4, 48000);
-            if (i3 == 1) {
-                i5 = 4;
-            } else {
-                i5 = 12;
-            }
-            AudioTrack audioTrack = new AudioTrack(0, 48000, i5, 2, bufferSize, 1);
-            this.audioTrack = audioTrack;
-            if (audioTrack.getState() != 1) {
-                VLog.w("Error initializing AudioTrack with 48k, trying 44.1k with resampling");
-                try {
-                    this.audioTrack.release();
-                } catch (Throwable unused) {
-                }
-                int bufferSize2 = getBufferSize(i4 * 6, 44100);
-                VLog.d("buffer size: " + bufferSize2);
-                if (i3 == 1) {
-                    i6 = 4;
-                } else {
-                    i6 = 12;
-                }
-                this.audioTrack = new AudioTrack(0, 44100, i6, 2, bufferSize2, 1);
-                this.needResampling = true;
-                return;
-            }
-            return;
-        }
-        throw new IllegalStateException("already inited");
-    }
+			}
+		}
+	}
 
-    public void release() {
-        this.running = false;
-        Thread thread = this.thread;
-        if (thread != null) {
-            try {
-                thread.join();
-            } catch (InterruptedException e) {
-                VLog.e(e);
-            }
-            this.thread = null;
-        }
-        AudioTrack audioTrack = this.audioTrack;
-        if (audioTrack != null) {
-            audioTrack.release();
-            this.audioTrack = null;
-        }
-    }
+	public void release() {
+		running = false;
+		if (thread != null) {
+			try {
+				thread.join();
+			} catch (InterruptedException e) {
+				VLog.e(e);
+			}
+			thread = null;
+		}
+		if (audioTrack != null) {
+			audioTrack.release();
+			audioTrack = null;
+		}
+	}
 
-    public void start() {
-        if (this.thread == null) {
-            startThread();
-        } else {
-            this.audioTrack.play();
-        }
-    }
+	public void start() {
+		if (thread == null) {
+			startThread();
+		} else {
+			audioTrack.play();
+		}
+	}
 
-    public void stop() {
-        AudioTrack audioTrack = this.audioTrack;
-        if (audioTrack != null) {
-            try {
-                audioTrack.stop();
-            } catch (Exception unused) {
-            }
-        }
-    }
+	private void startThread() {
+		if (thread != null) {
+			throw new IllegalStateException("thread already started");
+		}
+		running = true;
+		thread = new Thread(() -> {
+			try {
+				audioTrack.play();
+			} catch (Exception x) {
+				VLog.e("error starting AudioTrack", x);
+				return;
+			}
+			ByteBuffer tmp48 = needResampling ? ByteBuffer.allocateDirect(960 * 2) : null;
+			ByteBuffer tmp44 = needResampling ? ByteBuffer.allocateDirect(882 * 2) : null;
+			while (running) {
+				try {
+					if (needResampling) {
+						nativeCallback(buffer);
+						tmp48.rewind();
+						tmp48.put(buffer);
+						Resampler.convert48to44(tmp48, tmp44);
+						tmp44.rewind();
+						tmp44.get(buffer, 0, 882 * 2);
+						audioTrack.write(buffer, 0, 882 * 2);
+					} else {
+						nativeCallback(buffer);
+						audioTrack.write(buffer, 0, 960 * 2);
+					}
+					if (!running) {
+						audioTrack.stop();
+						break;
+					}
+				} catch (Exception e) {
+					VLog.e(e);
+				}
+			}
+			VLog.i("audiotrack thread exits");
+		});
+		thread.start();
+	}
+
+	private native void nativeCallback(byte[] buf);
 }

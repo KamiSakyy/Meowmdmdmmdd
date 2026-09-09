@@ -1,3 +1,11 @@
+/*
+ * This is the source code of Telegram for Android v. 5.x.x.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Nikolai Kudashov, 2013-2018.
+ */
+
 package org.telegram.messenger;
 
 import android.accounts.Account;
@@ -10,44 +18,48 @@ import android.content.Intent;
 import android.content.SyncResult;
 import android.os.Bundle;
 import android.os.IBinder;
-/* loaded from: classes2.dex */
+
 public class ContactsSyncAdapterService extends Service {
-    public static a a;
+    private static SyncAdapterImpl sSyncAdapter = null;
 
-    /* loaded from: classes2.dex */
-    public static class a extends AbstractThreadedSyncAdapter {
-        public Context a;
+    public ContactsSyncAdapterService() {
+        super();
+    }
 
-        public a(Context context) {
+    private static class SyncAdapterImpl extends AbstractThreadedSyncAdapter {
+        private Context mContext;
+
+        public SyncAdapterImpl(Context context) {
             super(context, true);
-            this.a = context;
+            mContext = context;
         }
 
-        @Override // android.content.AbstractThreadedSyncAdapter
-        public void onPerformSync(Account account, Bundle bundle, String str, ContentProviderClient contentProviderClient, SyncResult syncResult) {
+        @Override
+        public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
             try {
-                ContactsSyncAdapterService.c(this.a, account, bundle, str, contentProviderClient, syncResult);
+                ContactsSyncAdapterService.performSync(mContext, account, extras, authority, provider, syncResult);
             } catch (OperationCanceledException e) {
-                l.p(e);
+                FileLog.e(e);
             }
         }
     }
 
-    public static void c(Context context, Account account, Bundle bundle, String str, ContentProviderClient contentProviderClient, SyncResult syncResult) {
-        if (s60.f18613b) {
-            l.k("performSync: " + account.toString());
-        }
-    }
-
-    public final a b() {
-        if (a == null) {
-            a = new a(this);
-        }
-        return a;
-    }
-
-    @Override // android.app.Service
+    @Override
     public IBinder onBind(Intent intent) {
-        return b().getSyncAdapterBinder();
+        return getSyncAdapter().getSyncAdapterBinder();
+    }
+
+    private SyncAdapterImpl getSyncAdapter() {
+        if (sSyncAdapter == null) {
+            sSyncAdapter = new SyncAdapterImpl(this);
+        }
+        return sSyncAdapter;
+    }
+
+    private static void performSync(Context context, Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult)
+            throws OperationCanceledException {
+        if (BuildVars.LOGS_ENABLED) {
+            FileLog.d("performSync: " + account.toString());
+        }
     }
 }

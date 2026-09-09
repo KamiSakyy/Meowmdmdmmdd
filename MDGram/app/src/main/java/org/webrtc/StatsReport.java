@@ -1,56 +1,63 @@
+/*
+ *  Copyright 2013 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
 
-import org.dizitart.no2.Constants;
-/* loaded from: classes3.dex */
+/** Java version of webrtc::StatsReport. */
 public class StatsReport {
-    public final String id;
-    public final double timestamp;
-    public final String type;
-    public final Value[] values;
+  /** Java version of webrtc::StatsReport::Value. */
+  public static class Value {
+    public final String name;
+    public final String value;
 
-    /* loaded from: classes3.dex */
-    public static class Value {
-        public final String name;
-        public final String value;
-
-        @CalledByNative("Value")
-        public Value(String str, String str2) {
-            this.name = str;
-            this.value = str2;
-        }
-
-        public String toString() {
-            return Constants.ID_PREFIX + this.name + ": " + this.value + "]";
-        }
+    @CalledByNative("Value")
+    public Value(String name, String value) {
+      this.name = name;
+      this.value = value;
     }
 
-    @CalledByNative
-    public StatsReport(String str, String str2, double d, Value[] valueArr) {
-        this.id = str;
-        this.type = str2;
-        this.timestamp = d;
-        this.values = valueArr;
-    }
-
+    @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("id: ");
-        sb.append(this.id);
-        sb.append(", type: ");
-        sb.append(this.type);
-        sb.append(", timestamp: ");
-        sb.append(this.timestamp);
-        sb.append(", values: ");
-        int i = 0;
-        while (true) {
-            Value[] valueArr = this.values;
-            if (i < valueArr.length) {
-                sb.append(valueArr[i].toString());
-                sb.append(", ");
-                i++;
-            } else {
-                return sb.toString();
-            }
-        }
+      StringBuilder builder = new StringBuilder();
+      builder.append("[").append(name).append(": ").append(value).append("]");
+      return builder.toString();
     }
+  }
+
+  public final String id;
+  public final String type;
+  // Time since 1970-01-01T00:00:00Z in milliseconds.
+  public final double timestamp;
+  public final Value[] values;
+
+  @CalledByNative
+  public StatsReport(String id, String type, double timestamp, Value[] values) {
+    this.id = id;
+    this.type = type;
+    this.timestamp = timestamp;
+    this.values = values;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    builder.append("id: ")
+        .append(id)
+        .append(", type: ")
+        .append(type)
+        .append(", timestamp: ")
+        .append(timestamp)
+        .append(", values: ");
+    for (int i = 0; i < values.length; ++i) {
+      builder.append(values[i].toString()).append(", ");
+    }
+    return builder.toString();
+  }
 }

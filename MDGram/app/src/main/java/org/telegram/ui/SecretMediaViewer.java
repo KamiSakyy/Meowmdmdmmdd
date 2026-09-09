@@ -1,16 +1,26 @@
+/*
+ * This is the source code of Telegram for Android v. 5.x.x.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Nikolai Kudashov, 2013-2018.
+ */
+
 package org.telegram.ui;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.Point;
+import android.graphics.PixelFormat;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.graphics.drawable.BitmapDrawable;
@@ -18,9 +28,10 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
-import android.util.Property;
+import androidx.annotation.Keep;
 import android.util.SparseArray;
 import android.view.GestureDetector;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.TextureView;
 import android.view.VelocityTracker;
@@ -30,1501 +41,1676 @@ import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
-import androidx.annotation.Keep;
-import androidx.recyclerview.widget.j;
-import com.blankj.utilcode.constant.MemoryConstants;
-import defpackage.dc;
+
+import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
+
+import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.ImageLocation;
+import org.telegram.messenger.ImageReceiver;
+import org.telegram.messenger.LocaleController;
+import org.telegram.messenger.MessageObject;
+import org.telegram.messenger.NotificationCenter;
+import org.telegram.messenger.FileLoader;
+import org.telegram.messenger.FileLog;
+import org.telegram.messenger.R;
+import org.telegram.messenger.SharedConfig;
+import org.telegram.messenger.UserConfig;
+import org.telegram.tgnet.ConnectionsManager;
+import org.telegram.tgnet.TLRPC;
+import org.telegram.ui.ActionBar.ActionBar;
+import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.Components.AnimationProperties;
+import org.telegram.ui.Components.CubicBezierInterpolator;
+import org.telegram.ui.Components.LayoutHelper;
+import org.telegram.ui.Components.Scroller;
+import org.telegram.ui.Components.TimerParticles;
+import org.telegram.ui.Components.VideoPlayer;
+
 import java.io.File;
 import java.util.ArrayList;
-import org.telegram.messenger.ImageReceiver;
-import org.telegram.messenger.a0;
-import org.telegram.tgnet.ConnectionsManager;
-import org.telegram.ui.ActionBar.DrawerLayoutContainer;
-import org.telegram.ui.ActionBar.a;
-import org.telegram.ui.Components.i3;
-import org.telegram.ui.PhotoViewer;
-import org.telegram.ui.SecretMediaViewer;
-/* loaded from: classes2.dex */
-public class SecretMediaViewer implements a0.d, GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
-    @SuppressLint({"StaticFieldLeak"})
-    private static volatile SecretMediaViewer Instance;
-    private org.telegram.ui.ActionBar.a actionBar;
-    private int[] animateFromRadius;
-    private float animateToClipBottom;
-    private float animateToClipBottomOrigin;
-    private float animateToClipHorizontal;
-    private float animateToClipTop;
-    private float animateToClipTopOrigin;
-    private boolean animateToRadius;
-    private float animateToScale;
-    private float animateToX;
-    private float animateToY;
-    private long animationStartTime;
-    private float animationValue;
-    private pn aspectRatioFrameLayout;
-    private float clipBottom;
-    private float clipBottomOrigin;
-    private float clipHorizontal;
-    private float clipTop;
-    private float clipTopOrigin;
-    private boolean closeAfterAnimation;
-    private long closeTime;
-    private boolean closeVideoAfterWatch;
-    private j containerView;
-    private int currentAccount;
-    private AnimatorSet currentActionBarAnimation;
-    private long currentDialogId;
-    private org.telegram.messenger.x currentMessageObject;
-    private PhotoViewer.o2 currentProvider;
-    private float[] currentRadii;
-    private ImageReceiver.b currentThumb;
-    private boolean disableShowCheck;
-    private boolean discardTap;
-    private boolean doubleTap;
-    private float dragY;
-    private boolean draggingDown;
-    private GestureDetector gestureDetector;
-    private AnimatorSet imageMoveAnimation;
-    private boolean invalidCoords;
-    private boolean isPhotoVisible;
-    private boolean isPlaying;
-    private boolean isVideo;
-    private boolean isVisible;
-    private Object lastInsets;
-    private float maxX;
-    private float maxY;
-    private float minX;
-    private float minY;
-    private float moveStartX;
-    private float moveStartY;
-    private boolean moving;
-    private long openTime;
-    private Activity parentActivity;
-    private Runnable photoAnimationEndRunnable;
-    private int photoAnimationInProgress;
-    private long photoTransitionAnimationStartTime;
-    private float pinchCenterX;
-    private float pinchCenterY;
-    private float pinchStartDistance;
-    private float pinchStartX;
-    private float pinchStartY;
-    private int playerRetryPlayCount;
-    private tl8 scroller;
-    private k secretDeleteTimer;
-    private boolean textureUploaded;
-    private float translationX;
-    private float translationY;
-    private boolean useOvershootForScale;
-    private VelocityTracker velocityTracker;
-    private float videoCrossfadeAlpha;
-    private long videoCrossfadeAlphaLastTime;
-    private boolean videoCrossfadeStarted;
-    private i3 videoPlayer;
-    private TextureView videoTextureView;
-    private boolean videoWatchedOneTime;
-    private boolean wasLightNavigationBar;
-    private int wasNavigationBarColor;
-    private WindowManager.LayoutParams windowLayoutParams;
-    private FrameLayout windowView;
-    private boolean zoomAnimation;
-    private boolean zooming;
-    private ImageReceiver centerImage = new ImageReceiver();
-    private int[] coords = new int[2];
-    private boolean isActionBarVisible = true;
-    private PhotoBackgroundDrawable photoBackgroundDrawable = new PhotoBackgroundDrawable(-16777216);
-    private Paint blackPaint = new Paint();
-    private float scale = 1.0f;
-    private DecelerateInterpolator interpolator = new DecelerateInterpolator(1.5f);
-    private float pinchStartScale = 1.0f;
-    private boolean canDragDown = true;
-    private Path roundRectPath = new Path();
 
-    /* loaded from: classes2.dex */
-    public class PhotoBackgroundDrawable extends ColorDrawable {
-        private Runnable drawRunnable;
-        private int frame;
+public class SecretMediaViewer implements NotificationCenter.NotificationCenterDelegate, GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
 
-        public PhotoBackgroundDrawable(int i) {
-            super(i);
-        }
-
-        @Override // android.graphics.drawable.ColorDrawable, android.graphics.drawable.Drawable
-        public void draw(Canvas canvas) {
-            Runnable runnable;
-            super.draw(canvas);
-            if (getAlpha() != 0) {
-                if (this.frame == 2 && (runnable = this.drawRunnable) != null) {
-                    runnable.run();
-                    this.drawRunnable = null;
-                } else {
-                    invalidateSelf();
-                }
-                this.frame++;
-            }
-        }
-
-        @Override // android.graphics.drawable.ColorDrawable, android.graphics.drawable.Drawable
-        @Keep
-        public void setAlpha(int i) {
-            boolean z;
-            if (SecretMediaViewer.this.parentActivity instanceof LaunchActivity) {
-                DrawerLayoutContainer drawerLayoutContainer = ((LaunchActivity) SecretMediaViewer.this.parentActivity).drawerLayoutContainer;
-                if (SecretMediaViewer.this.isPhotoVisible && i == 255) {
-                    z = false;
-                } else {
-                    z = true;
-                }
-                drawerLayoutContainer.setAllowDrawContent(z);
-            }
-            super.setAlpha(i);
-        }
-    }
-
-    /* loaded from: classes2.dex */
-    public class a implements i3.d {
-        public final /* synthetic */ File val$file;
-
-        public a(File file) {
-            this.val$file = file;
-        }
-
-        /* JADX INFO: Access modifiers changed from: private */
-        public /* synthetic */ void j(File file) {
-            SecretMediaViewer.this.q0(file);
-        }
-
-        @Override // org.telegram.ui.Components.i3.d
-        public void a(int i, int i2, int i3, float f) {
-            float f2;
-            if (SecretMediaViewer.this.aspectRatioFrameLayout != null) {
-                if (i3 != 90 && i3 != 270) {
-                    i2 = i;
-                    i = i2;
-                }
-                pn pnVar = SecretMediaViewer.this.aspectRatioFrameLayout;
-                if (i == 0) {
-                    f2 = 1.0f;
-                } else {
-                    f2 = (i2 * f) / i;
-                }
-                pnVar.c(f2, i3);
-            }
-        }
-
-        @Override // org.telegram.ui.Components.i3.d
-        public /* synthetic */ void b(dc.a aVar) {
-            xoa.c(this, aVar);
-        }
-
-        @Override // org.telegram.ui.Components.i3.d
-        public void c() {
-            if (!SecretMediaViewer.this.textureUploaded) {
-                SecretMediaViewer.this.textureUploaded = true;
-                SecretMediaViewer.this.containerView.invalidate();
-            }
-        }
-
-        @Override // org.telegram.ui.Components.i3.d
-        public void d(boolean z, int i) {
-            if (SecretMediaViewer.this.videoPlayer != null && SecretMediaViewer.this.currentMessageObject != null) {
-                if (i != 4 && i != 1) {
-                    try {
-                        SecretMediaViewer.this.parentActivity.getWindow().addFlags(128);
-                    } catch (Exception e) {
-                        org.telegram.messenger.l.p(e);
-                    }
-                } else {
-                    try {
-                        SecretMediaViewer.this.parentActivity.getWindow().clearFlags(128);
-                    } catch (Exception e2) {
-                        org.telegram.messenger.l.p(e2);
-                    }
-                }
-                if (i == 3 && SecretMediaViewer.this.aspectRatioFrameLayout.getVisibility() != 0) {
-                    SecretMediaViewer.this.aspectRatioFrameLayout.setVisibility(0);
-                }
-                if (SecretMediaViewer.this.videoPlayer.q0() && i != 4) {
-                    if (!SecretMediaViewer.this.isPlaying) {
-                        SecretMediaViewer.this.isPlaying = true;
-                    }
-                } else if (SecretMediaViewer.this.isPlaying) {
-                    SecretMediaViewer.this.isPlaying = false;
-                    if (i == 4) {
-                        SecretMediaViewer.this.videoWatchedOneTime = true;
-                        if (SecretMediaViewer.this.closeVideoAfterWatch) {
-                            SecretMediaViewer.this.W(true, true);
-                            return;
-                        }
-                        SecretMediaViewer.this.videoPlayer.x0(0L);
-                        SecretMediaViewer.this.videoPlayer.t0();
-                    }
-                }
-            }
-        }
-
-        @Override // org.telegram.ui.Components.i3.d
-        public boolean e(SurfaceTexture surfaceTexture) {
-            return false;
-        }
-
-        @Override // org.telegram.ui.Components.i3.d
-        public void f(i3 i3Var, Exception exc) {
-            if (SecretMediaViewer.this.playerRetryPlayCount > 0) {
-                SecretMediaViewer secretMediaViewer = SecretMediaViewer.this;
-                secretMediaViewer.playerRetryPlayCount--;
-                final File file = this.val$file;
-                org.telegram.messenger.a.n3(new Runnable() { // from class: vo8
-                    @Override // java.lang.Runnable
-                    public final void run() {
-                        SecretMediaViewer.a.this.j(file);
-                    }
-                }, 100L);
-                return;
-            }
-            org.telegram.messenger.l.p(exc);
-        }
-
-        @Override // org.telegram.ui.Components.i3.d
-        public /* synthetic */ void g(dc.a aVar) {
-            xoa.b(this, aVar);
-        }
-
-        @Override // org.telegram.ui.Components.i3.d
-        public /* synthetic */ void h(dc.a aVar) {
-            xoa.a(this, aVar);
-        }
-
-        @Override // org.telegram.ui.Components.i3.d
-        public void onSurfaceTextureUpdated(SurfaceTexture surfaceTexture) {
-        }
-    }
-
-    /* loaded from: classes2.dex */
-    public class b extends FrameLayout {
-        public b(Context context) {
-            super(context);
-        }
-
-        @Override // android.view.View
-        public void onDraw(Canvas canvas) {
-            if (SecretMediaViewer.this.isVisible && SecretMediaViewer.this.lastInsets != null) {
-                WindowInsets windowInsets = (WindowInsets) SecretMediaViewer.this.lastInsets;
-                if (SecretMediaViewer.this.photoAnimationInProgress != 0) {
-                    SecretMediaViewer.this.blackPaint.setAlpha(SecretMediaViewer.this.photoBackgroundDrawable.getAlpha());
-                } else {
-                    SecretMediaViewer.this.blackPaint.setAlpha(255);
-                }
-                canvas.drawRect(0.0f, getMeasuredHeight(), getMeasuredWidth(), getMeasuredHeight() + windowInsets.getSystemWindowInsetBottom(), SecretMediaViewer.this.blackPaint);
-            }
-        }
-
-        @Override // android.widget.FrameLayout, android.view.ViewGroup, android.view.View
-        public void onLayout(boolean z, int i, int i2, int i3, int i4) {
-            int i5;
-            if (SecretMediaViewer.this.lastInsets != null) {
-                i5 = ((WindowInsets) SecretMediaViewer.this.lastInsets).getSystemWindowInsetLeft() + 0;
-            } else {
-                i5 = 0;
-            }
-            SecretMediaViewer.this.containerView.layout(i5, 0, SecretMediaViewer.this.containerView.getMeasuredWidth() + i5, SecretMediaViewer.this.containerView.getMeasuredHeight());
-            if (z) {
-                if (SecretMediaViewer.this.imageMoveAnimation == null) {
-                    SecretMediaViewer.this.scale = 1.0f;
-                    SecretMediaViewer.this.translationX = 0.0f;
-                    SecretMediaViewer.this.translationY = 0.0f;
-                }
-                SecretMediaViewer secretMediaViewer = SecretMediaViewer.this;
-                secretMediaViewer.v0(secretMediaViewer.scale);
-            }
-        }
-
-        @Override // android.widget.FrameLayout, android.view.View
-        public void onMeasure(int i, int i2) {
-            int size = View.MeasureSpec.getSize(i);
-            int size2 = View.MeasureSpec.getSize(i2);
-            if (SecretMediaViewer.this.lastInsets != null) {
-                WindowInsets windowInsets = (WindowInsets) SecretMediaViewer.this.lastInsets;
-                if (org.telegram.messenger.a.f12485d) {
-                    int i3 = org.telegram.messenger.a.f12447a.y;
-                    if (size2 > i3) {
-                        size2 = i3;
-                    }
-                    size2 += org.telegram.messenger.a.f12472b;
-                }
-                size2 -= windowInsets.getSystemWindowInsetBottom();
-                size -= windowInsets.getSystemWindowInsetRight();
-            } else {
-                int i4 = org.telegram.messenger.a.f12447a.y;
-                if (size2 > i4) {
-                    size2 = i4;
-                }
-            }
-            setMeasuredDimension(size, size2);
-            if (SecretMediaViewer.this.lastInsets != null) {
-                size -= ((WindowInsets) SecretMediaViewer.this.lastInsets).getSystemWindowInsetLeft();
-            }
-            SecretMediaViewer.this.containerView.measure(View.MeasureSpec.makeMeasureSpec(size, MemoryConstants.GB), View.MeasureSpec.makeMeasureSpec(size2, MemoryConstants.GB));
-        }
-    }
-
-    /* loaded from: classes2.dex */
-    public class c extends j {
-        public c(Context context) {
-            super(context);
-        }
-
-        @Override // android.widget.FrameLayout, android.view.ViewGroup, android.view.View
-        public void onLayout(boolean z, int i, int i2, int i3, int i4) {
-            super.onLayout(z, i, i2, i3, i4);
-            if (SecretMediaViewer.this.secretDeleteTimer != null) {
-                int currentActionBarHeight = ((org.telegram.ui.ActionBar.a.getCurrentActionBarHeight() - SecretMediaViewer.this.secretDeleteTimer.getMeasuredHeight()) / 2) + org.telegram.messenger.a.f12472b;
-                SecretMediaViewer.this.secretDeleteTimer.layout(SecretMediaViewer.this.secretDeleteTimer.getLeft(), currentActionBarHeight, SecretMediaViewer.this.secretDeleteTimer.getRight(), SecretMediaViewer.this.secretDeleteTimer.getMeasuredHeight() + currentActionBarHeight);
-            }
-        }
-    }
-
-    /* loaded from: classes2.dex */
-    public class d extends a.j {
-        public d() {
-        }
-
-        @Override // org.telegram.ui.ActionBar.a.j
-        public void b(int i) {
-            if (i == -1) {
-                SecretMediaViewer.this.W(true, false);
-            }
-        }
-    }
-
-    /* loaded from: classes2.dex */
-    public class e extends AnimatorListenerAdapter {
-        public e() {
-        }
-
-        @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
-        public void onAnimationEnd(Animator animator) {
-            if (SecretMediaViewer.this.photoAnimationEndRunnable != null) {
-                SecretMediaViewer.this.photoAnimationEndRunnable.run();
-                SecretMediaViewer.this.photoAnimationEndRunnable = null;
-            }
-        }
-    }
-
-    /* loaded from: classes2.dex */
-    public class f extends AnimatorListenerAdapter {
-        public f() {
-        }
-
-        @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
-        public void onAnimationEnd(Animator animator) {
-            if (SecretMediaViewer.this.currentActionBarAnimation != null && SecretMediaViewer.this.currentActionBarAnimation.equals(animator)) {
-                SecretMediaViewer.this.actionBar.setVisibility(8);
-                SecretMediaViewer.this.currentActionBarAnimation = null;
-            }
-        }
-    }
-
-    /* loaded from: classes2.dex */
-    public class g extends AnimatorListenerAdapter {
-        public final /* synthetic */ PhotoViewer.p2 val$object;
-
-        public g(PhotoViewer.p2 p2Var) {
-            this.val$object = p2Var;
-        }
-
-        /* JADX INFO: Access modifiers changed from: private */
-        public /* synthetic */ void b() {
-            if (SecretMediaViewer.this.photoAnimationEndRunnable != null) {
-                SecretMediaViewer.this.photoAnimationEndRunnable.run();
-                SecretMediaViewer.this.photoAnimationEndRunnable = null;
-            }
-        }
-
-        @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
-        public void onAnimationEnd(Animator animator) {
-            PhotoViewer.p2 p2Var = this.val$object;
-            if (p2Var != null) {
-                p2Var.imageReceiver.W1(true, true);
-            }
-            SecretMediaViewer.this.isVisible = false;
-            org.telegram.messenger.a.m3(new Runnable() { // from class: wo8
-                @Override // java.lang.Runnable
-                public final void run() {
-                    SecretMediaViewer.g.this.b();
-                }
-            });
-        }
-    }
-
-    /* loaded from: classes2.dex */
-    public class h extends AnimatorListenerAdapter {
-        public h() {
-        }
-
-        @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
-        public void onAnimationEnd(Animator animator) {
-            if (SecretMediaViewer.this.photoAnimationEndRunnable != null) {
-                SecretMediaViewer.this.photoAnimationEndRunnable.run();
-                SecretMediaViewer.this.photoAnimationEndRunnable = null;
-            }
-        }
-    }
-
-    /* loaded from: classes2.dex */
-    public class i extends AnimatorListenerAdapter {
-        public i() {
-        }
-
-        @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
-        public void onAnimationEnd(Animator animator) {
-            SecretMediaViewer.this.imageMoveAnimation = null;
-            SecretMediaViewer.this.containerView.invalidate();
-        }
-    }
-
-    /* loaded from: classes2.dex */
-    public class j extends FrameLayout {
-        public j(Context context) {
+    private class FrameLayoutDrawer extends FrameLayout {
+        public FrameLayoutDrawer(Context context) {
             super(context);
             setWillNotDraw(false);
         }
 
-        @Override // android.view.ViewGroup
-        public boolean drawChild(Canvas canvas, View view, long j) {
-            return view != SecretMediaViewer.this.aspectRatioFrameLayout && super.drawChild(canvas, view, j);
-        }
-
-        @Override // android.view.ViewGroup, android.view.View
-        public void onAttachedToWindow() {
-            super.onAttachedToWindow();
-            SecretMediaViewer.this.centerImage.C0();
-        }
-
-        @Override // android.view.ViewGroup, android.view.View
-        public void onDetachedFromWindow() {
-            super.onDetachedFromWindow();
-            SecretMediaViewer.this.centerImage.E0();
-        }
-
-        @Override // android.view.View
-        public void onDraw(Canvas canvas) {
-            SecretMediaViewer.this.n0(canvas);
-        }
-
-        @Override // android.view.View
-        public boolean onTouchEvent(MotionEvent motionEvent) {
-            SecretMediaViewer.this.r0(motionEvent);
+        @Override
+        public boolean onTouchEvent(MotionEvent event) {
+            processTouchEvent(event);
             return true;
         }
-    }
 
-    /* loaded from: classes2.dex */
-    public class k extends FrameLayout {
-        private Paint afterDeleteProgressPaint;
-        private Paint circlePaint;
-        private RectF deleteProgressRect;
-        private long destroyTime;
-        private long destroyTtl;
-        private Drawable drawable;
-        private Paint particlePaint;
-        private i3a timerParticles;
-        private boolean useVideoProgress;
-
-        public k(Context context) {
-            super(context);
-            this.deleteProgressRect = new RectF();
-            this.timerParticles = new i3a();
-            setWillNotDraw(false);
-            Paint paint = new Paint(1);
-            this.particlePaint = paint;
-            paint.setStrokeWidth(org.telegram.messenger.a.e0(1.5f));
-            this.particlePaint.setColor(-1644826);
-            this.particlePaint.setStrokeCap(Paint.Cap.ROUND);
-            this.particlePaint.setStyle(Paint.Style.STROKE);
-            Paint paint2 = new Paint(1);
-            this.afterDeleteProgressPaint = paint2;
-            paint2.setStyle(Paint.Style.STROKE);
-            this.afterDeleteProgressPaint.setStrokeCap(Paint.Cap.ROUND);
-            this.afterDeleteProgressPaint.setColor(-1644826);
-            this.afterDeleteProgressPaint.setStrokeWidth(org.telegram.messenger.a.e0(2.0f));
-            Paint paint3 = new Paint(1);
-            this.circlePaint = paint3;
-            paint3.setColor(2130706432);
-            this.drawable = context.getResources().getDrawable(org.telegram.mdgram.R.drawable.flame_small);
+        @Override
+        protected void onDraw(Canvas canvas) {
+            SecretMediaViewer.this.onDraw(canvas);
         }
 
-        public final void b(long j, long j2, boolean z) {
-            this.destroyTime = j;
-            this.destroyTtl = j2;
-            this.useVideoProgress = z;
+        @Override
+        protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
+            return child != aspectRatioFrameLayout && super.drawChild(canvas, child, drawingTime);
+        }
+
+
+        @Override
+        protected void onAttachedToWindow() {
+            super.onAttachedToWindow();
+            centerImage.onAttachedToWindow();
+        }
+
+        @Override
+        protected void onDetachedFromWindow() {
+            super.onDetachedFromWindow();
+            centerImage.onDetachedFromWindow();
+        }
+    }
+
+    private class SecretDeleteTimer extends FrameLayout {
+
+        private Paint afterDeleteProgressPaint;
+        private Paint circlePaint;
+        private Paint particlePaint;
+        private RectF deleteProgressRect = new RectF();
+        private TimerParticles timerParticles = new TimerParticles();
+
+        private long destroyTime;
+        private long destroyTtl;
+        private boolean useVideoProgress;
+
+        private Drawable drawable;
+
+        public SecretDeleteTimer(Context context) {
+            super(context);
+            setWillNotDraw(false);
+
+            particlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            particlePaint.setStrokeWidth(AndroidUtilities.dp(1.5f));
+            particlePaint.setColor(0xffe6e6e6);
+            particlePaint.setStrokeCap(Paint.Cap.ROUND);
+            particlePaint.setStyle(Paint.Style.STROKE);
+
+            afterDeleteProgressPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            afterDeleteProgressPaint.setStyle(Paint.Style.STROKE);
+            afterDeleteProgressPaint.setStrokeCap(Paint.Cap.ROUND);
+            afterDeleteProgressPaint.setColor(0xffe6e6e6);
+            afterDeleteProgressPaint.setStrokeWidth(AndroidUtilities.dp(2));
+
+            circlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            circlePaint.setColor(0x7f000000);
+
+            drawable = context.getResources().getDrawable(R.drawable.flame_small);
+        }
+
+        private void setDestroyTime(long time, long ttl, boolean videoProgress) {
+            destroyTime = time;
+            destroyTtl = ttl;
+            useVideoProgress = videoProgress;
             invalidate();
         }
 
-        @Override // android.view.View
-        public void onDraw(Canvas canvas) {
-            if (SecretMediaViewer.this.currentMessageObject != null && SecretMediaViewer.this.currentMessageObject.f13365a.l != 0) {
-                canvas.drawCircle(getMeasuredWidth() - org.telegram.messenger.a.e0(35.0f), getMeasuredHeight() / 2, org.telegram.messenger.a.e0(16.0f), this.circlePaint);
-                float f = 1.0f;
-                if (this.useVideoProgress) {
-                    if (SecretMediaViewer.this.videoPlayer != null) {
-                        long j0 = SecretMediaViewer.this.videoPlayer.j0();
-                        long h0 = SecretMediaViewer.this.videoPlayer.h0();
-                        if (j0 != -9223372036854775807L && h0 != -9223372036854775807L) {
-                            f = 1.0f - (((float) h0) / ((float) j0));
-                        }
+        @Override
+        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+            int y = getMeasuredHeight() / 2 - AndroidUtilities.dp(28) / 2;
+            deleteProgressRect.set(getMeasuredWidth() - AndroidUtilities.dp(30 + 19), y, getMeasuredWidth() - AndroidUtilities.dp(2 + 19), y + AndroidUtilities.dp(28));
+        }
+
+        @SuppressLint("DrawAllocation")
+        @Override
+        protected void onDraw(Canvas canvas) {
+            if (currentMessageObject == null || currentMessageObject.messageOwner.destroyTime == 0) {
+                return;
+            }
+
+            canvas.drawCircle(getMeasuredWidth() - AndroidUtilities.dp(16 + 19), getMeasuredHeight() / 2, AndroidUtilities.dp(16), circlePaint);
+
+            float progress;
+
+            if (useVideoProgress) {
+                if (videoPlayer != null) {
+                    long duration = videoPlayer.getDuration();
+                    long position = videoPlayer.getCurrentPosition();
+                    if (duration != C.TIME_UNSET && position != C.TIME_UNSET) {
+                        progress = 1.0f - (position / (float) duration);
+                    } else {
+                        progress = 1;
                     }
                 } else {
-                    f = ((float) Math.max(0L, this.destroyTime - (System.currentTimeMillis() + (ConnectionsManager.getInstance(SecretMediaViewer.this.currentAccount).getTimeDifference() * 1000)))) / (((float) this.destroyTtl) * 1000.0f);
+                    progress = 1;
                 }
-                int measuredWidth = getMeasuredWidth() - org.telegram.messenger.a.e0(40.0f);
-                int measuredHeight = ((getMeasuredHeight() - org.telegram.messenger.a.e0(14.0f)) / 2) - org.telegram.messenger.a.e0(0.5f);
-                this.drawable.setBounds(measuredWidth, measuredHeight, org.telegram.messenger.a.e0(10.0f) + measuredWidth, org.telegram.messenger.a.e0(14.0f) + measuredHeight);
-                this.drawable.draw(canvas);
-                float f2 = (-360.0f) * f;
-                canvas.drawArc(this.deleteProgressRect, -90.0f, f2, false, this.afterDeleteProgressPaint);
-                this.timerParticles.a(canvas, this.particlePaint, this.deleteProgressRect, f2, 1.0f);
-                invalidate();
+            } else {
+                long msTime = System.currentTimeMillis() + ConnectionsManager.getInstance(currentAccount).getTimeDifference() * 1000;
+                progress = Math.max(0, destroyTime - msTime) / (destroyTtl * 1000.0f);
             }
-        }
 
-        @Override // android.widget.FrameLayout, android.view.View
-        public void onMeasure(int i, int i2) {
-            super.onMeasure(i, i2);
-            int measuredHeight = (getMeasuredHeight() / 2) - (org.telegram.messenger.a.e0(28.0f) / 2);
-            this.deleteProgressRect.set(getMeasuredWidth() - org.telegram.messenger.a.e0(49.0f), measuredHeight, getMeasuredWidth() - org.telegram.messenger.a.e0(21.0f), measuredHeight + org.telegram.messenger.a.e0(28.0f));
+            int x = getMeasuredWidth() - AndroidUtilities.dp(32 - 11 + 19);
+            int y = (getMeasuredHeight() - AndroidUtilities.dp(14)) / 2 - AndroidUtilities.dp(0.5f);
+            drawable.setBounds(x, y, x + AndroidUtilities.dp(10), y + AndroidUtilities.dp(14));
+            drawable.draw(canvas);
+            float radProgress = -360 * progress;
+            canvas.drawArc(deleteProgressRect, -90, radProgress, false, afterDeleteProgressPaint);
+
+            timerParticles.draw(canvas, particlePaint, deleteProgressRect, radProgress, 1.0f);
+            invalidate();
         }
     }
 
-    public static SecretMediaViewer c0() {
-        SecretMediaViewer secretMediaViewer = Instance;
-        if (secretMediaViewer == null) {
+    private class PhotoBackgroundDrawable extends ColorDrawable {
+
+        private Runnable drawRunnable;
+        private int frame;
+
+        public PhotoBackgroundDrawable(int color) {
+            super(color);
+        }
+
+        @Keep
+        @Override
+        public void setAlpha(int alpha) {
+            if (parentActivity instanceof LaunchActivity) {
+                ((LaunchActivity) parentActivity).drawerLayoutContainer.setAllowDrawContent(!isPhotoVisible || alpha != 255);
+            }
+            super.setAlpha(alpha);
+        }
+
+        @Override
+        public void draw(Canvas canvas) {
+            super.draw(canvas);
+            if (getAlpha() != 0) {
+                if (frame == 2 && drawRunnable != null) {
+                    drawRunnable.run();
+                    drawRunnable = null;
+                } else {
+                    invalidateSelf();
+                }
+                frame++;
+            }
+        }
+    }
+
+    private int currentAccount;
+    private Activity parentActivity;
+    private WindowManager.LayoutParams windowLayoutParams;
+    private FrameLayout windowView;
+    private FrameLayoutDrawer containerView;
+    private ImageReceiver centerImage = new ImageReceiver();
+    private SecretDeleteTimer secretDeleteTimer;
+    private boolean isVisible;
+    private long currentDialogId;
+    private AspectRatioFrameLayout aspectRatioFrameLayout;
+    private TextureView videoTextureView;
+    private VideoPlayer videoPlayer;
+    private boolean isPlaying;
+    private ActionBar actionBar;
+    private AnimatorSet currentActionBarAnimation;
+    private boolean videoWatchedOneTime;
+    private boolean closeVideoAfterWatch;
+    private boolean isVideo;
+    private long openTime;
+    private long closeTime;
+    private boolean disableShowCheck;
+    private PhotoViewer.PhotoViewerProvider currentProvider;
+
+    private int playerRetryPlayCount;
+
+    private boolean textureUploaded;
+    private boolean videoCrossfadeStarted;
+    private float videoCrossfadeAlpha;
+    private long videoCrossfadeAlphaLastTime;
+
+    private Object lastInsets;
+
+    private MessageObject currentMessageObject;
+    private ImageReceiver.BitmapHolder currentThumb;
+
+    private int[] coords = new int[2];
+
+    private boolean isPhotoVisible;
+
+    private boolean isActionBarVisible = true;
+
+    private PhotoBackgroundDrawable photoBackgroundDrawable = new PhotoBackgroundDrawable(0xff000000);
+    private Paint blackPaint = new Paint();
+
+    private int photoAnimationInProgress;
+    private long photoTransitionAnimationStartTime;
+    private Runnable photoAnimationEndRunnable;
+
+    private boolean draggingDown;
+    private float dragY;
+    private float clipTop;
+    private float clipBottom;
+    private float clipTopOrigin;
+    private float clipBottomOrigin;
+    private float clipHorizontal;
+    private float translationX;
+    private float translationY;
+    private float scale = 1;
+    private boolean useOvershootForScale;
+    private float animateToX;
+    private float animateToY;
+    private float animateToScale;
+    private float animateToClipTop;
+    private float animateToClipBottom;
+    private float animateToClipTopOrigin;
+    private float animateToClipBottomOrigin;
+    private float animateToClipHorizontal;
+    private int[] animateFromRadius;
+    private boolean animateToRadius;
+    private float animationValue;
+    private int currentRotation;
+    private long animationStartTime;
+    private AnimatorSet imageMoveAnimation;
+    private GestureDetector gestureDetector;
+    private DecelerateInterpolator interpolator = new DecelerateInterpolator(1.5f);
+    private float pinchStartDistance;
+    private float pinchStartScale = 1;
+    private float pinchCenterX;
+    private float pinchCenterY;
+    private float pinchStartX;
+    private float pinchStartY;
+    private float moveStartX;
+    private float moveStartY;
+    private float minX;
+    private float maxX;
+    private float minY;
+    private float maxY;
+    private boolean zooming;
+    private boolean moving;
+    private boolean doubleTap;
+    private boolean invalidCoords;
+    private boolean canDragDown = true;
+    private boolean zoomAnimation;
+    private boolean discardTap;
+    private VelocityTracker velocityTracker;
+    private Scroller scroller;
+
+    private boolean closeAfterAnimation;
+
+    @SuppressLint("StaticFieldLeak")
+    private static volatile SecretMediaViewer Instance = null;
+    public static SecretMediaViewer getInstance() {
+        SecretMediaViewer localInstance = Instance;
+        if (localInstance == null) {
             synchronized (PhotoViewer.class) {
-                secretMediaViewer = Instance;
-                if (secretMediaViewer == null) {
-                    secretMediaViewer = new SecretMediaViewer();
-                    Instance = secretMediaViewer;
+                localInstance = Instance;
+                if (localInstance == null) {
+                    Instance = localInstance = new SecretMediaViewer();
                 }
             }
         }
-        return secretMediaViewer;
+        return localInstance;
     }
 
-    public static boolean e0() {
+    public static boolean hasInstance() {
         return Instance != null;
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void h0(PhotoViewer.p2 p2Var) {
-        this.imageMoveAnimation = null;
-        this.photoAnimationInProgress = 0;
-        this.containerView.setLayerType(0, null);
-        this.containerView.setVisibility(4);
-        o0(p2Var);
-    }
-
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void i0(PhotoViewer.p2 p2Var) {
-        j jVar = this.containerView;
-        if (jVar == null) {
-            return;
-        }
-        jVar.setLayerType(0, null);
-        this.containerView.setVisibility(4);
-        this.photoAnimationInProgress = 0;
-        o0(p2Var);
-        this.containerView.setScaleX(1.0f);
-        this.containerView.setScaleY(1.0f);
-    }
-
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void j0() {
-        ImageReceiver.b bVar = this.currentThumb;
-        if (bVar != null) {
-            bVar.d();
-            this.currentThumb = null;
-        }
-        this.centerImage.r1(null);
-        try {
-            if (this.windowView.getParent() != null) {
-                ((WindowManager) this.parentActivity.getSystemService("window")).removeView(this.windowView);
-            }
-        } catch (Exception e2) {
-            org.telegram.messenger.l.p(e2);
-        }
-        this.isPhotoVisible = false;
-    }
-
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void k0(Runnable runnable) {
-        this.photoAnimationInProgress = 0;
-        this.imageMoveAnimation = null;
-        if (runnable != null) {
-            runnable.run();
-        }
-        j jVar = this.containerView;
-        if (jVar == null) {
-            return;
-        }
-        jVar.setLayerType(0, null);
-        this.containerView.invalidate();
-        if (this.closeAfterAnimation) {
-            W(true, true);
-        }
-    }
-
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void l0(PhotoViewer.p2 p2Var) {
-        this.disableShowCheck = false;
-        p2Var.imageReceiver.W1(false, true);
-    }
-
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ WindowInsets m0(View view, WindowInsets windowInsets) {
-        WindowInsets windowInsets2 = (WindowInsets) this.lastInsets;
-        this.lastInsets = windowInsets;
-        if (windowInsets2 == null || !windowInsets2.toString().equals(windowInsets.toString())) {
-            this.windowView.requestLayout();
-        }
-        if (Build.VERSION.SDK_INT >= 30) {
-            return WindowInsets.CONSUMED;
-        }
-        return windowInsets.consumeSystemWindowInsets();
-    }
-
-    public final void S(float f2, float f3, float f4, boolean z) {
-        T(f2, f3, f4, z, j.e.DEFAULT_SWIPE_ANIMATION_DURATION);
-    }
-
-    public final void T(float f2, float f3, float f4, boolean z, int i2) {
-        if (this.scale == f2 && this.translationX == f3 && this.translationY == f4) {
-            return;
-        }
-        this.zoomAnimation = z;
-        this.animateToScale = f2;
-        this.animateToX = f3;
-        this.animateToY = f4;
-        this.animationStartTime = System.currentTimeMillis();
-        AnimatorSet animatorSet = new AnimatorSet();
-        this.imageMoveAnimation = animatorSet;
-        animatorSet.playTogether(ObjectAnimator.ofFloat(this, "animationValue", 0.0f, 1.0f));
-        this.imageMoveAnimation.setInterpolator(this.interpolator);
-        this.imageMoveAnimation.setDuration(i2);
-        this.imageMoveAnimation.addListener(new i());
-        this.imageMoveAnimation.start();
-    }
-
-    /* JADX WARN: Code restructure failed: missing block: B:12:0x0028, code lost:
-        if (r2 > r3) goto L6;
-     */
-    /* JADX WARN: Code restructure failed: missing block: B:6:0x0017, code lost:
-        if (r2 > r3) goto L3;
-     */
-    /*
-        Code decompiled incorrectly, please refer to instructions dump.
-        To view partially-correct add '--show-bad-code' argument
-    */
-    public final void U(boolean r6) {
-        /*
-            r5 = this;
-            float r0 = r5.translationX
-            float r1 = r5.translationY
-            float r2 = r5.scale
-            r5.v0(r2)
-            float r2 = r5.translationX
-            float r3 = r5.minX
-            int r4 = (r2 > r3 ? 1 : (r2 == r3 ? 0 : -1))
-            if (r4 >= 0) goto L13
-        L11:
-            r0 = r3
-            goto L1a
-        L13:
-            float r3 = r5.maxX
-            int r2 = (r2 > r3 ? 1 : (r2 == r3 ? 0 : -1))
-            if (r2 <= 0) goto L1a
-            goto L11
-        L1a:
-            float r2 = r5.translationY
-            float r3 = r5.minY
-            int r4 = (r2 > r3 ? 1 : (r2 == r3 ? 0 : -1))
-            if (r4 >= 0) goto L24
-        L22:
-            r1 = r3
-            goto L2b
-        L24:
-            float r3 = r5.maxY
-            int r2 = (r2 > r3 ? 1 : (r2 == r3 ? 0 : -1))
-            if (r2 <= 0) goto L2b
-            goto L22
-        L2b:
-            float r2 = r5.scale
-            r5.S(r2, r0, r1, r6)
-            return
-        */
-        throw new UnsupportedOperationException("Method not decompiled: org.telegram.ui.SecretMediaViewer.U(boolean):void");
-    }
-
-    public final boolean V() {
-        if (this.photoAnimationInProgress != 0 && Math.abs(this.photoTransitionAnimationStartTime - System.currentTimeMillis()) >= 500) {
-            Runnable runnable = this.photoAnimationEndRunnable;
-            if (runnable != null) {
-                runnable.run();
-                this.photoAnimationEndRunnable = null;
-            }
-            this.photoAnimationInProgress = 0;
-        }
-        if (this.photoAnimationInProgress == 0) {
-            return false;
-        }
-        return true;
-    }
-
-    /* JADX WARN: Removed duplicated region for block: B:26:0x007a  */
-    /* JADX WARN: Removed duplicated region for block: B:29:0x0083  */
-    /* JADX WARN: Removed duplicated region for block: B:45:0x0253  */
-    /*
-        Code decompiled incorrectly, please refer to instructions dump.
-        To view partially-correct add '--show-bad-code' argument
-    */
-    public boolean W(boolean r18, boolean r19) {
-        /*
-            Method dump skipped, instructions count: 718
-            To view this dump add '--comments-level debug' option
-        */
-        throw new UnsupportedOperationException("Method not decompiled: org.telegram.ui.SecretMediaViewer.W(boolean, boolean):boolean");
-    }
-
-    public void X() {
-        FrameLayout frameLayout;
-        org.telegram.messenger.a0.k(this.currentAccount).v(this, org.telegram.messenger.a0.k);
-        org.telegram.messenger.a0.k(this.currentAccount).v(this, org.telegram.messenger.a0.Y);
-        org.telegram.messenger.a0.k(this.currentAccount).v(this, org.telegram.messenger.a0.V);
-        this.isVisible = false;
-        this.currentProvider = null;
-        ImageReceiver.b bVar = this.currentThumb;
-        if (bVar != null) {
-            bVar.d();
-            this.currentThumb = null;
-        }
-        s0();
-        if (this.parentActivity != null && (frameLayout = this.windowView) != null) {
-            try {
-                if (frameLayout.getParent() != null) {
-                    ((WindowManager) this.parentActivity.getSystemService("window")).removeViewImmediate(this.windowView);
-                }
-                this.windowView = null;
-            } catch (Exception e2) {
-                org.telegram.messenger.l.p(e2);
-            }
-        }
-        Instance = null;
-    }
-
-    public long Y() {
-        return this.closeTime;
-    }
-
-    public final int Z() {
-        return this.containerView.getHeight();
-    }
-
-    public final int a0() {
-        return this.containerView.getWidth();
-    }
-
-    public org.telegram.messenger.x b0() {
-        return this.currentMessageObject;
-    }
-
-    public long d0() {
-        return this.openTime;
-    }
-
-    @Override // org.telegram.messenger.a0.d
-    public void didReceivedNotification(int i2, int i3, Object... objArr) {
-        if (i2 == org.telegram.messenger.a0.k) {
-            if (!((Boolean) objArr[2]).booleanValue() && this.currentMessageObject != null && ((Long) objArr[1]).longValue() == 0 && ((ArrayList) objArr[0]).contains(Integer.valueOf(this.currentMessageObject.D0()))) {
-                if (this.isVideo && !this.videoWatchedOneTime) {
-                    this.closeVideoAfterWatch = true;
-                } else if (!W(true, true)) {
-                    this.closeAfterAnimation = true;
-                }
-            }
-        } else if (i2 == org.telegram.messenger.a0.V) {
-            if (this.currentMessageObject == null || this.secretDeleteTimer == null || ((Long) objArr[0]).longValue() != this.currentDialogId) {
+    @SuppressWarnings("unchecked")
+    @Override
+    public void didReceivedNotification(int id, int account, Object... args) {
+        if (id == NotificationCenter.messagesDeleted) {
+            boolean scheduled = (Boolean) args[2];
+            if (scheduled) {
                 return;
             }
-            SparseArray sparseArray = (SparseArray) objArr[1];
-            for (int i4 = 0; i4 < sparseArray.size(); i4++) {
-                int keyAt = sparseArray.keyAt(i4);
-                ArrayList arrayList = (ArrayList) sparseArray.get(keyAt);
-                for (int i5 = 0; i5 < arrayList.size(); i5++) {
-                    if (this.currentMessageObject.D0() == ((Integer) arrayList.get(i5)).intValue()) {
-                        this.currentMessageObject.f13365a.l = keyAt;
-                        this.secretDeleteTimer.invalidate();
+            if (currentMessageObject == null) {
+                return;
+            }
+            long channelId = (Long) args[1];
+            if (channelId != 0) {
+                return;
+            }
+            ArrayList<Integer> markAsDeletedMessages = (ArrayList<Integer>) args[0];
+            if (markAsDeletedMessages.contains(currentMessageObject.getId())) {
+                if (isVideo && !videoWatchedOneTime) {
+                    closeVideoAfterWatch = true;
+                } else {
+                    if (!closePhoto(true, true)) {
+                        closeAfterAnimation = true;
+                    }
+                }
+            }
+        } else if (id == NotificationCenter.didCreatedNewDeleteTask) {
+            if (currentMessageObject == null || secretDeleteTimer == null) {
+                return;
+            }
+            long dialogId = (long) args[0];
+            if (dialogId != currentDialogId) {
+                return;
+            }
+            SparseArray<ArrayList<Integer>> mids = (SparseArray<ArrayList<Integer>>) args[1];
+            for (int i = 0; i < mids.size(); i++) {
+                int key = mids.keyAt(i);
+                ArrayList<Integer> arr = mids.get(key);
+                for (int a = 0; a < arr.size(); a++) {
+                    long mid = arr.get(a);
+                    if (currentMessageObject.getId() == mid) {
+                        currentMessageObject.messageOwner.destroyTime = key;
+                        secretDeleteTimer.invalidate();
                         return;
                     }
                 }
             }
-        } else if (i2 == org.telegram.messenger.a0.Y && this.currentMessageObject.D0() == ((lo9) objArr[0]).a) {
-            if (this.isVideo && !this.videoWatchedOneTime) {
-                this.closeVideoAfterWatch = true;
-            } else if (!W(true, true)) {
-                this.closeAfterAnimation = true;
+        } else if (id == NotificationCenter.updateMessageMedia) {
+            TLRPC.Message message = (TLRPC.Message) args[0];
+            if (currentMessageObject.getId() == message.id) {
+                if (isVideo && !videoWatchedOneTime) {
+                    closeVideoAfterWatch = true;
+                } else {
+                    if (!closePhoto(true, true)) {
+                        closeAfterAnimation = true;
+                    }
+                }
             }
         }
     }
 
-    public boolean f0(org.telegram.messenger.x xVar) {
-        org.telegram.messenger.x xVar2;
-        return (!this.isVisible || this.disableShowCheck || xVar == null || (xVar2 = this.currentMessageObject) == null || xVar2.D0() != xVar.D0()) ? false : true;
+    private void preparePlayer(File file) {
+        if (parentActivity == null) {
+            return;
+        }
+        releasePlayer();
+        if (videoTextureView == null) {
+            aspectRatioFrameLayout = new AspectRatioFrameLayout(parentActivity);
+            aspectRatioFrameLayout.setVisibility(View.INVISIBLE);
+            containerView.addView(aspectRatioFrameLayout, 0, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.CENTER));
+
+            videoTextureView = new TextureView(parentActivity);
+            videoTextureView.setOpaque(false);
+            aspectRatioFrameLayout.addView(videoTextureView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.CENTER));
+        }
+        textureUploaded = false;
+        videoCrossfadeStarted = false;
+        videoTextureView.setAlpha(videoCrossfadeAlpha = 0.0f);
+        if (videoPlayer == null) {
+            videoPlayer = new VideoPlayer();
+            videoPlayer.setTextureView(videoTextureView);
+            videoPlayer.setDelegate(new VideoPlayer.VideoPlayerDelegate() {
+                @Override
+                public void onStateChanged(boolean playWhenReady, int playbackState) {
+                    if (videoPlayer == null || currentMessageObject == null) {
+                        return;
+                    }
+                    if (playbackState != ExoPlayer.STATE_ENDED && playbackState != ExoPlayer.STATE_IDLE) {
+                        try {
+                            parentActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                        } catch (Exception e) {
+                            FileLog.e(e);
+                        }
+                    } else {
+                        try {
+                            parentActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                        } catch (Exception e) {
+                            FileLog.e(e);
+                        }
+                    }
+                    if (playbackState == ExoPlayer.STATE_READY && aspectRatioFrameLayout.getVisibility() != View.VISIBLE) {
+                        aspectRatioFrameLayout.setVisibility(View.VISIBLE);
+                    }
+                    if (videoPlayer.isPlaying() && playbackState != ExoPlayer.STATE_ENDED) {
+                        if (!isPlaying) {
+                            isPlaying = true;
+                        }
+                    } else if (isPlaying) {
+                        isPlaying = false;
+                        if (playbackState == ExoPlayer.STATE_ENDED) {
+                            videoWatchedOneTime = true;
+                            if (closeVideoAfterWatch) {
+                                closePhoto(true, true);
+                            } else {
+                                videoPlayer.seekTo(0);
+                                videoPlayer.play();
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onError(VideoPlayer player, Exception e) {
+                    if (playerRetryPlayCount > 0) {
+                        playerRetryPlayCount--;
+                        AndroidUtilities.runOnUIThread(() -> preparePlayer(file), 100);
+                    } else {
+                        FileLog.e(e);
+                    }
+                }
+
+                @Override
+                public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
+                    if (aspectRatioFrameLayout != null) {
+                        if (unappliedRotationDegrees == 90 || unappliedRotationDegrees == 270) {
+                            int temp = width;
+                            width = height;
+                            height = temp;
+                        }
+                        aspectRatioFrameLayout.setAspectRatio(height == 0 ? 1 : (width * pixelWidthHeightRatio) / height, unappliedRotationDegrees);
+                    }
+                }
+
+                @Override
+                public void onRenderedFirstFrame() {
+                    if (!textureUploaded) {
+                        textureUploaded = true;
+                        containerView.invalidate();
+                    }
+                }
+
+                @Override
+                public boolean onSurfaceDestroyed(SurfaceTexture surfaceTexture) {
+                    return false;
+                }
+
+                @Override
+                public void onSurfaceTextureUpdated(SurfaceTexture surfaceTexture) {
+
+                }
+            });
+        }
+        videoPlayer.preparePlayer(Uri.fromFile(file), "other");
+        videoPlayer.setPlayWhenReady(true);
     }
 
-    public boolean g0() {
-        return this.isVisible;
+    private void releasePlayer() {
+        if (videoPlayer != null) {
+            playerRetryPlayCount = 0;
+            videoPlayer.releasePlayer(true);
+            videoPlayer = null;
+        }
+        try {
+            if (parentActivity != null) {
+                parentActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+        if (aspectRatioFrameLayout != null) {
+            containerView.removeView(aspectRatioFrameLayout);
+            aspectRatioFrameLayout = null;
+        }
+        if (videoTextureView != null) {
+            videoTextureView = null;
+        }
+        isPlaying = false;
     }
 
-    @Keep
-    public float getAnimationValue() {
-        return this.animationValue;
+    public void setParentActivity(Activity activity) {
+        currentAccount = UserConfig.selectedAccount;
+        centerImage.setCurrentAccount(currentAccount);
+        if (parentActivity == activity) {
+            return;
+        }
+        parentActivity = activity;
+
+        scroller = new Scroller(activity);
+
+        windowView = new FrameLayout(activity) {
+            @Override
+            protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+                int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+                if (Build.VERSION.SDK_INT >= 21 && lastInsets != null) {
+                    WindowInsets insets = (WindowInsets) lastInsets;
+                    if (AndroidUtilities.incorrectDisplaySizeFix) {
+                        if (heightSize > AndroidUtilities.displaySize.y) {
+                            heightSize = AndroidUtilities.displaySize.y;
+                        }
+                        heightSize += AndroidUtilities.statusBarHeight;
+                    }
+                    heightSize -= insets.getSystemWindowInsetBottom();
+                    widthSize -= insets.getSystemWindowInsetRight();
+                } else {
+                    if (heightSize > AndroidUtilities.displaySize.y) {
+                        heightSize = AndroidUtilities.displaySize.y;
+                    }
+                }
+                setMeasuredDimension(widthSize, heightSize);
+                if (Build.VERSION.SDK_INT >= 21 && lastInsets != null) {
+                    widthSize -= ((WindowInsets) lastInsets).getSystemWindowInsetLeft();
+                }
+                containerView.measure(MeasureSpec.makeMeasureSpec(widthSize, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(heightSize, MeasureSpec.EXACTLY));
+            }
+
+            @SuppressWarnings("DrawAllocation")
+            @Override
+            protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+                int x = 0;
+                if (Build.VERSION.SDK_INT >= 21 && lastInsets != null) {
+                    x += ((WindowInsets) lastInsets).getSystemWindowInsetLeft();
+                }
+                containerView.layout(x, 0, x + containerView.getMeasuredWidth(), containerView.getMeasuredHeight());
+                if (changed) {
+                    if (imageMoveAnimation == null) {
+                        scale = 1;
+                        translationX = 0;
+                        translationY = 0;
+                    }
+                    updateMinMax(scale);
+                }
+            }
+
+            @Override
+            protected void onDraw(Canvas canvas) {
+                if (Build.VERSION.SDK_INT >= 21 && isVisible && lastInsets != null) {
+                    WindowInsets insets = (WindowInsets) lastInsets;
+                    if (photoAnimationInProgress != 0) {
+                        blackPaint.setAlpha(photoBackgroundDrawable.getAlpha());
+                    } else {
+                        blackPaint.setAlpha(255);
+                    }
+                    canvas.drawRect(0, getMeasuredHeight(), getMeasuredWidth(), getMeasuredHeight() + insets.getSystemWindowInsetBottom(), blackPaint);
+                }
+            }
+        };
+        windowView.setBackgroundDrawable(photoBackgroundDrawable);
+        windowView.setFocusable(true);
+        windowView.setFocusableInTouchMode(true);
+
+        containerView = new FrameLayoutDrawer(activity) {
+            @Override
+            protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+                super.onLayout(changed, left, top, right, bottom);
+                if (secretDeleteTimer != null) {
+                    int y = (ActionBar.getCurrentActionBarHeight() - secretDeleteTimer.getMeasuredHeight()) / 2 + (Build.VERSION.SDK_INT >= 21 ? AndroidUtilities.statusBarHeight : 0);
+                    secretDeleteTimer.layout(secretDeleteTimer.getLeft(), y, secretDeleteTimer.getRight(), y + secretDeleteTimer.getMeasuredHeight());
+                }
+            }
+        };
+        containerView.setFocusable(false);
+        windowView.addView(containerView);
+        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) containerView.getLayoutParams();
+        layoutParams.width = LayoutHelper.MATCH_PARENT;
+        layoutParams.height = LayoutHelper.MATCH_PARENT;
+        layoutParams.gravity = Gravity.TOP | Gravity.LEFT;
+        containerView.setLayoutParams(layoutParams);
+        if (Build.VERSION.SDK_INT >= 21) {
+            containerView.setFitsSystemWindows(true);
+            containerView.setOnApplyWindowInsetsListener((v, insets) -> {
+                WindowInsets oldInsets = (WindowInsets) lastInsets;
+                lastInsets = insets;
+                if (oldInsets == null || !oldInsets.toString().equals(insets.toString())) {
+                    windowView.requestLayout();
+                }
+                if (Build.VERSION.SDK_INT >= 30) {
+                    return WindowInsets.CONSUMED;
+                } else {
+                    return insets.consumeSystemWindowInsets();
+                }
+            });
+            containerView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        }
+
+        gestureDetector = new GestureDetector(containerView.getContext(), this);
+        gestureDetector.setOnDoubleTapListener(this);
+
+        actionBar = new ActionBar(activity);
+        actionBar.setTitleColor(0xffffffff);
+        actionBar.setSubtitleColor(0xffffffff);
+        actionBar.setBackgroundColor(Theme.ACTION_BAR_PHOTO_VIEWER_COLOR);
+        actionBar.setOccupyStatusBar(Build.VERSION.SDK_INT >= 21);
+        actionBar.setItemsBackgroundColor(Theme.ACTION_BAR_WHITE_SELECTOR_COLOR, false);
+        actionBar.setBackButtonImage(R.drawable.ic_ab_back);
+        actionBar.setTitleRightMargin(AndroidUtilities.dp(70));
+        containerView.addView(actionBar, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
+        actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
+            @Override
+            public void onItemClick(int id) {
+                if (id == -1) {
+                    closePhoto(true, false);
+                }
+            }
+        });
+
+        secretDeleteTimer = new SecretDeleteTimer(activity);
+        containerView.addView(secretDeleteTimer, LayoutHelper.createFrame(119, 48, Gravity.TOP | Gravity.RIGHT, 0, 0, 0, 0));
+
+        windowLayoutParams = new WindowManager.LayoutParams();
+        windowLayoutParams.height = WindowManager.LayoutParams.MATCH_PARENT;
+        windowLayoutParams.format = PixelFormat.TRANSLUCENT;
+        windowLayoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+        windowLayoutParams.gravity = Gravity.TOP;
+        windowLayoutParams.type = WindowManager.LayoutParams.LAST_APPLICATION_WINDOW;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            windowLayoutParams.flags = WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN |
+                    WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR |
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
+                    WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS;
+        } else {
+            windowLayoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+        }
+        windowLayoutParams.flags |= WindowManager.LayoutParams.FLAG_SECURE;
+        centerImage.setParentView(containerView);
+        centerImage.setForceCrossfade(true);
+    }
+
+    private int wasNavigationBarColor;
+    private boolean wasLightNavigationBar;
+
+    public void openMedia(MessageObject messageObject, PhotoViewer.PhotoViewerProvider provider, Runnable onOpen) {
+        if (parentActivity == null || messageObject == null || !messageObject.needDrawBluredPreview() || provider == null) {
+            return;
+        }
+        final PhotoViewer.PlaceProviderObject object = provider.getPlaceForPhoto(messageObject, null, 0, true);
+        if (object == null) {
+            return;
+        }
+
+        //messageObject.messageOwner.destroyTime = (int) (System.currentTimeMillis() / 1000 + ConnectionsManager.getInstance().getTimeDifference()) + 4;
+
+        currentProvider = provider;
+        openTime = System.currentTimeMillis();
+        closeTime = 0;
+        isActionBarVisible = true;
+        isPhotoVisible = true;
+        draggingDown = false;
+        if (aspectRatioFrameLayout != null) {
+            aspectRatioFrameLayout.setVisibility(View.INVISIBLE);
+        }
+        releasePlayer();
+
+        pinchStartDistance = 0;
+        pinchStartScale = 1;
+        pinchCenterX = 0;
+        pinchCenterY = 0;
+        pinchStartX = 0;
+        pinchStartY = 0;
+        moveStartX = 0;
+        moveStartY = 0;
+        zooming = false;
+        moving = false;
+        doubleTap = false;
+        invalidCoords = false;
+        canDragDown = true;
+        updateMinMax(scale);
+        photoBackgroundDrawable.setAlpha(0);
+        containerView.setAlpha(1.0f);
+        containerView.setVisibility(View.VISIBLE);
+        secretDeleteTimer.setAlpha(1.0f);
+        isVideo = false;
+        videoWatchedOneTime = false;
+        closeVideoAfterWatch = false;
+        disableShowCheck = true;
+        centerImage.setManualAlphaAnimator(false);
+
+        final RectF drawRegion = object.imageReceiver.getDrawRegion();
+
+        float width = drawRegion.width();
+        float height = drawRegion.height();
+        int viewWidth = AndroidUtilities.displaySize.x;
+        int viewHeight = AndroidUtilities.displaySize.y + (Build.VERSION.SDK_INT >= 21 ? AndroidUtilities.statusBarHeight : 0);
+        scale = Math.max(width / viewWidth, height / viewHeight);
+
+        if (object.radius != null) {
+            animateFromRadius = new int[object.radius.length];
+            for (int i = 0; i < object.radius.length; ++i) {
+                animateFromRadius[i] = object.radius[i];
+            }
+        } else {
+            animateFromRadius = null;
+        }
+        translationX = object.viewX + drawRegion.left + width / 2 -  viewWidth / 2;
+        translationY = object.viewY + drawRegion.top + height / 2 - viewHeight / 2;
+        clipHorizontal = Math.abs(drawRegion.left - object.imageReceiver.getImageX());
+        int clipVertical = (int) Math.abs(drawRegion.top - object.imageReceiver.getImageY());
+        int[] coords2 = new int[2];
+        object.parentView.getLocationInWindow(coords2);
+        clipTop = coords2[1] - (Build.VERSION.SDK_INT >= 21 ? 0 : AndroidUtilities.statusBarHeight) - (object.viewY + drawRegion.top) + object.clipTopAddition;
+        clipTop = Math.max(0, Math.max(clipTop, clipVertical));
+        clipBottom = (object.viewY + drawRegion.top + (int) height) - (coords2[1] + object.parentView.getHeight() - (Build.VERSION.SDK_INT >= 21 ? 0 : AndroidUtilities.statusBarHeight)) + object.clipBottomAddition;
+        clipBottom = Math.max(0, Math.max(clipBottom, clipVertical));
+
+        clipTopOrigin = 0;//coords2[1] - (Build.VERSION.SDK_INT >= 21 ? 0 : AndroidUtilities.statusBarHeight) - (object.viewY + drawRegion.top) + object.clipTopAddition;
+        clipTopOrigin = Math.max(0, Math.max(clipTopOrigin, clipVertical));
+        clipBottomOrigin = 0;//(object.viewY + drawRegion.top + (int) height) - (coords2[1] + object.parentView.getHeight() - (Build.VERSION.SDK_INT >= 21 ? 0 : AndroidUtilities.statusBarHeight)) + object.clipBottomAddition;
+        clipBottomOrigin = Math.max(0, Math.max(clipBottomOrigin, clipVertical));
+
+        animationStartTime = System.currentTimeMillis();
+        animateToX = 0;
+        animateToY = 0;
+        animateToClipBottom = 0;
+        animateToClipBottomOrigin = 0;
+        animateToClipHorizontal = 0;
+        animateToClipTop = 0;
+        animateToClipTopOrigin = 0;
+        animateToScale = 1.0f;
+        animateToRadius = true;
+        zoomAnimation = true;
+
+        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.messagesDeleted);
+        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.updateMessageMedia);
+        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.didCreatedNewDeleteTask);
+        currentDialogId = MessageObject.getPeerId(messageObject.messageOwner.peer_id);
+        toggleActionBar(true, false);
+
+        currentMessageObject = messageObject;
+        TLRPC.Document document = messageObject.getDocument();
+        if (currentThumb != null) {
+            currentThumb.release();
+            currentThumb = null;
+        }
+        currentThumb = object.imageReceiver.getThumbBitmapSafe();
+        if (document != null) {
+            if (MessageObject.isGifDocument(document)) {
+                actionBar.setTitle(LocaleController.getString("DisappearingGif", R.string.DisappearingGif));
+                centerImage.setImage(ImageLocation.getForDocument(document), null, currentThumb != null ? new BitmapDrawable(currentThumb.bitmap) : null, -1, null, messageObject, 1);
+                secretDeleteTimer.setDestroyTime((long) messageObject.messageOwner.destroyTime * 1000, messageObject.messageOwner.ttl, false);
+            } else {
+                playerRetryPlayCount = 1;
+                actionBar.setTitle(LocaleController.getString("DisappearingVideo", R.string.DisappearingVideo));
+                File f = new File(messageObject.messageOwner.attachPath);
+                if (f.exists()) {
+                    preparePlayer(f);
+                } else {
+                    File file = FileLoader.getInstance(currentAccount).getPathToMessage(messageObject.messageOwner);
+                    File encryptedFile = new File(file.getAbsolutePath() + ".enc");
+                    if (encryptedFile.exists()) {
+                        file = encryptedFile;
+                    }
+                    preparePlayer(file);
+                }
+                isVideo = true;
+                centerImage.setImage(null, null, currentThumb != null ? new BitmapDrawable(currentThumb.bitmap) : null, -1, null, messageObject, 2);
+                long destroyTime = (long) messageObject.messageOwner.destroyTime * 1000;
+                long currentTime = System.currentTimeMillis() + ConnectionsManager.getInstance(currentAccount).getTimeDifference() * 1000L;
+                long timeToDestroy = destroyTime - currentTime;
+                long duration = messageObject.getDuration() * 1000L;
+                if (duration > timeToDestroy) {
+                    secretDeleteTimer.setDestroyTime(-1, -1, true);
+                } else {
+                    secretDeleteTimer.setDestroyTime((long) messageObject.messageOwner.destroyTime * 1000, messageObject.messageOwner.ttl, false);
+                }
+            }
+        } else {
+            actionBar.setTitle(LocaleController.getString("DisappearingPhoto", R.string.DisappearingPhoto));
+            TLRPC.PhotoSize sizeFull = FileLoader.getClosestPhotoSizeWithSize(messageObject.photoThumbs, AndroidUtilities.getPhotoSize());
+            centerImage.setImage(ImageLocation.getForObject(sizeFull, messageObject.photoThumbsObject), null, currentThumb != null ? new BitmapDrawable(currentThumb.bitmap) : null, -1, null, messageObject, 2);
+            secretDeleteTimer.setDestroyTime((long) messageObject.messageOwner.destroyTime * 1000, messageObject.messageOwner.ttl, false);
+        }
+        try {
+            if (windowView.getParent() != null) {
+                WindowManager wm = (WindowManager) parentActivity.getSystemService(Context.WINDOW_SERVICE);
+                wm.removeView(windowView);
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+
+        WindowManager wm = (WindowManager) parentActivity.getSystemService(Context.WINDOW_SERVICE);
+        wm.addView(windowView, windowLayoutParams);
+        secretDeleteTimer.invalidate();
+        isVisible = true;
+
+        final Window window = parentActivity.getWindow();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            wasNavigationBarColor = window.getNavigationBarColor();
+            wasLightNavigationBar = AndroidUtilities.getLightNavigationBar(window);
+            AndroidUtilities.setLightNavigationBar(window, false);
+            AndroidUtilities.setNavigationBarColor(window, 0xff000000);
+        }
+
+        imageMoveAnimation = new AnimatorSet();
+        imageMoveAnimation.playTogether(
+                ObjectAnimator.ofFloat(actionBar, View.ALPHA, 0, 1.0f),
+                ObjectAnimator.ofFloat(secretDeleteTimer, View.ALPHA, 0, 1.0f),
+                ObjectAnimator.ofInt(photoBackgroundDrawable, AnimationProperties.COLOR_DRAWABLE_ALPHA, 0, 255),
+                ObjectAnimator.ofFloat(secretDeleteTimer, View.ALPHA, 0, 1.0f),
+                ObjectAnimator.ofFloat(this, "animationValue", 0, 1)
+        );
+        photoAnimationInProgress = 3;
+        photoAnimationEndRunnable = () -> {
+            photoAnimationInProgress = 0;
+            imageMoveAnimation = null;
+            if (onOpen != null) {
+                onOpen.run();
+            }
+            if (containerView == null) {
+                return;
+            }
+            if (Build.VERSION.SDK_INT >= 18) {
+                containerView.setLayerType(View.LAYER_TYPE_NONE, null);
+            }
+            containerView.invalidate();
+            if (closeAfterAnimation) {
+                closePhoto(true, true);
+            }
+        };
+        imageMoveAnimation.setDuration(250);
+        imageMoveAnimation.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if (photoAnimationEndRunnable != null) {
+                    photoAnimationEndRunnable.run();
+                    photoAnimationEndRunnable = null;
+                }
+            }
+        });
+        photoTransitionAnimationStartTime = System.currentTimeMillis();
+        if (Build.VERSION.SDK_INT >= 18) {
+            containerView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        }
+        imageMoveAnimation.setInterpolator(new DecelerateInterpolator());
+        photoBackgroundDrawable.frame = 0;
+        photoBackgroundDrawable.drawRunnable = () -> {
+            disableShowCheck = false;
+            object.imageReceiver.setVisible(false, true);
+        };
+        imageMoveAnimation.start();
+    }
+
+    public boolean isShowingImage(MessageObject object) {
+        return isVisible && !disableShowCheck && object != null && currentMessageObject != null && currentMessageObject.getId() == object.getId();
+    }
+
+    private void toggleActionBar(boolean show, final boolean animated) {
+        if (show) {
+            actionBar.setVisibility(View.VISIBLE);
+        }
+        actionBar.setEnabled(show);
+        isActionBarVisible = show;
+
+        if (animated) {
+            ArrayList<Animator> arrayList = new ArrayList<>();
+            arrayList.add(ObjectAnimator.ofFloat(actionBar, View.ALPHA, show ? 1.0f : 0.0f));
+            currentActionBarAnimation = new AnimatorSet();
+            currentActionBarAnimation.playTogether(arrayList);
+            if (!show) {
+                currentActionBarAnimation.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        if (currentActionBarAnimation != null && currentActionBarAnimation.equals(animation)) {
+                            actionBar.setVisibility(View.GONE);
+                            currentActionBarAnimation = null;
+                        }
+                    }
+                });
+            }
+
+            currentActionBarAnimation.setDuration(200);
+            currentActionBarAnimation.start();
+        } else {
+            actionBar.setAlpha(show ? 1.0f : 0.0f);
+            if (!show) {
+                actionBar.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    public boolean isVisible() {
+        return isVisible;
+    }
+
+    public void destroyPhotoViewer() {
+        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.messagesDeleted);
+        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.updateMessageMedia);
+        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.didCreatedNewDeleteTask);
+        isVisible = false;
+        currentProvider = null;
+        if (currentThumb != null) {
+            currentThumb.release();
+            currentThumb = null;
+        }
+        releasePlayer();
+        if (parentActivity != null && windowView != null) {
+            try {
+                if (windowView.getParent() != null) {
+                    WindowManager wm = (WindowManager) parentActivity.getSystemService(Context.WINDOW_SERVICE);
+                    wm.removeViewImmediate(windowView);
+                }
+                windowView = null;
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+        }
+        Instance = null;
+
+    }
+
+    private float[] currentRadii;
+    private Path roundRectPath = new Path();
+
+    private void onDraw(Canvas canvas) {
+        if (!isPhotoVisible) {
+            return;
+        }
+
+        float currentTranslationY;
+        float currentTranslationX;
+        float currentScale;
+        float currentClipTop;
+        float currentClipBottom;
+        float currentClipTopOrigin;
+        float currentClipBottomOrigin;
+        float currentClipHorizontal;
+        float aty = -1;
+
+        if (imageMoveAnimation != null) {
+            if (!scroller.isFinished()) {
+                scroller.abortAnimation();
+            }
+
+            if (useOvershootForScale) {
+                final float overshoot = 1.02f;
+                final float overshootTime = 0.9f;
+                float av;
+                if (animationValue < overshootTime) {
+                    av = animationValue / overshootTime;
+                    currentScale = scale + (animateToScale * overshoot - scale) * av;
+                } else {
+                    av = 1;
+                    currentScale = animateToScale + (animateToScale * (overshoot - 1.0f)) * (1.0f - (animationValue - overshootTime) / (1.0f - overshootTime));
+                }
+                currentTranslationY = translationY + (animateToY - translationY) * av;
+                currentTranslationX = translationX + (animateToX - translationX) * av;
+                currentClipTop = clipTop + (animateToClipTop - clipTop) * av;
+                currentClipBottom = clipBottom + (animateToClipBottom - clipBottom) * av;
+                currentClipTopOrigin = clipTopOrigin + (animateToClipTopOrigin - clipTopOrigin) * av;
+                currentClipBottomOrigin = clipBottomOrigin + (animateToClipBottomOrigin - clipBottomOrigin) * av;
+                currentClipHorizontal = clipHorizontal + (animateToClipHorizontal - clipHorizontal) * av;
+            } else {
+                currentScale = scale + (animateToScale - scale) * animationValue;
+                currentTranslationY = translationY + (animateToY - translationY) * animationValue;
+                currentTranslationX = translationX + (animateToX - translationX) * animationValue;
+                currentClipTop = clipTop + (animateToClipTop - clipTop) * animationValue;
+                currentClipBottom = clipBottom + (animateToClipBottom - clipBottom) * animationValue;
+                currentClipTopOrigin = clipTopOrigin + (animateToClipTopOrigin - clipTopOrigin) * animationValue;
+                currentClipBottomOrigin = clipBottomOrigin + (animateToClipBottomOrigin - clipBottomOrigin) * animationValue;
+                currentClipHorizontal = clipHorizontal + (animateToClipHorizontal - clipHorizontal) * animationValue;
+            }
+
+            if (animateToScale == 1 && scale == 1 && translationX == 0) {
+                aty = currentTranslationY;
+            }
+
+            containerView.invalidate();
+        } else {
+            if (animationStartTime != 0) {
+                translationX = animateToX;
+                translationY = animateToY;
+                clipBottom = animateToClipBottom;
+                clipTop = animateToClipTop;
+                clipTopOrigin = animateToClipTopOrigin;
+                clipBottomOrigin = animateToClipBottomOrigin;
+                clipHorizontal = animateToClipHorizontal;
+                scale = animateToScale;
+                animationStartTime = 0;
+                updateMinMax(scale);
+                zoomAnimation = false;
+                useOvershootForScale = false;
+            }
+            if (!scroller.isFinished()) {
+                if (scroller.computeScrollOffset()) {
+                    if (scroller.getStartX() < maxX && scroller.getStartX() > minX) {
+                        translationX = scroller.getCurrX();
+                    }
+                    if (scroller.getStartY() < maxY && scroller.getStartY() > minY) {
+                        translationY = scroller.getCurrY();
+                    }
+                    containerView.invalidate();
+                }
+            }
+            currentScale = scale;
+            currentTranslationY = translationY;
+            currentTranslationX = translationX;
+            currentClipTop = clipTop;
+            currentClipBottom = clipBottom;
+            currentClipTopOrigin = clipTopOrigin;
+            currentClipBottomOrigin = clipBottomOrigin;
+            currentClipHorizontal = clipHorizontal;
+            if (!moving) {
+                aty = translationY;
+            }
+        }
+
+        boolean zeroRadius = true;
+        if (animateFromRadius != null) {
+            if (currentRadii == null) {
+                currentRadii = new float[8];
+            }
+            float t = animateToRadius ? animationValue : 1f - animationValue;
+            zeroRadius = true;
+            for (int i = 0; i < 8; i += 2) {
+                currentRadii[i] = currentRadii[i + 1] = AndroidUtilities.lerp((float) animateFromRadius[i / 2] * 2, 0, t);
+                if (currentRadii[i] > 0) {
+                    zeroRadius = false;
+                }
+            }
+        }
+
+        float translateX = currentTranslationX;
+        float scaleDiff = 0;
+        float alpha = 1;
+        if (photoAnimationInProgress != 3) {
+            if (scale == 1 && aty != -1 && !zoomAnimation) {
+                float maxValue = getContainerViewHeight() / 4.0f;
+                photoBackgroundDrawable.setAlpha((int) Math.max(127, 255 * (1.0f - (Math.min(Math.abs(aty), maxValue) / maxValue))));
+            } else {
+                photoBackgroundDrawable.setAlpha(255);
+            }
+            if (!zoomAnimation && translateX > maxX) {
+                alpha = Math.min(1.0f, (translateX - maxX) / canvas.getWidth());
+                scaleDiff = alpha * 0.3f;
+                alpha = 1.0f - alpha;
+                translateX = maxX;
+            }
+        }
+
+        boolean drawTextureView = aspectRatioFrameLayout != null && aspectRatioFrameLayout.getVisibility() == View.VISIBLE;
+        canvas.save();
+        float sc = currentScale - scaleDiff;
+        canvas.translate(getContainerViewWidth() / 2 + translateX, getContainerViewHeight() / 2 + currentTranslationY);
+        canvas.scale(sc, sc);
+
+        int bitmapWidth = centerImage.getBitmapWidth();
+        int bitmapHeight = centerImage.getBitmapHeight();
+        if (drawTextureView && textureUploaded) {
+            float scale1 = bitmapWidth / (float) bitmapHeight;
+            float scale2 = videoTextureView.getMeasuredWidth() / (float) videoTextureView.getMeasuredHeight();
+            if (Math.abs(scale1 - scale2) > 0.01f) {
+                bitmapWidth = videoTextureView.getMeasuredWidth();
+                bitmapHeight = videoTextureView.getMeasuredHeight();
+            }
+        }
+
+        float scale = Math.min((float) getContainerViewHeight() / (float) bitmapHeight, (float) getContainerViewWidth() / (float) bitmapWidth);
+        int width = (int) (bitmapWidth * scale);
+        int height = (int) (bitmapHeight * scale);
+
+        canvas.clipRect(-width / 2 + currentClipHorizontal / sc, -height / 2 + currentClipTop / sc, width / 2 - currentClipHorizontal / sc, height / 2 - currentClipBottom / sc);
+        if (!zeroRadius) {
+            roundRectPath.reset();
+            AndroidUtilities.rectTmp.set(-width / 2 + currentClipHorizontal / sc, -height / 2 + currentClipTopOrigin / sc, width / 2 - currentClipHorizontal / sc, height / 2 - currentClipBottomOrigin / sc);
+            roundRectPath.addRoundRect(AndroidUtilities.rectTmp, currentRadii, Path.Direction.CW);
+            canvas.clipPath(roundRectPath);
+        }
+
+        if (!drawTextureView || !textureUploaded || !videoCrossfadeStarted || videoCrossfadeAlpha != 1.0f) {
+            centerImage.setAlpha(alpha);
+            centerImage.setImageCoords(-width / 2, -height / 2, width, height);
+            centerImage.draw(canvas);
+        }
+        if (drawTextureView) {
+            if (!videoCrossfadeStarted && textureUploaded) {
+                videoCrossfadeStarted = true;
+                videoCrossfadeAlpha = 0.0f;
+                videoCrossfadeAlphaLastTime = System.currentTimeMillis();
+            }
+            canvas.translate(-width / 2, -height / 2);
+            videoTextureView.setAlpha(alpha * videoCrossfadeAlpha);
+            aspectRatioFrameLayout.draw(canvas);
+            if (videoCrossfadeStarted && videoCrossfadeAlpha < 1.0f) {
+                long newUpdateTime = System.currentTimeMillis();
+                long dt = newUpdateTime - videoCrossfadeAlphaLastTime;
+                videoCrossfadeAlphaLastTime = newUpdateTime;
+                videoCrossfadeAlpha += dt / 200.0f;
+                containerView.invalidate();
+                if (videoCrossfadeAlpha > 1.0f) {
+                    videoCrossfadeAlpha = 1.0f;
+                }
+            }
+        }
+        canvas.restore();
     }
 
     @Keep
     public float getVideoCrossfadeAlpha() {
-        return this.videoCrossfadeAlpha;
+        return videoCrossfadeAlpha;
     }
 
-    /* JADX WARN: Removed duplicated region for block: B:106:0x0315  */
-    /* JADX WARN: Removed duplicated region for block: B:96:0x02d4  */
-    /*
-        Code decompiled incorrectly, please refer to instructions dump.
-        To view partially-correct add '--show-bad-code' argument
-    */
-    public final void n0(android.graphics.Canvas r21) {
-        /*
-            Method dump skipped, instructions count: 875
-            To view this dump add '--comments-level debug' option
-        */
-        throw new UnsupportedOperationException("Method not decompiled: org.telegram.ui.SecretMediaViewer.n0(android.graphics.Canvas):void");
+    @Keep
+    public void setVideoCrossfadeAlpha(float value) {
+        videoCrossfadeAlpha = value;
+        containerView.invalidate();
     }
 
-    public final void o0(PhotoViewer.p2 p2Var) {
-        this.isVisible = false;
-        this.currentProvider = null;
-        this.disableShowCheck = false;
-        s0();
-        new ArrayList();
-        org.telegram.messenger.a.n3(new Runnable() { // from class: ro8
-            @Override // java.lang.Runnable
-            public final void run() {
-                SecretMediaViewer.this.j0();
+    private boolean checkPhotoAnimation() {
+        if (photoAnimationInProgress != 0) {
+            if (Math.abs(photoTransitionAnimationStartTime - System.currentTimeMillis()) >= 500) {
+                if (photoAnimationEndRunnable != null) {
+                    photoAnimationEndRunnable.run();
+                    photoAnimationEndRunnable = null;
+                }
+                photoAnimationInProgress = 0;
             }
-        }, 50L);
+        }
+        return photoAnimationInProgress != 0;
     }
 
-    /* JADX WARN: Code restructure failed: missing block: B:20:0x007f, code lost:
-        if (r0 > r10) goto L17;
-     */
-    /* JADX WARN: Code restructure failed: missing block: B:26:0x008e, code lost:
-        if (r2 > r10) goto L20;
-     */
-    @Override // android.view.GestureDetector.OnDoubleTapListener
-    /*
-        Code decompiled incorrectly, please refer to instructions dump.
-        To view partially-correct add '--show-bad-code' argument
-    */
-    public boolean onDoubleTap(android.view.MotionEvent r10) {
-        /*
-            r9 = this;
-            float r0 = r9.scale
-            r1 = 0
-            r2 = 1065353216(0x3f800000, float:1.0)
-            r3 = 0
-            int r4 = (r0 > r2 ? 1 : (r0 == r2 ? 0 : -1))
-            if (r4 != 0) goto L17
-            float r4 = r9.translationY
-            int r4 = (r4 > r3 ? 1 : (r4 == r3 ? 0 : -1))
-            if (r4 != 0) goto L16
-            float r4 = r9.translationX
-            int r4 = (r4 > r3 ? 1 : (r4 == r3 ? 0 : -1))
-            if (r4 == 0) goto L17
-        L16:
-            return r1
-        L17:
-            long r4 = r9.animationStartTime
-            r6 = 0
-            int r8 = (r4 > r6 ? 1 : (r4 == r6 ? 0 : -1))
-            if (r8 != 0) goto L9a
-            int r4 = r9.photoAnimationInProgress
-            if (r4 == 0) goto L25
-            goto L9a
-        L25:
-            r1 = 1
-            int r0 = (r0 > r2 ? 1 : (r0 == r2 ? 0 : -1))
-            if (r0 != 0) goto L95
-            float r0 = r10.getX()
-            int r2 = r9.a0()
-            int r2 = r2 / 2
-            float r2 = (float) r2
-            float r0 = r0 - r2
-            float r2 = r10.getX()
-            int r3 = r9.a0()
-            int r3 = r3 / 2
-            float r3 = (float) r3
-            float r2 = r2 - r3
-            float r3 = r9.translationX
-            float r2 = r2 - r3
-            float r3 = r9.scale
-            r4 = 1077936128(0x40400000, float:3.0)
-            float r3 = r4 / r3
-            float r2 = r2 * r3
-            float r0 = r0 - r2
-            float r2 = r10.getY()
-            int r3 = r9.Z()
-            int r3 = r3 / 2
-            float r3 = (float) r3
-            float r2 = r2 - r3
-            float r10 = r10.getY()
-            int r3 = r9.Z()
-            int r3 = r3 / 2
-            float r3 = (float) r3
-            float r10 = r10 - r3
-            float r3 = r9.translationY
-            float r10 = r10 - r3
-            float r3 = r9.scale
-            float r3 = r4 / r3
-            float r10 = r10 * r3
-            float r2 = r2 - r10
-            r9.v0(r4)
-            float r10 = r9.minX
-            int r3 = (r0 > r10 ? 1 : (r0 == r10 ? 0 : -1))
-            if (r3 >= 0) goto L7b
-        L79:
-            r0 = r10
-            goto L82
-        L7b:
-            float r10 = r9.maxX
-            int r3 = (r0 > r10 ? 1 : (r0 == r10 ? 0 : -1))
-            if (r3 <= 0) goto L82
-            goto L79
-        L82:
-            float r10 = r9.minY
-            int r3 = (r2 > r10 ? 1 : (r2 == r10 ? 0 : -1))
-            if (r3 >= 0) goto L8a
-        L88:
-            r2 = r10
-            goto L91
-        L8a:
-            float r10 = r9.maxY
-            int r3 = (r2 > r10 ? 1 : (r2 == r10 ? 0 : -1))
-            if (r3 <= 0) goto L91
-            goto L88
-        L91:
-            r9.S(r4, r0, r2, r1)
-            goto L98
-        L95:
-            r9.S(r2, r3, r3, r1)
-        L98:
-            r9.doubleTap = r1
-        L9a:
-            return r1
-        */
-        throw new UnsupportedOperationException("Method not decompiled: org.telegram.ui.SecretMediaViewer.onDoubleTap(android.view.MotionEvent):boolean");
+    public long getOpenTime() {
+        return openTime;
     }
 
-    @Override // android.view.GestureDetector.OnDoubleTapListener
-    public boolean onDoubleTapEvent(MotionEvent motionEvent) {
-        return false;
+    public long getCloseTime() {
+        return closeTime;
     }
 
-    @Override // android.view.GestureDetector.OnGestureListener
-    public boolean onDown(MotionEvent motionEvent) {
-        return false;
+    public MessageObject getCurrentMessageObject() {
+        return currentMessageObject;
     }
 
-    @Override // android.view.GestureDetector.OnGestureListener
-    public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent2, float f2, float f3) {
-        if (this.scale != 1.0f) {
-            this.scroller.a();
-            this.scroller.d(Math.round(this.translationX), Math.round(this.translationY), Math.round(f2), Math.round(f3), (int) this.minX, (int) this.maxX, (int) this.minY, (int) this.maxY);
-            this.containerView.postInvalidate();
+    public boolean closePhoto(boolean animated, boolean byDelete) {
+        if (parentActivity == null || !isPhotoVisible || checkPhotoAnimation()) {
             return false;
         }
-        return false;
-    }
 
-    @Override // android.view.GestureDetector.OnGestureListener
-    public void onLongPress(MotionEvent motionEvent) {
-    }
-
-    @Override // android.view.GestureDetector.OnGestureListener
-    public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent2, float f2, float f3) {
-        return false;
-    }
-
-    @Override // android.view.GestureDetector.OnGestureListener
-    public void onShowPress(MotionEvent motionEvent) {
-    }
-
-    @Override // android.view.GestureDetector.OnDoubleTapListener
-    public boolean onSingleTapConfirmed(MotionEvent motionEvent) {
-        if (this.discardTap) {
-            return false;
+        if (parentActivity != null) {
+            final Window window = parentActivity.getWindow();
+            AndroidUtilities.setLightNavigationBar(window, wasLightNavigationBar);
+            AndroidUtilities.setNavigationBarColor(window, wasNavigationBarColor);
         }
-        u0(!this.isActionBarVisible, true);
+
+        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.messagesDeleted);
+        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.updateMessageMedia);
+        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.didCreatedNewDeleteTask);
+
+        isActionBarVisible = false;
+
+        if (velocityTracker != null) {
+            velocityTracker.recycle();
+            velocityTracker = null;
+        }
+        closeTime = System.currentTimeMillis();
+        final PhotoViewer.PlaceProviderObject object;
+        if (currentProvider == null || currentMessageObject.messageOwner.media.photo instanceof TLRPC.TL_photoEmpty || currentMessageObject.messageOwner.media.document instanceof TLRPC.TL_documentEmpty) {
+            object = null;
+        } else {
+            object = currentProvider.getPlaceForPhoto(currentMessageObject, null, 0, true);
+        }
+        if (videoPlayer != null) {
+            videoPlayer.pause();
+        }
+
+        if (animated) {
+            photoAnimationInProgress = 3;
+            containerView.invalidate();
+
+            imageMoveAnimation = new AnimatorSet();
+
+            if (object != null && object.imageReceiver.getThumbBitmap() != null && !byDelete) {
+                object.imageReceiver.setVisible(false, true);
+
+                final RectF drawRegion = object.imageReceiver.getDrawRegion();
+
+                float width = (drawRegion.right - drawRegion.left);
+                float height = (drawRegion.bottom - drawRegion.top);
+                int viewWidth = AndroidUtilities.displaySize.x;
+                int viewHeight = AndroidUtilities.displaySize.y + (Build.VERSION.SDK_INT >= 21 ? AndroidUtilities.statusBarHeight : 0);
+                animateToScale = Math.max(width / viewWidth, height / viewHeight);
+                animateToX = object.viewX + drawRegion.left + width / 2 -  viewWidth / 2;
+                animateToY = object.viewY + drawRegion.top + height / 2 - viewHeight / 2;
+                animateToClipHorizontal = Math.abs(drawRegion.left - object.imageReceiver.getImageX());
+                int clipVertical =( int) Math.abs(drawRegion.top - object.imageReceiver.getImageY());
+                int[] coords2 = new int[2];
+                object.parentView.getLocationInWindow(coords2);
+                animateToClipTop = coords2[1] - (Build.VERSION.SDK_INT >= 21 ? 0 : AndroidUtilities.statusBarHeight) - (object.viewY + drawRegion.top) + object.clipTopAddition;
+                animateToClipTop = Math.max(0, Math.max(animateToClipTop, clipVertical));
+                animateToClipBottom = (object.viewY + drawRegion.top + (int) height) - (coords2[1] + object.parentView.getHeight() - (Build.VERSION.SDK_INT >= 21 ? 0 : AndroidUtilities.statusBarHeight)) + object.clipBottomAddition;
+                animateToClipBottom = Math.max(0, Math.max(animateToClipBottom, clipVertical));
+
+                animateToClipTopOrigin = 0; // coords2[1] - (Build.VERSION.SDK_INT >= 21 ? 0 : AndroidUtilities.statusBarHeight) - (object.viewY + drawRegion.top) + object.clipTopAddition;
+                animateToClipTopOrigin = Math.max(0, Math.max(animateToClipTopOrigin, clipVertical));
+                animateToClipBottomOrigin = 0; // (object.viewY + drawRegion.top + (int) height) - (coords2[1] + object.parentView.getHeight() - (Build.VERSION.SDK_INT >= 21 ? 0 : AndroidUtilities.statusBarHeight)) + object.clipBottomAddition;
+                animateToClipBottomOrigin = Math.max(0, Math.max(animateToClipBottomOrigin, clipVertical));
+
+                animationStartTime = System.currentTimeMillis();
+                zoomAnimation = true;
+            } else {
+                int h = (AndroidUtilities.displaySize.y + (Build.VERSION.SDK_INT >= 21 ? AndroidUtilities.statusBarHeight : 0));
+                animateToY = translationY >= 0 ? h : -h;
+            }
+            animateToRadius = false;
+            if (isVideo) {
+                videoCrossfadeStarted = false;
+                textureUploaded = false;
+                imageMoveAnimation.playTogether(
+                        ObjectAnimator.ofInt(photoBackgroundDrawable, AnimationProperties.COLOR_DRAWABLE_ALPHA, 0),
+                        ObjectAnimator.ofFloat(this, "animationValue", 0, 1),
+                        ObjectAnimator.ofFloat(actionBar, View.ALPHA, 0),
+                        ObjectAnimator.ofFloat(secretDeleteTimer, View.ALPHA, 0),
+                        ObjectAnimator.ofFloat(this, "videoCrossfadeAlpha", 0)
+                );
+            } else {
+                centerImage.setManualAlphaAnimator(true);
+                imageMoveAnimation.playTogether(
+                        ObjectAnimator.ofInt(photoBackgroundDrawable, AnimationProperties.COLOR_DRAWABLE_ALPHA, 0),
+                        ObjectAnimator.ofFloat(this, "animationValue", 0, 1),
+                        ObjectAnimator.ofFloat(actionBar, View.ALPHA, 0),
+                        ObjectAnimator.ofFloat(secretDeleteTimer, View.ALPHA, 0),
+                        ObjectAnimator.ofFloat(centerImage, "currentAlpha", 0.0f)
+                );
+            }
+
+            photoAnimationEndRunnable = () -> {
+                imageMoveAnimation = null;
+                photoAnimationInProgress = 0;
+                if (Build.VERSION.SDK_INT >= 18) {
+                    containerView.setLayerType(View.LAYER_TYPE_NONE, null);
+                }
+                containerView.setVisibility(View.INVISIBLE);
+                onPhotoClosed(object);
+            };
+
+            imageMoveAnimation.setInterpolator(new DecelerateInterpolator());
+            imageMoveAnimation.setDuration(250);
+            imageMoveAnimation.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    if (object != null) {
+                        object.imageReceiver.setVisible(true, true);
+                    }
+                    isVisible = false;
+                    AndroidUtilities.runOnUIThread(() -> {
+                        if (photoAnimationEndRunnable != null) {
+                            photoAnimationEndRunnable.run();
+                            photoAnimationEndRunnable = null;
+                        }
+                    });
+                }
+            });
+            photoTransitionAnimationStartTime = System.currentTimeMillis();
+            if (Build.VERSION.SDK_INT >= 18) {
+                containerView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+            }
+            imageMoveAnimation.start();
+        } else {
+            AnimatorSet animatorSet = new AnimatorSet();
+            animatorSet.playTogether(
+                    ObjectAnimator.ofFloat(containerView, View.SCALE_X, 0.9f),
+                    ObjectAnimator.ofFloat(containerView, View.SCALE_Y, 0.9f),
+                    ObjectAnimator.ofInt(photoBackgroundDrawable, AnimationProperties.COLOR_DRAWABLE_ALPHA, 0),
+                    ObjectAnimator.ofFloat(actionBar, View.ALPHA, 0)
+            );
+            photoAnimationInProgress = 2;
+            photoAnimationEndRunnable = () -> {
+                if (containerView == null) {
+                    return;
+                }
+                if (Build.VERSION.SDK_INT >= 18) {
+                    containerView.setLayerType(View.LAYER_TYPE_NONE, null);
+                }
+                containerView.setVisibility(View.INVISIBLE);
+                photoAnimationInProgress = 0;
+                onPhotoClosed(object);
+                containerView.setScaleX(1.0f);
+                containerView.setScaleY(1.0f);
+            };
+            animatorSet.setDuration(200);
+            animatorSet.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    if (photoAnimationEndRunnable != null) {
+                        photoAnimationEndRunnable.run();
+                        photoAnimationEndRunnable = null;
+                    }
+                }
+            });
+            photoTransitionAnimationStartTime = System.currentTimeMillis();
+            if (Build.VERSION.SDK_INT >= 18) {
+                containerView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+            }
+            animatorSet.start();
+        }
         return true;
     }
 
-    @Override // android.view.GestureDetector.OnGestureListener
-    public boolean onSingleTapUp(MotionEvent motionEvent) {
+    private void onPhotoClosed(PhotoViewer.PlaceProviderObject object) {
+        isVisible = false;
+        currentProvider = null;
+        disableShowCheck = false;
+        releasePlayer();
+        ArrayList<File> filesToDelete = new ArrayList<>();
+        AndroidUtilities.runOnUIThread(() -> {
+            if (currentThumb != null) {
+                currentThumb.release();
+                currentThumb = null;
+            }
+            centerImage.setImageBitmap((Bitmap) null);
+            try {
+                if (windowView.getParent() != null) {
+                    WindowManager wm = (WindowManager) parentActivity.getSystemService(Context.WINDOW_SERVICE);
+                    wm.removeView(windowView);
+                }
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+            isPhotoVisible = false;
+        }, 50);
+    }
+
+    private void updateMinMax(float scale) {
+        int maxW = (int) (centerImage.getImageWidth() * scale - getContainerViewWidth()) / 2;
+        int maxH = (int) (centerImage.getImageHeight() * scale - getContainerViewHeight()) / 2;
+        if (maxW > 0) {
+            minX = -maxW;
+            maxX = maxW;
+        } else {
+            minX = maxX = 0;
+        }
+        if (maxH > 0) {
+            minY = -maxH;
+            maxY = maxH;
+        } else {
+            minY = maxY = 0;
+        }
+    }
+
+    private int getContainerViewWidth() {
+        return containerView.getWidth();
+    }
+
+    private int getContainerViewHeight() {
+        return containerView.getHeight();
+    }
+
+    private boolean processTouchEvent(MotionEvent ev) {
+        if (photoAnimationInProgress != 0 || animationStartTime != 0) {
+            return false;
+        }
+
+        if (ev.getPointerCount() == 1 && gestureDetector.onTouchEvent(ev) && doubleTap) {
+            doubleTap = false;
+            moving = false;
+            zooming = false;
+            checkMinMax(false);
+            return true;
+        }
+
+        if (ev.getActionMasked() == MotionEvent.ACTION_DOWN || ev.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN) {
+            discardTap = false;
+            if (!scroller.isFinished()) {
+                scroller.abortAnimation();
+            }
+            if (!draggingDown) {
+                if (ev.getPointerCount() == 2) {
+                    pinchStartDistance = (float) Math.hypot(ev.getX(1) - ev.getX(0), ev.getY(1) - ev.getY(0));
+                    pinchStartScale = scale;
+                    pinchCenterX = (ev.getX(0) + ev.getX(1)) / 2.0f;
+                    pinchCenterY = (ev.getY(0) + ev.getY(1)) / 2.0f;
+                    pinchStartX = translationX;
+                    pinchStartY = translationY;
+                    zooming = true;
+                    moving = false;
+                    if (velocityTracker != null) {
+                        velocityTracker.clear();
+                    }
+                } else if (ev.getPointerCount() == 1) {
+                    moveStartX = ev.getX();
+                    dragY = moveStartY = ev.getY();
+                    draggingDown = false;
+                    canDragDown = true;
+                    if (velocityTracker != null) {
+                        velocityTracker.clear();
+                    }
+                }
+            }
+        } else if (ev.getActionMasked() == MotionEvent.ACTION_MOVE) {
+            if (ev.getPointerCount() == 2 && !draggingDown && zooming) {
+                discardTap = true;
+                scale = (float) Math.hypot(ev.getX(1) - ev.getX(0), ev.getY(1) - ev.getY(0)) / pinchStartDistance * pinchStartScale;
+                translationX = (pinchCenterX - getContainerViewWidth() / 2) - ((pinchCenterX - getContainerViewWidth() / 2) - pinchStartX) * (scale / pinchStartScale);
+                translationY = (pinchCenterY - getContainerViewHeight() / 2) - ((pinchCenterY - getContainerViewHeight() / 2) - pinchStartY) * (scale / pinchStartScale);
+                updateMinMax(scale);
+                containerView.invalidate();
+            } else if (ev.getPointerCount() == 1) {
+                if (velocityTracker != null) {
+                    velocityTracker.addMovement(ev);
+                }
+                float dx = Math.abs(ev.getX() - moveStartX);
+                float dy = Math.abs(ev.getY() - dragY);
+                if (dx > AndroidUtilities.dp(3) || dy > AndroidUtilities.dp(3)) {
+                    discardTap = true;
+                }
+                if (canDragDown && !draggingDown && scale == 1 && dy >= AndroidUtilities.dp(30) && dy / 2 > dx) {
+                    draggingDown = true;
+                    moving = false;
+                    dragY = ev.getY();
+                    if (isActionBarVisible) {
+                        toggleActionBar(false, true);
+                    }
+                    return true;
+                } else if (draggingDown) {
+                    translationY = ev.getY() - dragY;
+                    containerView.invalidate();
+                } else if (!invalidCoords && animationStartTime == 0) {
+                    float moveDx = moveStartX - ev.getX();
+                    float moveDy = moveStartY - ev.getY();
+                    if (moving || scale == 1 && Math.abs(moveDy) + AndroidUtilities.dp(12) < Math.abs(moveDx) || scale != 1) {
+                        if (!moving) {
+                            moveDx = 0;
+                            moveDy = 0;
+                            moving = true;
+                            canDragDown = false;
+                        }
+
+                        moveStartX = ev.getX();
+                        moveStartY = ev.getY();
+                        updateMinMax(scale);
+                        if (translationX < minX || translationX > maxX) {
+                            moveDx /= 3.0f;
+                        }
+                        if (maxY == 0 && minY == 0) {
+                            if (translationY - moveDy < minY) {
+                                translationY = minY;
+                                moveDy = 0;
+                            } else if (translationY - moveDy > maxY) {
+                                translationY = maxY;
+                                moveDy = 0;
+                            }
+                        } else {
+                            if (translationY < minY || translationY > maxY) {
+                                moveDy /= 3.0f;
+                            }
+                        }
+
+                        translationX -= moveDx;
+                        if (scale != 1) {
+                            translationY -= moveDy;
+                        }
+                        containerView.invalidate();
+                    }
+                } else {
+                    invalidCoords = false;
+                    moveStartX = ev.getX();
+                    moveStartY = ev.getY();
+                }
+            }
+        } else if (ev.getActionMasked() == MotionEvent.ACTION_CANCEL || ev.getActionMasked() == MotionEvent.ACTION_UP || ev.getActionMasked() == MotionEvent.ACTION_POINTER_UP) {
+            if (zooming) {
+                invalidCoords = true;
+                if (scale < 1.0f) {
+                    updateMinMax(1.0f);
+                    animateTo(1.0f, 0, 0, true);
+                } else if (scale > 3.0f) {
+                    float atx = (pinchCenterX - getContainerViewWidth() / 2) - ((pinchCenterX - getContainerViewWidth() / 2) - pinchStartX) * (3.0f / pinchStartScale);
+                    float aty = (pinchCenterY - getContainerViewHeight() / 2) - ((pinchCenterY - getContainerViewHeight() / 2) - pinchStartY) * (3.0f / pinchStartScale);
+                    updateMinMax(3.0f);
+                    if (atx < minX) {
+                        atx = minX;
+                    } else if (atx > maxX) {
+                        atx = maxX;
+                    }
+                    if (aty < minY) {
+                        aty = minY;
+                    } else if (aty > maxY) {
+                        aty = maxY;
+                    }
+                    animateTo(3.0f, atx, aty, true);
+                } else {
+                    checkMinMax(true);
+                }
+                zooming = false;
+            } else if (draggingDown) {
+                if (Math.abs(dragY - ev.getY()) > getContainerViewHeight() / 6.0f) {
+                    closePhoto(true, false);
+                } else {
+                    animateTo(1, 0, 0, false);
+                }
+                draggingDown = false;
+            } else if (moving) {
+                float moveToX = translationX;
+                float moveToY = translationY;
+                updateMinMax(scale);
+                moving = false;
+                canDragDown = true;
+                if (velocityTracker != null && scale == 1) {
+                    velocityTracker.computeCurrentVelocity(1000);
+                }
+                if (translationX < minX) {
+                    moveToX = minX;
+                } else if (translationX > maxX) {
+                    moveToX = maxX;
+                }
+                if (translationY < minY) {
+                    moveToY = minY;
+                } else if (translationY > maxY) {
+                    moveToY = maxY;
+                }
+                animateTo(scale, moveToX, moveToY, false);
+            }
+        }
         return false;
     }
 
-    public void p0(org.telegram.messenger.x xVar, PhotoViewer.o2 o2Var, final Runnable runnable) {
-        final PhotoViewer.p2 placeForPhoto;
-        int i2;
-        int i3;
-        int[] iArr;
-        int i4;
-        char c2;
-        BitmapDrawable bitmapDrawable;
-        BitmapDrawable bitmapDrawable2;
-        BitmapDrawable bitmapDrawable3;
-        if (this.parentActivity == null || xVar == null || !xVar.l4() || o2Var == null || (placeForPhoto = o2Var.getPlaceForPhoto(xVar, null, 0, true)) == null) {
+    private void checkMinMax(boolean zoom) {
+        float moveToX = translationX;
+        float moveToY = translationY;
+        updateMinMax(scale);
+        if (translationX < minX) {
+            moveToX = minX;
+        } else if (translationX > maxX) {
+            moveToX = maxX;
+        }
+        if (translationY < minY) {
+            moveToY = minY;
+        } else if (translationY > maxY) {
+            moveToY = maxY;
+        }
+        animateTo(scale, moveToX, moveToY, zoom);
+    }
+
+    private void animateTo(float newScale, float newTx, float newTy, boolean isZoom) {
+        animateTo(newScale, newTx, newTy, isZoom, 250);
+    }
+
+    private void animateTo(float newScale, float newTx, float newTy, boolean isZoom, int duration) {
+        if (scale == newScale && translationX == newTx && translationY == newTy) {
             return;
         }
-        this.currentProvider = o2Var;
-        this.openTime = System.currentTimeMillis();
-        this.closeTime = 0L;
-        this.isActionBarVisible = true;
-        this.isPhotoVisible = true;
-        this.draggingDown = false;
-        pn pnVar = this.aspectRatioFrameLayout;
-        if (pnVar != null) {
-            pnVar.setVisibility(4);
-        }
-        s0();
-        this.pinchStartDistance = 0.0f;
-        this.pinchStartScale = 1.0f;
-        this.pinchCenterX = 0.0f;
-        this.pinchCenterY = 0.0f;
-        this.pinchStartX = 0.0f;
-        this.pinchStartY = 0.0f;
-        this.moveStartX = 0.0f;
-        this.moveStartY = 0.0f;
-        this.zooming = false;
-        this.moving = false;
-        this.doubleTap = false;
-        this.invalidCoords = false;
-        this.canDragDown = true;
-        v0(this.scale);
-        this.photoBackgroundDrawable.setAlpha(0);
-        this.containerView.setAlpha(1.0f);
-        this.containerView.setVisibility(0);
-        this.secretDeleteTimer.setAlpha(1.0f);
-        this.isVideo = false;
-        this.videoWatchedOneTime = false;
-        this.closeVideoAfterWatch = false;
-        this.disableShowCheck = true;
-        this.centerImage.C1(false);
-        RectF w = placeForPhoto.imageReceiver.w();
-        float width = w.width();
-        float height = w.height();
-        Point point = org.telegram.messenger.a.f12447a;
-        this.scale = Math.max(width / point.x, height / (point.y + org.telegram.messenger.a.f12472b));
-        int[] iArr2 = placeForPhoto.radius;
-        if (iArr2 != null) {
-            this.animateFromRadius = new int[iArr2.length];
-            int i5 = 0;
-            while (true) {
-                int[] iArr3 = placeForPhoto.radius;
-                if (i5 >= iArr3.length) {
-                    break;
-                }
-                this.animateFromRadius[i5] = iArr3[i5];
-                i5++;
-            }
-        } else {
-            this.animateFromRadius = null;
-        }
-        float f2 = w.left;
-        this.translationX = ((placeForPhoto.viewX + f2) + (width / 2.0f)) - (i2 / 2);
-        this.translationY = ((placeForPhoto.viewY + w.top) + (height / 2.0f)) - (i3 / 2);
-        this.clipHorizontal = Math.abs(f2 - placeForPhoto.imageReceiver.G());
-        placeForPhoto.parentView.getLocationInWindow(new int[2]);
-        float f3 = ((iArr[1] - 0) - (placeForPhoto.viewY + w.top)) + placeForPhoto.clipTopAddition;
-        this.clipTop = f3;
-        float abs = (int) Math.abs(w.top - placeForPhoto.imageReceiver.I());
-        this.clipTop = Math.max(0.0f, Math.max(f3, abs));
-        float height2 = (((placeForPhoto.viewY + w.top) + ((int) height)) - ((iArr[1] + placeForPhoto.parentView.getHeight()) - 0)) + placeForPhoto.clipBottomAddition;
-        this.clipBottom = height2;
-        this.clipBottom = Math.max(0.0f, Math.max(height2, abs));
-        this.clipTopOrigin = 0.0f;
-        this.clipTopOrigin = Math.max(0.0f, Math.max(0.0f, abs));
-        this.clipBottomOrigin = 0.0f;
-        this.clipBottomOrigin = Math.max(0.0f, Math.max(0.0f, abs));
-        this.animationStartTime = System.currentTimeMillis();
-        this.animateToX = 0.0f;
-        this.animateToY = 0.0f;
-        this.animateToClipBottom = 0.0f;
-        this.animateToClipBottomOrigin = 0.0f;
-        this.animateToClipHorizontal = 0.0f;
-        this.animateToClipTop = 0.0f;
-        this.animateToClipTopOrigin = 0.0f;
-        this.animateToScale = 1.0f;
-        this.animateToRadius = true;
-        this.zoomAnimation = true;
-        org.telegram.messenger.a0.k(this.currentAccount).d(this, org.telegram.messenger.a0.k);
-        org.telegram.messenger.a0.k(this.currentAccount).d(this, org.telegram.messenger.a0.Y);
-        org.telegram.messenger.a0.k(this.currentAccount).d(this, org.telegram.messenger.a0.V);
-        this.currentDialogId = org.telegram.messenger.x.X0(xVar.f13365a.f9699b);
-        u0(true, false);
-        this.currentMessageObject = xVar;
-        tm9 o0 = xVar.o0();
-        ImageReceiver.b bVar = this.currentThumb;
-        if (bVar != null) {
-            bVar.d();
-            this.currentThumb = null;
-        }
-        this.currentThumb = placeForPhoto.imageReceiver.c0();
-        if (o0 != null) {
-            if (org.telegram.messenger.x.v2(o0)) {
-                this.actionBar.setTitle(org.telegram.messenger.u.B0("DisappearingGif", org.telegram.mdgram.R.string.DisappearingGif));
-                ImageReceiver imageReceiver = this.centerImage;
-                org.telegram.messenger.t b2 = org.telegram.messenger.t.b(o0);
-                if (this.currentThumb != null) {
-                    bitmapDrawable3 = new BitmapDrawable(this.currentThumb.f12199a);
-                } else {
-                    bitmapDrawable3 = null;
-                }
-                i4 = 2;
-                c2 = 4;
-                imageReceiver.k1(b2, null, bitmapDrawable3, -1L, null, xVar, 1);
-                k kVar = this.secretDeleteTimer;
-                lo9 lo9Var = xVar.f13365a;
-                kVar.b(lo9Var.l * 1000, lo9Var.k, false);
-            } else {
-                i4 = 2;
-                c2 = 4;
-                this.playerRetryPlayCount = 1;
-                this.actionBar.setTitle(org.telegram.messenger.u.B0("DisappearingVideo", org.telegram.mdgram.R.string.DisappearingVideo));
-                File file = new File(xVar.f13365a.f9707d);
-                if (file.exists()) {
-                    q0(file);
-                } else {
-                    File B0 = org.telegram.messenger.k.r0(this.currentAccount).B0(xVar.f13365a);
-                    File file2 = new File(B0.getAbsolutePath() + ".enc");
-                    if (file2.exists()) {
-                        B0 = file2;
-                    }
-                    q0(B0);
-                }
-                this.isVideo = true;
-                ImageReceiver imageReceiver2 = this.centerImage;
-                if (this.currentThumb != null) {
-                    bitmapDrawable2 = new BitmapDrawable(this.currentThumb.f12199a);
-                } else {
-                    bitmapDrawable2 = null;
-                }
-                imageReceiver2.k1(null, null, bitmapDrawable2, -1L, null, xVar, 2);
-                if (xVar.t0() * 1000 > (xVar.f13365a.l * 1000) - (System.currentTimeMillis() + (ConnectionsManager.getInstance(this.currentAccount).getTimeDifference() * 1000))) {
-                    this.secretDeleteTimer.b(-1L, -1L, true);
-                } else {
-                    k kVar2 = this.secretDeleteTimer;
-                    lo9 lo9Var2 = xVar.f13365a;
-                    kVar2.b(lo9Var2.l * 1000, lo9Var2.k, false);
-                }
-            }
-        } else {
-            i4 = 2;
-            c2 = 4;
-            this.actionBar.setTitle(org.telegram.messenger.u.B0("DisappearingPhoto", org.telegram.mdgram.R.string.DisappearingPhoto));
-            lp9 e0 = org.telegram.messenger.k.e0(xVar.f13364a, org.telegram.messenger.a.d1());
-            ImageReceiver imageReceiver3 = this.centerImage;
-            org.telegram.messenger.t g2 = org.telegram.messenger.t.g(e0, xVar.f13373a);
-            if (this.currentThumb != null) {
-                bitmapDrawable = new BitmapDrawable(this.currentThumb.f12199a);
-            } else {
-                bitmapDrawable = null;
-            }
-            imageReceiver3.k1(g2, null, bitmapDrawable, -1L, null, xVar, 2);
-            k kVar3 = this.secretDeleteTimer;
-            lo9 lo9Var3 = xVar.f13365a;
-            kVar3.b(lo9Var3.l * 1000, lo9Var3.k, false);
-        }
-        try {
-            if (this.windowView.getParent() != null) {
-                ((WindowManager) this.parentActivity.getSystemService("window")).removeView(this.windowView);
-            }
-        } catch (Exception e2) {
-            org.telegram.messenger.l.p(e2);
-        }
-        ((WindowManager) this.parentActivity.getSystemService("window")).addView(this.windowView, this.windowLayoutParams);
-        this.secretDeleteTimer.invalidate();
-        this.isVisible = true;
-        Window window = this.parentActivity.getWindow();
-        this.wasNavigationBarColor = window.getNavigationBarColor();
-        this.wasLightNavigationBar = org.telegram.messenger.a.T0(window);
-        org.telegram.messenger.a.s3(window, false);
-        org.telegram.messenger.a.w3(window, -16777216);
-        AnimatorSet animatorSet = new AnimatorSet();
-        this.imageMoveAnimation = animatorSet;
-        Animator[] animatorArr = new Animator[5];
-        float[] fArr = new float[i4];
-        // fill-array-data instruction
-        fArr[0] = 0.0f;
-        fArr[1] = 1.0f;
-        animatorArr[0] = ObjectAnimator.ofFloat(this.actionBar, View.ALPHA, fArr);
-        float[] fArr2 = new float[i4];
-        // fill-array-data instruction
-        fArr2[0] = 0.0f;
-        fArr2[1] = 1.0f;
-        animatorArr[1] = ObjectAnimator.ofFloat(this.secretDeleteTimer, View.ALPHA, fArr2);
-        int[] iArr4 = new int[i4];
-        // fill-array-data instruction
-        iArr4[0] = 0;
-        iArr4[1] = 255;
-        animatorArr[i4] = ObjectAnimator.ofInt(this.photoBackgroundDrawable, (Property<PhotoBackgroundDrawable, Integer>) org.telegram.ui.Components.f.COLOR_DRAWABLE_ALPHA, iArr4);
-        float[] fArr3 = new float[i4];
-        // fill-array-data instruction
-        fArr3[0] = 0.0f;
-        fArr3[1] = 1.0f;
-        animatorArr[3] = ObjectAnimator.ofFloat(this.secretDeleteTimer, View.ALPHA, fArr3);
-        float[] fArr4 = new float[i4];
-        // fill-array-data instruction
-        fArr4[0] = 0.0f;
-        fArr4[1] = 1.0f;
-        animatorArr[c2] = ObjectAnimator.ofFloat(this, "animationValue", fArr4);
-        animatorSet.playTogether(animatorArr);
-        this.photoAnimationInProgress = 3;
-        this.photoAnimationEndRunnable = new Runnable() { // from class: so8
-            @Override // java.lang.Runnable
-            public final void run() {
-                SecretMediaViewer.this.k0(runnable);
-            }
-        };
-        this.imageMoveAnimation.setDuration(250L);
-        this.imageMoveAnimation.addListener(new e());
-        this.photoTransitionAnimationStartTime = System.currentTimeMillis();
-        this.containerView.setLayerType(i4, null);
-        this.imageMoveAnimation.setInterpolator(new DecelerateInterpolator());
-        this.photoBackgroundDrawable.frame = 0;
-        this.photoBackgroundDrawable.drawRunnable = new Runnable() { // from class: to8
-            @Override // java.lang.Runnable
-            public final void run() {
-                SecretMediaViewer.this.l0(placeForPhoto);
-            }
-        };
-        this.imageMoveAnimation.start();
-    }
-
-    public final void q0(File file) {
-        if (this.parentActivity == null) {
-            return;
-        }
-        s0();
-        if (this.videoTextureView == null) {
-            pn pnVar = new pn(this.parentActivity);
-            this.aspectRatioFrameLayout = pnVar;
-            pnVar.setVisibility(4);
-            this.containerView.addView(this.aspectRatioFrameLayout, 0, cn4.d(-1, -1, 17));
-            TextureView textureView = new TextureView(this.parentActivity);
-            this.videoTextureView = textureView;
-            textureView.setOpaque(false);
-            this.aspectRatioFrameLayout.addView(this.videoTextureView, cn4.d(-1, -1, 17));
-        }
-        this.textureUploaded = false;
-        this.videoCrossfadeStarted = false;
-        TextureView textureView2 = this.videoTextureView;
-        this.videoCrossfadeAlpha = 0.0f;
-        textureView2.setAlpha(0.0f);
-        if (this.videoPlayer == null) {
-            i3 i3Var = new i3();
-            this.videoPlayer = i3Var;
-            i3Var.G0(this.videoTextureView);
-            this.videoPlayer.z0(new a(file));
-        }
-        this.videoPlayer.u0(Uri.fromFile(file), "other");
-        this.videoPlayer.C0(true);
-    }
-
-    /* JADX WARN: Code restructure failed: missing block: B:115:0x026c, code lost:
-        if (r13 > r3) goto L111;
-     */
-    /* JADX WARN: Code restructure failed: missing block: B:121:0x027b, code lost:
-        if (r0 > r3) goto L114;
-     */
-    /* JADX WARN: Code restructure failed: missing block: B:144:0x02dd, code lost:
-        if (r2 > r3) goto L137;
-     */
-    /* JADX WARN: Code restructure failed: missing block: B:150:0x02ee, code lost:
-        if (r2 > r3) goto L140;
-     */
-    /* JADX WARN: Removed duplicated region for block: B:95:0x01de  */
-    /*
-        Code decompiled incorrectly, please refer to instructions dump.
-        To view partially-correct add '--show-bad-code' argument
-    */
-    public final boolean r0(android.view.MotionEvent r13) {
-        /*
-            Method dump skipped, instructions count: 892
-            To view this dump add '--comments-level debug' option
-        */
-        throw new UnsupportedOperationException("Method not decompiled: org.telegram.ui.SecretMediaViewer.r0(android.view.MotionEvent):boolean");
-    }
-
-    public final void s0() {
-        i3 i3Var = this.videoPlayer;
-        if (i3Var != null) {
-            this.playerRetryPlayCount = 0;
-            i3Var.w0(true);
-            this.videoPlayer = null;
-        }
-        try {
-            Activity activity = this.parentActivity;
-            if (activity != null) {
-                activity.getWindow().clearFlags(128);
-            }
-        } catch (Exception e2) {
-            org.telegram.messenger.l.p(e2);
-        }
-        pn pnVar = this.aspectRatioFrameLayout;
-        if (pnVar != null) {
-            this.containerView.removeView(pnVar);
-            this.aspectRatioFrameLayout = null;
-        }
-        if (this.videoTextureView != null) {
-            this.videoTextureView = null;
-        }
-        this.isPlaying = false;
-    }
-
-    @Keep
-    public void setAnimationValue(float f2) {
-        this.animationValue = f2;
-        this.containerView.invalidate();
-    }
-
-    @Keep
-    public void setVideoCrossfadeAlpha(float f2) {
-        this.videoCrossfadeAlpha = f2;
-        this.containerView.invalidate();
-    }
-
-    public void t0(Activity activity) {
-        int i2 = tla.o;
-        this.currentAccount = i2;
-        this.centerImage.V0(i2);
-        if (this.parentActivity == activity) {
-            return;
-        }
-        this.parentActivity = activity;
-        this.scroller = new tl8(activity);
-        b bVar = new b(activity);
-        this.windowView = bVar;
-        bVar.setBackgroundDrawable(this.photoBackgroundDrawable);
-        this.windowView.setFocusable(true);
-        this.windowView.setFocusableInTouchMode(true);
-        c cVar = new c(activity);
-        this.containerView = cVar;
-        cVar.setFocusable(false);
-        this.windowView.addView(this.containerView);
-        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) this.containerView.getLayoutParams();
-        layoutParams.width = -1;
-        layoutParams.height = -1;
-        layoutParams.gravity = 51;
-        this.containerView.setLayoutParams(layoutParams);
-        this.containerView.setFitsSystemWindows(true);
-        this.containerView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() { // from class: uo8
-            @Override // android.view.View.OnApplyWindowInsetsListener
-            public final WindowInsets onApplyWindowInsets(View view, WindowInsets windowInsets) {
-                WindowInsets m0;
-                m0 = SecretMediaViewer.this.m0(view, windowInsets);
-                return m0;
+        zoomAnimation = isZoom;
+        animateToScale = newScale;
+        animateToX = newTx;
+        animateToY = newTy;
+        animationStartTime = System.currentTimeMillis();
+        imageMoveAnimation = new AnimatorSet();
+        imageMoveAnimation.playTogether(
+                ObjectAnimator.ofFloat(this, "animationValue", 0, 1)
+        );
+        imageMoveAnimation.setInterpolator(interpolator);
+        imageMoveAnimation.setDuration(duration);
+        imageMoveAnimation.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                imageMoveAnimation = null;
+                containerView.invalidate();
             }
         });
-        this.containerView.setSystemUiVisibility(1280);
-        GestureDetector gestureDetector = new GestureDetector(this.containerView.getContext(), this);
-        this.gestureDetector = gestureDetector;
-        gestureDetector.setOnDoubleTapListener(this);
-        org.telegram.ui.ActionBar.a aVar = new org.telegram.ui.ActionBar.a(activity);
-        this.actionBar = aVar;
-        aVar.setTitleColor(-1);
-        this.actionBar.setSubtitleColor(-1);
-        this.actionBar.setBackgroundColor(2130706432);
-        this.actionBar.setOccupyStatusBar(true);
-        this.actionBar.V(1090519039, false);
-        this.actionBar.setBackButtonImage(org.telegram.mdgram.R.drawable.ic_ab_back);
-        this.actionBar.setTitleRightMargin(org.telegram.messenger.a.e0(70.0f));
-        this.containerView.addView(this.actionBar, cn4.b(-1, -2.0f));
-        this.actionBar.setActionBarMenuOnItemClick(new d());
-        k kVar = new k(activity);
-        this.secretDeleteTimer = kVar;
-        this.containerView.addView(kVar, cn4.c(119, 48.0f, 53, 0.0f, 0.0f, 0.0f, 0.0f));
-        WindowManager.LayoutParams layoutParams2 = new WindowManager.LayoutParams();
-        this.windowLayoutParams = layoutParams2;
-        layoutParams2.height = -1;
-        layoutParams2.format = -3;
-        layoutParams2.width = -1;
-        layoutParams2.gravity = 48;
-        layoutParams2.type = 99;
-        layoutParams2.flags = (-2147417848) | 8192;
-        this.centerImage.H1(this.containerView);
-        this.centerImage.e1(true);
+        imageMoveAnimation.start();
     }
 
-    public final void u0(boolean z, boolean z2) {
-        if (z) {
-            this.actionBar.setVisibility(0);
-        }
-        this.actionBar.setEnabled(z);
-        this.isActionBarVisible = z;
-        float f2 = 1.0f;
-        if (z2) {
-            ArrayList arrayList = new ArrayList();
-            org.telegram.ui.ActionBar.a aVar = this.actionBar;
-            Property property = View.ALPHA;
-            float[] fArr = new float[1];
-            if (!z) {
-                f2 = 0.0f;
-            }
-            fArr[0] = f2;
-            arrayList.add(ObjectAnimator.ofFloat(aVar, property, fArr));
-            AnimatorSet animatorSet = new AnimatorSet();
-            this.currentActionBarAnimation = animatorSet;
-            animatorSet.playTogether(arrayList);
-            if (!z) {
-                this.currentActionBarAnimation.addListener(new f());
-            }
-            this.currentActionBarAnimation.setDuration(200L);
-            this.currentActionBarAnimation.start();
-            return;
-        }
-        org.telegram.ui.ActionBar.a aVar2 = this.actionBar;
-        if (!z) {
-            f2 = 0.0f;
-        }
-        aVar2.setAlpha(f2);
-        if (!z) {
-            this.actionBar.setVisibility(8);
-        }
+    @Keep
+    public void setAnimationValue(float value) {
+        animationValue = value;
+        containerView.invalidate();
     }
 
-    public final void v0(float f2) {
-        int F = ((int) ((this.centerImage.F() * f2) - a0())) / 2;
-        int C = ((int) ((this.centerImage.C() * f2) - Z())) / 2;
-        if (F > 0) {
-            this.minX = -F;
-            this.maxX = F;
+    @Keep
+    public float getAnimationValue() {
+        return animationValue;
+    }
+
+    @Override
+    public boolean onDown(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public void onShowPress(MotionEvent e) {
+
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        return false;
+    }
+
+    @Override
+    public void onLongPress(MotionEvent e) {
+
+    }
+
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        if (scale != 1) {
+            scroller.abortAnimation();
+            scroller.fling(Math.round(translationX), Math.round(translationY), Math.round(velocityX), Math.round(velocityY), (int) minX, (int) maxX, (int) minY, (int) maxY);
+            containerView.postInvalidate();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onSingleTapConfirmed(MotionEvent e) {
+        if (discardTap) {
+            return false;
+        }
+        toggleActionBar(!isActionBarVisible, true);
+        return true;
+    }
+
+    @Override
+    public boolean onDoubleTap(MotionEvent e) {
+        if (scale == 1.0f && (translationY != 0 || translationX != 0)) {
+            return false;
+        }
+        if (animationStartTime != 0 || photoAnimationInProgress != 0) {
+            return false;
+        }
+        if (scale == 1.0f) {
+            float atx = (e.getX() - getContainerViewWidth() / 2) - ((e.getX() - getContainerViewWidth() / 2) - translationX) * (3.0f / scale);
+            float aty = (e.getY() - getContainerViewHeight() / 2) - ((e.getY() - getContainerViewHeight() / 2) - translationY) * (3.0f / scale);
+            updateMinMax(3.0f);
+            if (atx < minX) {
+                atx = minX;
+            } else if (atx > maxX) {
+                atx = maxX;
+            }
+            if (aty < minY) {
+                aty = minY;
+            } else if (aty > maxY) {
+                aty = maxY;
+            }
+            animateTo(3.0f, atx, aty, true);
         } else {
-            this.maxX = 0.0f;
-            this.minX = 0.0f;
+            animateTo(1.0f, 0, 0, true);
         }
-        if (C > 0) {
-            this.minY = -C;
-            this.maxY = C;
-            return;
-        }
-        this.maxY = 0.0f;
-        this.minY = 0.0f;
+        doubleTap = true;
+        return true;
+    }
+
+    @Override
+    public boolean onDoubleTapEvent(MotionEvent e) {
+        return false;
+    }
+
+    private boolean scaleToFill() {
+        return false;
     }
 }

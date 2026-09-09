@@ -1,98 +1,113 @@
+/*
+ *  Copyright 2018 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
 
 import android.annotation.TargetApi;
 import android.media.MediaCodec;
+import android.media.MediaCodec.BufferInfo;
 import android.media.MediaCrypto;
 import android.media.MediaFormat;
 import android.os.Bundle;
 import android.view.Surface;
+import java.io.IOException;
 import java.nio.ByteBuffer;
-/* loaded from: classes3.dex */
+
+/**
+ * Implementation of MediaCodecWrapperFactory that returns MediaCodecInterfaces wrapping
+ * {@link android.media.MediaCodec} objects.
+ */
 class MediaCodecWrapperFactoryImpl implements MediaCodecWrapperFactory {
+  private static class MediaCodecWrapperImpl implements MediaCodecWrapper {
+    private final MediaCodec mediaCodec;
 
-    /* loaded from: classes3.dex */
-    public static class MediaCodecWrapperImpl implements MediaCodecWrapper {
-        private final MediaCodec mediaCodec;
-
-        public MediaCodecWrapperImpl(MediaCodec mediaCodec) {
-            this.mediaCodec = mediaCodec;
-        }
-
-        @Override // org.webrtc.MediaCodecWrapper
-        public void configure(MediaFormat mediaFormat, Surface surface, MediaCrypto mediaCrypto, int i) {
-            this.mediaCodec.configure(mediaFormat, surface, mediaCrypto, i);
-        }
-
-        @Override // org.webrtc.MediaCodecWrapper
-        @TargetApi(18)
-        public Surface createInputSurface() {
-            return this.mediaCodec.createInputSurface();
-        }
-
-        @Override // org.webrtc.MediaCodecWrapper
-        public int dequeueInputBuffer(long j) {
-            return this.mediaCodec.dequeueInputBuffer(j);
-        }
-
-        @Override // org.webrtc.MediaCodecWrapper
-        public int dequeueOutputBuffer(MediaCodec.BufferInfo bufferInfo, long j) {
-            return this.mediaCodec.dequeueOutputBuffer(bufferInfo, j);
-        }
-
-        @Override // org.webrtc.MediaCodecWrapper
-        public void flush() {
-            this.mediaCodec.flush();
-        }
-
-        @Override // org.webrtc.MediaCodecWrapper
-        public ByteBuffer[] getInputBuffers() {
-            return this.mediaCodec.getInputBuffers();
-        }
-
-        @Override // org.webrtc.MediaCodecWrapper
-        public ByteBuffer[] getOutputBuffers() {
-            return this.mediaCodec.getOutputBuffers();
-        }
-
-        @Override // org.webrtc.MediaCodecWrapper
-        public MediaFormat getOutputFormat() {
-            return this.mediaCodec.getOutputFormat();
-        }
-
-        @Override // org.webrtc.MediaCodecWrapper
-        public void queueInputBuffer(int i, int i2, int i3, long j, int i4) {
-            this.mediaCodec.queueInputBuffer(i, i2, i3, j, i4);
-        }
-
-        @Override // org.webrtc.MediaCodecWrapper
-        public void release() {
-            this.mediaCodec.release();
-        }
-
-        @Override // org.webrtc.MediaCodecWrapper
-        public void releaseOutputBuffer(int i, boolean z) {
-            this.mediaCodec.releaseOutputBuffer(i, z);
-        }
-
-        @Override // org.webrtc.MediaCodecWrapper
-        @TargetApi(19)
-        public void setParameters(Bundle bundle) {
-            this.mediaCodec.setParameters(bundle);
-        }
-
-        @Override // org.webrtc.MediaCodecWrapper
-        public void start() {
-            this.mediaCodec.start();
-        }
-
-        @Override // org.webrtc.MediaCodecWrapper
-        public void stop() {
-            this.mediaCodec.stop();
-        }
+    public MediaCodecWrapperImpl(MediaCodec mediaCodec) {
+      this.mediaCodec = mediaCodec;
     }
 
-    @Override // org.webrtc.MediaCodecWrapperFactory
-    public MediaCodecWrapper createByCodecName(String str) {
-        return new MediaCodecWrapperImpl(MediaCodec.createByCodecName(str));
+    @Override
+    public void configure(MediaFormat format, Surface surface, MediaCrypto crypto, int flags) {
+      mediaCodec.configure(format, surface, crypto, flags);
     }
+
+    @Override
+    public void start() {
+      mediaCodec.start();
+    }
+
+    @Override
+    public void flush() {
+      mediaCodec.flush();
+    }
+
+    @Override
+    public void stop() {
+      mediaCodec.stop();
+    }
+
+    @Override
+    public void release() {
+      mediaCodec.release();
+    }
+
+    @Override
+    public int dequeueInputBuffer(long timeoutUs) {
+      return mediaCodec.dequeueInputBuffer(timeoutUs);
+    }
+
+    @Override
+    public void queueInputBuffer(
+        int index, int offset, int size, long presentationTimeUs, int flags) {
+      mediaCodec.queueInputBuffer(index, offset, size, presentationTimeUs, flags);
+    }
+
+    @Override
+    public int dequeueOutputBuffer(BufferInfo info, long timeoutUs) {
+      return mediaCodec.dequeueOutputBuffer(info, timeoutUs);
+    }
+
+    @Override
+    public void releaseOutputBuffer(int index, boolean render) {
+      mediaCodec.releaseOutputBuffer(index, render);
+    }
+
+    @Override
+    public MediaFormat getOutputFormat() {
+      return mediaCodec.getOutputFormat();
+    }
+
+    @Override
+    public ByteBuffer[] getInputBuffers() {
+      return mediaCodec.getInputBuffers();
+    }
+
+    @Override
+    public ByteBuffer[] getOutputBuffers() {
+      return mediaCodec.getOutputBuffers();
+    }
+
+    @Override
+    @TargetApi(18)
+    public Surface createInputSurface() {
+      return mediaCodec.createInputSurface();
+    }
+
+    @Override
+    @TargetApi(19)
+    public void setParameters(Bundle params) {
+      mediaCodec.setParameters(params);
+    }
+  }
+
+  @Override
+  public MediaCodecWrapper createByCodecName(String name) throws IOException {
+    return new MediaCodecWrapperImpl(MediaCodec.createByCodecName(name));
+  }
 }

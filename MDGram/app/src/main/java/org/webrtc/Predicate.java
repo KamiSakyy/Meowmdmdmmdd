@@ -1,88 +1,73 @@
+/*
+ *  Copyright 2018 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
-/* loaded from: classes3.dex */
+
+/**
+ * Represents a predicate (boolean-valued function) of one argument.
+ */
 public interface Predicate<T> {
+  /**
+   * Evaluates this predicate on the given argument.
+   *
+   * @param arg the input argument
+   * @return true if the input argument matches the predicate, otherwise false
+   */
+  boolean test(T arg);
 
-    /* renamed from: org.webrtc.Predicate$-CC  reason: invalid class name */
-    /* loaded from: classes3.dex */
-    public abstract /* synthetic */ class CC {
-        public static Predicate a(final Predicate predicate, final Predicate predicate2) {
-            return new Predicate<Object>() { // from class: org.webrtc.Predicate.2
-                @Override // org.webrtc.Predicate
-                public /* synthetic */ Predicate<Object> and(Predicate<? super Object> predicate3) {
-                    return CC.a(this, predicate3);
-                }
+  /**
+   * Returns a composed predicate that represents a short-circuiting logical OR of this predicate
+   * and another. When evaluating the composed predicate, if this predicate is true, then the other
+   * predicate is not evaluated.
+   *
+   * @param other a predicate that will be logically-ORed with this predicate
+   * @return a composed predicate that represents the short-circuiting logical OR of this predicate
+   *     and the other predicate
+   */
+  default Predicate<T> or(Predicate<? super T> other) {
+    return new Predicate<T>() {
+      @Override
+      public boolean test(T arg) {
+        return Predicate.this.test(arg) || other.test(arg);
+      }
+    };
+  }
 
-                @Override // org.webrtc.Predicate
-                public /* synthetic */ Predicate<Object> negate() {
-                    return CC.b(this);
-                }
+  /**
+   * Returns a composed predicate that represents a short-circuiting logical AND of this predicate
+   * and another.
+   *
+   * @param other a predicate that will be logically-ANDed with this predicate
+   * @return a composed predicate that represents the short-circuiting logical AND of this predicate
+   *     and the other predicate
+   */
+  default Predicate<T> and(Predicate<? super T> other) {
+    return new Predicate<T>() {
+      @Override
+      public boolean test(T arg) {
+        return Predicate.this.test(arg) && other.test(arg);
+      }
+    };
+  }
 
-                @Override // org.webrtc.Predicate
-                public /* synthetic */ Predicate<Object> or(Predicate<? super Object> predicate3) {
-                    return CC.c(this, predicate3);
-                }
-
-                @Override // org.webrtc.Predicate
-                public boolean test(Object obj) {
-                    return Predicate.this.test(obj) && predicate2.test(obj);
-                }
-            };
-        }
-
-        public static Predicate b(final Predicate predicate) {
-            return new Predicate<Object>() { // from class: org.webrtc.Predicate.3
-                @Override // org.webrtc.Predicate
-                public /* synthetic */ Predicate<Object> and(Predicate<? super Object> predicate2) {
-                    return CC.a(this, predicate2);
-                }
-
-                @Override // org.webrtc.Predicate
-                public /* synthetic */ Predicate<Object> negate() {
-                    return CC.b(this);
-                }
-
-                @Override // org.webrtc.Predicate
-                public /* synthetic */ Predicate<Object> or(Predicate<? super Object> predicate2) {
-                    return CC.c(this, predicate2);
-                }
-
-                @Override // org.webrtc.Predicate
-                public boolean test(Object obj) {
-                    return !Predicate.this.test(obj);
-                }
-            };
-        }
-
-        public static Predicate c(final Predicate predicate, final Predicate predicate2) {
-            return new Predicate<Object>() { // from class: org.webrtc.Predicate.1
-                @Override // org.webrtc.Predicate
-                public /* synthetic */ Predicate<Object> and(Predicate<? super Object> predicate3) {
-                    return CC.a(this, predicate3);
-                }
-
-                @Override // org.webrtc.Predicate
-                public /* synthetic */ Predicate<Object> negate() {
-                    return CC.b(this);
-                }
-
-                @Override // org.webrtc.Predicate
-                public /* synthetic */ Predicate<Object> or(Predicate<? super Object> predicate3) {
-                    return CC.c(this, predicate3);
-                }
-
-                @Override // org.webrtc.Predicate
-                public boolean test(Object obj) {
-                    return Predicate.this.test(obj) || predicate2.test(obj);
-                }
-            };
-        }
-    }
-
-    Predicate<T> and(Predicate<? super T> predicate);
-
-    Predicate<T> negate();
-
-    Predicate<T> or(Predicate<? super T> predicate);
-
-    boolean test(T t);
+  /**
+   * Returns a predicate that represents the logical negation of this predicate.
+   *
+   * @return a predicate that represents the logical negation of this predicate
+   */
+  default Predicate<T> negate() {
+    return new Predicate<T>() {
+      @Override
+      public boolean test(T arg) {
+        return !Predicate.this.test(arg);
+      }
+    };
+  }
 }

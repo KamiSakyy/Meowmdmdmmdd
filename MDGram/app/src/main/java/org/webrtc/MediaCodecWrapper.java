@@ -1,3 +1,13 @@
+/*
+ *  Copyright 2018 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
 
 import android.media.MediaCodec;
@@ -6,33 +16,38 @@ import android.media.MediaFormat;
 import android.os.Bundle;
 import android.view.Surface;
 import java.nio.ByteBuffer;
-/* loaded from: classes3.dex */
+
+/**
+ * Subset of methods defined in {@link android.media.MediaCodec} needed by
+ * {@link HardwareVideoEncoder} and {@link AndroidVideoDecoder}. This interface
+ * exists to allow mocking and using a fake implementation in tests.
+ */
 interface MediaCodecWrapper {
-    void configure(MediaFormat mediaFormat, Surface surface, MediaCrypto mediaCrypto, int i);
+  void configure(MediaFormat format, Surface surface, MediaCrypto crypto, int flags);
 
-    Surface createInputSurface();
+  void start();
 
-    int dequeueInputBuffer(long j);
+  void flush();
 
-    int dequeueOutputBuffer(MediaCodec.BufferInfo bufferInfo, long j);
+  void stop();
 
-    void flush();
+  void release();
 
-    ByteBuffer[] getInputBuffers();
+  int dequeueInputBuffer(long timeoutUs);
 
-    ByteBuffer[] getOutputBuffers();
+  void queueInputBuffer(int index, int offset, int size, long presentationTimeUs, int flags);
 
-    MediaFormat getOutputFormat();
+  int dequeueOutputBuffer(MediaCodec.BufferInfo info, long timeoutUs);
 
-    void queueInputBuffer(int i, int i2, int i3, long j, int i4);
+  void releaseOutputBuffer(int index, boolean render);
 
-    void release();
+  MediaFormat getOutputFormat();
 
-    void releaseOutputBuffer(int i, boolean z);
+  ByteBuffer[] getInputBuffers();
 
-    void setParameters(Bundle bundle);
+  ByteBuffer[] getOutputBuffers();
 
-    void start();
+  Surface createInputSurface();
 
-    void stop();
+  void setParameters(Bundle params);
 }

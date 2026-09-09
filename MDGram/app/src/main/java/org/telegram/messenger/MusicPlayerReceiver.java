@@ -1,105 +1,76 @@
+/*
+ * This is the source code of Telegram for Android v. 5.x.x.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Nikolai Kudashov, 2013-2018.
+ */
+
 package org.telegram.messenger;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.view.KeyEvent;
-/* loaded from: classes2.dex */
+
 public class MusicPlayerReceiver extends BroadcastReceiver {
-    @Override // android.content.BroadcastReceiver
+
+    @Override
     public void onReceive(Context context, Intent intent) {
-        KeyEvent keyEvent;
-        if (intent.getAction().equals("android.intent.action.MEDIA_BUTTON")) {
-            if (intent.getExtras() == null || (keyEvent = (KeyEvent) intent.getExtras().get("android.intent.extra.KEY_EVENT")) == null || keyEvent.getAction() != 0) {
+        if (intent.getAction().equals(Intent.ACTION_MEDIA_BUTTON)) {
+            if (intent.getExtras() == null) {
                 return;
             }
-            int keyCode = keyEvent.getKeyCode();
-            if (keyCode != 79 && keyCode != 85) {
-                if (keyCode != 87) {
-                    if (keyCode != 88) {
-                        if (keyCode != 126) {
-                            if (keyCode == 127) {
-                                MediaController.H1().M2(MediaController.H1().J1());
-                                return;
-                            }
-                            return;
-                        }
-                        MediaController.H1().e3(MediaController.H1().J1());
-                        return;
+            KeyEvent keyEvent = (KeyEvent) intent.getExtras().get(Intent.EXTRA_KEY_EVENT);
+            if (keyEvent == null) {
+                return;
+            }
+            if (keyEvent.getAction() != KeyEvent.ACTION_DOWN)
+                return;
+
+            switch (keyEvent.getKeyCode()) {
+                case KeyEvent.KEYCODE_HEADSETHOOK:
+                case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+                    if (MediaController.getInstance().isMessagePaused()) {
+                        MediaController.getInstance().playMessage(MediaController.getInstance().getPlayingMessageObject());
+                    } else {
+                        MediaController.getInstance().pauseMessage(MediaController.getInstance().getPlayingMessageObject());
                     }
-                    MediaController.H1().j3();
-                    return;
-                }
-                MediaController.H1().h3();
-                return;
-            } else if (MediaController.H1().V1()) {
-                MediaController.H1().e3(MediaController.H1().J1());
-                return;
-            } else {
-                MediaController.H1().M2(MediaController.H1().J1());
-                return;
+                    break;
+                case KeyEvent.KEYCODE_MEDIA_PLAY:
+                    MediaController.getInstance().playMessage(MediaController.getInstance().getPlayingMessageObject());
+                    break;
+                case KeyEvent.KEYCODE_MEDIA_PAUSE:
+                    MediaController.getInstance().pauseMessage(MediaController.getInstance().getPlayingMessageObject());
+                    break;
+                case KeyEvent.KEYCODE_MEDIA_STOP:
+                    break;
+                case KeyEvent.KEYCODE_MEDIA_NEXT:
+                    MediaController.getInstance().playNextMessage();
+                    break;
+                case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
+                    MediaController.getInstance().playPreviousMessage();
+                    break;
             }
-        }
-        String action = intent.getAction();
-        action.hashCode();
-        char c = 65535;
-        switch (action.hashCode()) {
-            case -1461225938:
-                if (action.equals("org.telegram.android.musicplayer.close")) {
-                    c = 0;
+        } else {
+            switch (intent.getAction()) {
+                case MusicPlayerService.NOTIFY_PLAY:
+                    MediaController.getInstance().playMessage(MediaController.getInstance().getPlayingMessageObject());
                     break;
-                }
-                break;
-            case -1449542100:
-                if (action.equals("org.telegram.android.musicplayer.pause")) {
-                    c = 1;
+                case MusicPlayerService.NOTIFY_PAUSE:
+                case android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY:
+                    MediaController.getInstance().pauseMessage(MediaController.getInstance().getPlayingMessageObject());
                     break;
-                }
-                break;
-            case -1293741059:
-                if (action.equals("org.telegram.android.musicplayer.next")) {
-                    c = 2;
+                case MusicPlayerService.NOTIFY_NEXT:
+                    MediaController.getInstance().playNextMessage();
                     break;
-                }
-                break;
-            case -1293675458:
-                if (action.equals("org.telegram.android.musicplayer.play")) {
-                    c = 3;
+                case MusicPlayerService.NOTIFY_CLOSE:
+                    MediaController.getInstance().cleanupPlayer(true, true);
                     break;
-                }
-                break;
-            case -549244379:
-                if (action.equals("android.media.AUDIO_BECOMING_NOISY")) {
-                    c = 4;
+                case MusicPlayerService.NOTIFY_PREVIOUS:
+                    MediaController.getInstance().playPreviousMessage();
                     break;
-                }
-                break;
-            case 40087297:
-                if (action.equals("org.telegram.android.musicplayer.previous")) {
-                    c = 5;
-                    break;
-                }
-                break;
-        }
-        switch (c) {
-            case 0:
-                MediaController.H1().s1(true, true);
-                return;
-            case 1:
-            case 4:
-                MediaController.H1().M2(MediaController.H1().J1());
-                return;
-            case 2:
-                MediaController.H1().h3();
-                return;
-            case 3:
-                MediaController.H1().e3(MediaController.H1().J1());
-                return;
-            case 5:
-                MediaController.H1().j3();
-                return;
-            default:
-                return;
+            }
         }
     }
 }

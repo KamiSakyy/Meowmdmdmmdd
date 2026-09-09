@@ -1,18 +1,39 @@
-package org.webrtc;
-/* loaded from: classes3.dex */
-public final class CandidatePairChangeEvent {
-    public final int estimatedDisconnectedTimeMs;
-    public final int lastDataReceivedMs;
-    public final IceCandidate local;
-    public final String reason;
-    public final IceCandidate remote;
+/*
+ *  Copyright 2013 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
 
-    @CalledByNative
-    public CandidatePairChangeEvent(IceCandidate iceCandidate, IceCandidate iceCandidate2, int i, String str, int i2) {
-        this.local = iceCandidate;
-        this.remote = iceCandidate2;
-        this.lastDataReceivedMs = i;
-        this.reason = str;
-        this.estimatedDisconnectedTimeMs = i2;
-    }
+package org.webrtc;
+
+/**
+ * Representation of a change in selected ICE candidate pair.
+ * {@code CandidatePairChangeEvent} in the C++ API.
+ */
+public final class CandidatePairChangeEvent {
+  public final IceCandidate local;
+  public final IceCandidate remote;
+  public final int lastDataReceivedMs;
+  public final String reason;
+
+  /**
+   * An estimate from the ICE stack on how long it was disconnected before
+   * changing to the new candidate pair in this event.
+   * The first time an candidate pair is signaled the value will be 0.
+   */
+  public final int estimatedDisconnectedTimeMs;
+
+  @CalledByNative
+  CandidatePairChangeEvent(IceCandidate local, IceCandidate remote, int lastDataReceivedMs,
+      String reason, int estimatedDisconnectedTimeMs) {
+    this.local = local;
+    this.remote = remote;
+    this.lastDataReceivedMs = lastDataReceivedMs;
+    this.reason = reason;
+    this.estimatedDisconnectedTimeMs = estimatedDisconnectedTimeMs;
+  }
 }

@@ -1,5 +1,5 @@
 package org.telegram.tgnet;
-/* loaded from: classes2.dex */
+
 public interface RequestDelegateInternal {
-    void run(long j, int i, String str, int i2, long j2, long j3);
+    void run(long response, int errorCode, String errorText, int networkType, long timestamp, long requestMsgId);
 }

@@ -1,147 +1,162 @@
+/*
+ *  Copyright 2013 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
 
-import org.webrtc.VideoFrame;
-import org.webrtc.VideoProcessor;
-import org.webrtc.VideoSink;
-import org.webrtc.VideoSource;
-/* loaded from: classes3.dex */
+import androidx.annotation.Nullable;
+
+/**
+ * Java wrapper of native AndroidVideoTrackSource.
+ */
 public class VideoSource extends MediaSource {
-    private final CapturerObserver capturerObserver;
-    private boolean isCapturerRunning;
-    private final NativeAndroidVideoTrackSource nativeAndroidVideoTrackSource;
-    private VideoProcessor videoProcessor;
-    private final Object videoProcessorLock;
+  /** Simple aspect ratio clas for use in constraining output format. */
+  public static class AspectRatio {
+    public static final AspectRatio UNDEFINED = new AspectRatio(/* width= */ 0, /* height= */ 0);
 
-    /* loaded from: classes3.dex */
-    public static class AspectRatio {
-        public static final AspectRatio UNDEFINED = new AspectRatio(0, 0);
-        public final int height;
-        public final int width;
+    public final int width;
+    public final int height;
 
-        public AspectRatio(int i, int i2) {
-            this.width = i;
-            this.height = i2;
+    public AspectRatio(int width, int height) {
+      this.width = width;
+      this.height = height;
+    }
+  }
+
+  private final NativeAndroidVideoTrackSource nativeAndroidVideoTrackSource;
+  private final Object videoProcessorLock = new Object();
+  @Nullable private VideoProcessor videoProcessor;
+  private boolean isCapturerRunning;
+
+  private final CapturerObserver capturerObserver = new CapturerObserver() {
+    @Override
+    public void onCapturerStarted(boolean success) {
+      nativeAndroidVideoTrackSource.setState(success);
+      synchronized (videoProcessorLock) {
+        isCapturerRunning = success;
+        if (videoProcessor != null) {
+          videoProcessor.onCapturerStarted(success);
         }
+      }
     }
 
-    public VideoSource(long j) {
-        super(j);
-        this.videoProcessorLock = new Object();
-        this.capturerObserver = new CapturerObserver() { // from class: org.webrtc.VideoSource.1
-            @Override // org.webrtc.CapturerObserver
-            public void onCapturerStarted(boolean z) {
-                VideoSource.this.nativeAndroidVideoTrackSource.setState(z);
-                synchronized (VideoSource.this.videoProcessorLock) {
-                    VideoSource.this.isCapturerRunning = z;
-                    if (VideoSource.this.videoProcessor != null) {
-                        VideoSource.this.videoProcessor.onCapturerStarted(z);
-                    }
-                }
-            }
-
-            @Override // org.webrtc.CapturerObserver
-            public void onCapturerStopped() {
-                VideoSource.this.nativeAndroidVideoTrackSource.setState(false);
-                synchronized (VideoSource.this.videoProcessorLock) {
-                    VideoSource.this.isCapturerRunning = false;
-                    if (VideoSource.this.videoProcessor != null) {
-                        VideoSource.this.videoProcessor.onCapturerStopped();
-                    }
-                }
-            }
-
-            @Override // org.webrtc.CapturerObserver
-            public void onFrameCaptured(VideoFrame videoFrame) {
-                VideoProcessor.FrameAdaptationParameters adaptFrame = VideoSource.this.nativeAndroidVideoTrackSource.adaptFrame(videoFrame);
-                synchronized (VideoSource.this.videoProcessorLock) {
-                    if (VideoSource.this.videoProcessor != null) {
-                        VideoSource.this.videoProcessor.onFrameCaptured(videoFrame, adaptFrame);
-                        return;
-                    }
-                    VideoFrame b = fpa.b(videoFrame, adaptFrame);
-                    if (b != null) {
-                        VideoSource.this.nativeAndroidVideoTrackSource.onFrameCaptured(b);
-                        b.release();
-                    }
-                }
-            }
-        };
-        this.nativeAndroidVideoTrackSource = new NativeAndroidVideoTrackSource(j);
-    }
-
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void lambda$setVideoProcessor$0(VideoFrame videoFrame) {
-        this.nativeAndroidVideoTrackSource.onFrameCaptured(videoFrame);
-    }
-
-    /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void lambda$setVideoProcessor$1(final VideoFrame videoFrame) {
-        runWithReference(new Runnable() { // from class: aqa
-            @Override // java.lang.Runnable
-            public final void run() {
-                VideoSource.this.lambda$setVideoProcessor$0(videoFrame);
-            }
-        });
-    }
-
-    public void adaptOutputFormat(int i, int i2, int i3) {
-        int max = Math.max(i, i2);
-        int min = Math.min(i, i2);
-        adaptOutputFormat(max, min, min, max, i3);
-    }
-
-    @Override // org.webrtc.MediaSource
-    public void dispose() {
-        setVideoProcessor(null);
-        super.dispose();
-    }
-
-    public CapturerObserver getCapturerObserver() {
-        return this.capturerObserver;
-    }
-
-    public long getNativeVideoTrackSource() {
-        return getNativeMediaSource();
-    }
-
-    public void setIsScreencast(boolean z) {
-        this.nativeAndroidVideoTrackSource.setIsScreencast(z);
-    }
-
-    public void setVideoProcessor(VideoProcessor videoProcessor) {
-        synchronized (this.videoProcessorLock) {
-            VideoProcessor videoProcessor2 = this.videoProcessor;
-            if (videoProcessor2 != null) {
-                videoProcessor2.setSink(null);
-                if (this.isCapturerRunning) {
-                    this.videoProcessor.onCapturerStopped();
-                }
-            }
-            this.videoProcessor = videoProcessor;
-            if (videoProcessor != null) {
-                videoProcessor.setSink(new VideoSink() { // from class: bqa
-                    @Override // org.webrtc.VideoSink
-                    public final void onFrame(VideoFrame videoFrame) {
-                        VideoSource.this.lambda$setVideoProcessor$1(videoFrame);
-                    }
-
-                    @Override // org.webrtc.VideoSink
-                    public /* synthetic */ void setParentSink(VideoSink videoSink) {
-                        zpa.a(this, videoSink);
-                    }
-                });
-                if (this.isCapturerRunning) {
-                    videoProcessor.onCapturerStarted(true);
-                }
-            }
+    @Override
+    public void onCapturerStopped() {
+      nativeAndroidVideoTrackSource.setState(/* isLive= */ false);
+      synchronized (videoProcessorLock) {
+        isCapturerRunning = false;
+        if (videoProcessor != null) {
+          videoProcessor.onCapturerStopped();
         }
+      }
     }
 
-    public void adaptOutputFormat(int i, int i2, int i3, int i4, int i5) {
-        adaptOutputFormat(new AspectRatio(i, i2), Integer.valueOf(i * i2), new AspectRatio(i3, i4), Integer.valueOf(i3 * i4), Integer.valueOf(i5));
-    }
+    @Override
+    public void onFrameCaptured(VideoFrame frame) {
+      final VideoProcessor.FrameAdaptationParameters parameters =
+          nativeAndroidVideoTrackSource.adaptFrame(frame);
+      synchronized (videoProcessorLock) {
+        if (videoProcessor != null) {
+          videoProcessor.onFrameCaptured(frame, parameters);
+          return;
+        }
+      }
 
-    public void adaptOutputFormat(AspectRatio aspectRatio, Integer num, AspectRatio aspectRatio2, Integer num2, Integer num3) {
-        this.nativeAndroidVideoTrackSource.adaptOutputFormat(aspectRatio, num, aspectRatio2, num2, num3);
+      VideoFrame adaptedFrame = VideoProcessor.applyFrameAdaptationParameters(frame, parameters);
+      if (adaptedFrame != null) {
+        nativeAndroidVideoTrackSource.onFrameCaptured(adaptedFrame);
+        adaptedFrame.release();
+      }
     }
+  };
+
+  public VideoSource(long nativeSource) {
+    super(nativeSource);
+    this.nativeAndroidVideoTrackSource = new NativeAndroidVideoTrackSource(nativeSource);
+  }
+
+  /**
+   * Calling this function will cause frames to be scaled down to the requested resolution. Also,
+   * frames will be cropped to match the requested aspect ratio, and frames will be dropped to match
+   * the requested fps. The requested aspect ratio is orientation agnostic and will be adjusted to
+   * maintain the input orientation, so it doesn't matter if e.g. 1280x720 or 720x1280 is requested.
+   */
+  public void adaptOutputFormat(int width, int height, int fps) {
+    final int maxSide = Math.max(width, height);
+    final int minSide = Math.min(width, height);
+    adaptOutputFormat(maxSide, minSide, minSide, maxSide, fps);
+  }
+
+  /**
+   * Same as above, but allows setting two different target resolutions depending on incoming
+   * frame orientation. This gives more fine-grained control and can e.g. be used to force landscape
+   * video to be cropped to portrait video.
+   */
+  public void adaptOutputFormat(
+      int landscapeWidth, int landscapeHeight, int portraitWidth, int portraitHeight, int fps) {
+    adaptOutputFormat(new AspectRatio(landscapeWidth, landscapeHeight),
+        /* maxLandscapePixelCount= */ landscapeWidth * landscapeHeight,
+        new AspectRatio(portraitWidth, portraitHeight),
+        /* maxPortraitPixelCount= */ portraitWidth * portraitHeight, fps);
+  }
+
+  /** Same as above, with even more control as each constraint is optional. */
+  public void adaptOutputFormat(AspectRatio targetLandscapeAspectRatio,
+      @Nullable Integer maxLandscapePixelCount, AspectRatio targetPortraitAspectRatio,
+      @Nullable Integer maxPortraitPixelCount, @Nullable Integer maxFps) {
+    nativeAndroidVideoTrackSource.adaptOutputFormat(targetLandscapeAspectRatio,
+        maxLandscapePixelCount, targetPortraitAspectRatio, maxPortraitPixelCount, maxFps);
+  }
+
+  public void setIsScreencast(boolean isScreencast) {
+    nativeAndroidVideoTrackSource.setIsScreencast(isScreencast);
+  }
+
+  /**
+   * Hook for injecting a custom video processor before frames are passed onto WebRTC. The frames
+   * will be cropped and scaled depending on CPU and network conditions before they are passed to
+   * the video processor. Frames will be delivered to the video processor on the same thread they
+   * are passed to this object. The video processor is allowed to deliver the processed frames
+   * back on any thread.
+   */
+  public void setVideoProcessor(@Nullable VideoProcessor newVideoProcessor) {
+    synchronized (videoProcessorLock) {
+      if (videoProcessor != null) {
+        videoProcessor.setSink(/* sink= */ null);
+        if (isCapturerRunning) {
+          videoProcessor.onCapturerStopped();
+        }
+      }
+      videoProcessor = newVideoProcessor;
+      if (newVideoProcessor != null) {
+        newVideoProcessor.setSink(
+            (frame)
+                -> runWithReference(() -> nativeAndroidVideoTrackSource.onFrameCaptured(frame)));
+        if (isCapturerRunning) {
+          newVideoProcessor.onCapturerStarted(/* success= */ true);
+        }
+      }
+    }
+  }
+
+  public CapturerObserver getCapturerObserver() {
+    return capturerObserver;
+  }
+
+  /** Returns a pointer to webrtc::VideoTrackSourceInterface. */
+  long getNativeVideoTrackSource() {
+    return getNativeMediaSource();
+  }
+
+  @Override
+  public void dispose() {
+    setVideoProcessor(/* newVideoProcessor= */ null);
+    super.dispose();
+  }
 }

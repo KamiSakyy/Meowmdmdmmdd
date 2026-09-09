@@ -1,50 +1,56 @@
+/*
+ *  Copyright 2017 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 package org.webrtc;
 
+import androidx.annotation.Nullable;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
-import org.webrtc.EglBase;
-import org.webrtc.VideoEncoderFactory;
-/* loaded from: classes3.dex */
+
+/** Helper class that combines HW and SW encoders. */
 public class DefaultVideoEncoderFactory implements VideoEncoderFactory {
-    private final VideoEncoderFactory hardwareVideoEncoderFactory;
-    private final VideoEncoderFactory softwareVideoEncoderFactory = new SoftwareVideoEncoderFactory();
+  private final VideoEncoderFactory hardwareVideoEncoderFactory;
+  private final VideoEncoderFactory softwareVideoEncoderFactory = new SoftwareVideoEncoderFactory();
 
-    public DefaultVideoEncoderFactory(EglBase.Context context, boolean z, boolean z2) {
-        this.hardwareVideoEncoderFactory = new HardwareVideoEncoderFactory(context, z, z2);
-    }
+  /** Create encoder factory using default hardware encoder factory. */
+  public DefaultVideoEncoderFactory(
+      EglBase.Context eglContext, boolean enableIntelVp8Encoder, boolean enableH264HighProfile) {
+    this.hardwareVideoEncoderFactory =
+        new HardwareVideoEncoderFactory(eglContext, enableIntelVp8Encoder, enableH264HighProfile);
+  }
 
-    @Override // org.webrtc.VideoEncoderFactory
-    public VideoEncoder createEncoder(VideoCodecInfo videoCodecInfo) {
-        VideoEncoder createEncoder = this.softwareVideoEncoderFactory.createEncoder(videoCodecInfo);
-        VideoEncoder createEncoder2 = this.hardwareVideoEncoderFactory.createEncoder(videoCodecInfo);
-        if (createEncoder2 != null && createEncoder != null) {
-            return new VideoEncoderFallback(createEncoder, createEncoder2);
-        }
-        if (createEncoder2 != null) {
-            return createEncoder2;
-        }
-        return createEncoder;
-    }
+  /** Create encoder factory using explicit hardware encoder factory. */
+  DefaultVideoEncoderFactory(VideoEncoderFactory hardwareVideoEncoderFactory) {
+    this.hardwareVideoEncoderFactory = hardwareVideoEncoderFactory;
+  }
 
-    @Override // org.webrtc.VideoEncoderFactory
-    public /* synthetic */ VideoEncoderFactory.VideoEncoderSelector getEncoderSelector() {
-        return loa.a(this);
+  @Nullable
+  @Override
+  public VideoEncoder createEncoder(VideoCodecInfo info) {
+    final VideoEncoder softwareEncoder = softwareVideoEncoderFactory.createEncoder(info);
+    final VideoEncoder hardwareEncoder = hardwareVideoEncoderFactory.createEncoder(info);
+    if (hardwareEncoder != null && softwareEncoder != null) {
+      // Both hardware and software supported, wrap it in a software fallback
+      return new VideoEncoderFallback(
+          /* fallback= */ softwareEncoder, /* primary= */ hardwareEncoder);
     }
+    return hardwareEncoder != null ? hardwareEncoder : softwareEncoder;
+  }
 
-    @Override // org.webrtc.VideoEncoderFactory
-    public /* synthetic */ VideoCodecInfo[] getImplementations() {
-        return loa.b(this);
-    }
+  @Override
+  public VideoCodecInfo[] getSupportedCodecs() {
+    LinkedHashSet<VideoCodecInfo> supportedCodecInfos = new LinkedHashSet<VideoCodecInfo>();
 
-    @Override // org.webrtc.VideoEncoderFactory
-    public VideoCodecInfo[] getSupportedCodecs() {
-        LinkedHashSet linkedHashSet = new LinkedHashSet();
-        linkedHashSet.addAll(Arrays.asList(this.softwareVideoEncoderFactory.getSupportedCodecs()));
-        linkedHashSet.addAll(Arrays.asList(this.hardwareVideoEncoderFactory.getSupportedCodecs()));
-        return (VideoCodecInfo[]) linkedHashSet.toArray(new VideoCodecInfo[linkedHashSet.size()]);
-    }
+    supportedCodecInfos.addAll(Arrays.asList(softwareVideoEncoderFactory.getSupportedCodecs()));
+    supportedCodecInfos.addAll(Arrays.asList(hardwareVideoEncoderFactory.getSupportedCodecs()));
 
-    public DefaultVideoEncoderFactory(VideoEncoderFactory videoEncoderFactory) {
-        this.hardwareVideoEncoderFactory = videoEncoderFactory;
-    }
+    return supportedCodecInfos.toArray(new VideoCodecInfo[supportedCodecInfos.size()]);
+  }
 }
