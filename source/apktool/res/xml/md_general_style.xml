@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cmwmobile="http://schemas.android.com/apk/res-auto">
-    <org.telegram.mdgram.fontStyle.FontListPreference android:entries="@array/fonts_names" android:layout="@layout/rc_preference_layout" android:key="font" android:defaultValue="fonts_names" android:entryValues="@array/fonts_names" />
-</PreferenceScreen>

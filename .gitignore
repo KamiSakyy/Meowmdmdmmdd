@@ -15,3 +15,7 @@ jadx_out/
 
 # Python
 __pycache__/
+
+# донор-декомпил (smali/jadx) — в ветке не хранится, лежит локально
+/source/
+/.arena/

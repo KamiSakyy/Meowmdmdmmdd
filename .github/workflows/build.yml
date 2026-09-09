@@ -101,36 +101,11 @@ jobs:
           path: MDGram/app/build/outputs/apk/release/*.apk
           if-no-files-found: warn
 
-      - name: APK в ветку и в релиз
-        if: success()
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -e
-          mkdir -p apk
-          for f in MDGram/app/build/outputs/apk/release/*.apk; do
-            cp "$f" "apk/MDGram-9.3.3.apk"
-          done
-          ls -la apk/
-          git config user.name  "arena-agent"
-          git config user.email "agent@arena.ai"
-          git add -f apk/MDGram-9.3.3.apk
-          git commit -m "APK MDGram 9.3.3 (сборка ${GITHUB_RUN_NUMBER})" || echo "нечего коммитить"
-          git pull --rebase || true
-          git push || true
-          TAG="mdgram-9.3.3-${GITHUB_RUN_NUMBER}"
-          gh release create "$TAG" apk/MDGram-9.3.3.apk             --title "MDGram 9.3.3 (сборка ${GITHUB_RUN_NUMBER})"             --notes "Автосборка из ветки arena/01a0865a-meowmdmdmmdd" || \
-          gh release upload "$TAG" apk/MDGram-9.3.3.apk --clobber || true
-
   emulator:
-    name: Проверка APK в эмуляторе (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
+    name: Проверка APK в эмуляторе
+    runs-on: ubuntu-latest
     needs: build
-    timeout-minutes: 40
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest]
+    timeout-minutes: 45
 
     steps:
       - name: Код
@@ -143,76 +118,39 @@ jobs:
           path: apk
 
       - name: Включаем KVM
-        if: runner.os == 'Linux'
-        if: runner.os == 'Linux'
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Прогон в эмуляторе (свой запуск, без KVM)
-        id: emu
-        continue-on-error: true
-        run: |
-          set +e
-          mkdir -p out
-          LOG=out/emu.log
-          exec > >(tee -a "$LOG") 2>&1
-          echo "== SDK =="
-          echo "ANDROID_HOME=$ANDROID_HOME ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
-          ls "$ANDROID_HOME" 2>/dev/null | head
-          SDKMAN="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
-          if [ ! -x "$SDKMAN" ]; then SDKMAN="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"; fi
-          echo "sdkmanager=$SDKMAN"
-          yes | "$SDKMAN" --licenses > /dev/null 2>&1
-          "$SDKMAN" --install "platform-tools" "platforms;android-30" \
-                              "emulator" "system-images;android-30;google_apis;x86_64" 2>&1 | tail -20
-          echo "== AVD =="
-          echo no | "$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager" create avd \
-              -n mdtest -k "system-images;android-30;google_apis;x86_64" \
-              --device "pixel_2" --force 2>&1 | tail -10
-          echo "== старт эмулятора =="
-          EXTRA=""
-          if [ "$(uname)" != "Darwin" ]; then EXTRA="-no-accel"; fi
-          "$ANDROID_HOME/emulator/emulator" -avd mdtest -no-window $EXTRA \
-              -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none \
-              -partition-size 2048 > out/emulator.log 2>&1 &
-          export PATH="$ANDROID_HOME/platform-tools:$PATH"
-          timeout 240 adb wait-for-device || echo "устройство не появилось за 240 c" 
-          echo "устройство подключено: $(adb devices | tail -2)"
-          i=0
-          while [ "$i" -lt 120 ]; do
-            boot=$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')
-            [ "$boot" = "1" ] && break
-            i=$((i+1)); sleep 5
-          done
-          echo "boot_completed=$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r') (попыток: $i)"
-          echo "== установка APK =="
-          APK=$(ls apk/*.apk | head -1)
-          timeout 900 adb install -r "$APK"
-          echo "== запуск приложения =="
-          adb logcat -c
-          adb shell monkey -p org.telegram.mdgram -c android.intent.category.LAUNCHER 1
-          sleep 120
-          echo "== состояние =="
-          adb shell pidof org.telegram.mdgram || echo "ПРОЦЕСС НЕ НАЙДЕН"
-          adb shell dumpsys window | grep -E "mCurrentFocus|mFocusedApp" | head -4
-          adb shell pm list packages | grep mdgram
-          echo "== краши =="
-          adb logcat -d | grep -iE "FATAL EXCEPTION|AndroidRuntime|force finishing" | head -30 || echo "крашей нет"
-          echo "== хвост logcat =="
-          adb logcat -d -t 120
-          adb exec-out screencap -p > out/screen.png 2>/dev/null || echo "скриншот не снят"
-          ls -la out
-          # сохраняем результат в ветку сразу отсюда
-          mkdir -p emulator-logs
-          cp out/* emulator-logs/ 2>/dev/null || true
-          git config user.name  "arena-agent"
-          git config user.email "agent@arena.ai"
-          git add -f emulator-logs || true
-          git commit -m "проверка APK в эмуляторе: логи и скриншот (ран ${GITHUB_RUN_NUMBER})" || echo "нечего коммитить"
-          git pull --rebase || true
-          git push || true
+      - name: Прогон в эмуляторе (API 30, Google APIs)
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          script: |
+            set -x
+            adb devices
+            APK=$(ls apk/*.apk | head -1)
+            echo "ставим $APK"
+            adb install -r "$APK"
+            adb logcat -c
+            adb shell monkey -p org.telegram.mdgram -c android.intent.category.LAUNCHER 1
+            sleep 60
+            echo "=== процесс ==="
+            adb shell pidof org.telegram.mdgram || echo "ПРОЦЕСС НЕ НАЙДЕН"
+            echo "=== краши ==="
+            adb logcat -d | grep -iE "FATAL EXCEPTION|AndroidRuntime|force finishing|mdgram.*(Error|Exception)" | head -40 || echo "крашей нет"
+            echo "=== список окон ==="
+            adb shell dumpsys window | grep -E "mCurrentFocus|mFocusedApp" | head -4
+            mkdir -p out
+            adb exec-out screencap -p > out/screen.png
+            adb logcat -d > out/logcat.txt
+            ls -la out
 
       - name: Скриншот и логи
         if: always()
@@ -221,15 +159,3 @@ jobs:
           name: emulator-check-${{ github.run_number }}
           path: out/
           if-no-files-found: warn
-
-      - name: Результаты эмулятора в ветку
-        if: always()
-        run: |
-          mkdir -p emulator-logs
-          cp -r out/. emulator-logs/ 2>/dev/null || true
-          git config user.name  "arena-agent"
-          git config user.email "agent@arena.ai"
-          git add -f emulator-logs/ || true
-          git commit -m "проверка в эмуляторе: логи и скриншот (ран ${GITHUB_RUN_NUMBER})" || echo "нечего коммитить"
-          git pull --rebase || true
-          git push || true
