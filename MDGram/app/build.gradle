@@ -15,6 +15,7 @@ android {
         versionCode 30275
         versionName '9.3.3'
         multiDexEnabled true
+        multiDexKeepFile file('multidex-config.txt')
         // поля, которые ждёт BuildVars из апстрима
         buildConfigField 'boolean', 'DEBUG_VERSION', 'false'
         buildConfigField 'boolean', 'DEBUG_PRIVATE_VERSION', 'false'
