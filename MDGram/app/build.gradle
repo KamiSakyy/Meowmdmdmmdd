@@ -100,10 +100,8 @@ dependencies {
     implementation 'com.jakewharton:process-phoenix:2.1.2'  // смена иконки/перезапуск
     implementation 'org.greenrobot:eventbus:3.3.1'
     implementation 'cat.ereza:customactivityoncrash:2.4.0'
-    implementation 'com.github.moxy-community:Moxy:2.2.2'
-    implementation 'com.github.moxy-community:Moxy-AndroidX:2.2.2'
-    // проект без Kotlin-плагина, поэтому кодогенератор цепляем как annotationProcessor
-    annotationProcessor 'com.github.moxy-community:Moxy-Compiler:2.2.2'
+    // Moxy (com.github.moxy-community) пока убран: JitPack не отдаёт артефакт.
+    // Вернём, когда дойдём до экранов MD на MVP (ChatHelper).
 
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
 }

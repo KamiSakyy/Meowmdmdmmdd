@@ -16,15 +16,15 @@ import org.telegram.ui.Components.LayoutHelper;
 /**
  * Раздел «Update» настроек MDGram (порт обфусцированного u55 из 9.3.3).
  *
- * TODO: расписать строки экрана — исходник разобран, разметка переносится
- *       следующим шагом (см. PORT_PLAN.md).
+ * TODO: проверитель обновлений (в оригинале класс pka) переносится отдельно —
+ *       здесь пока только кнопка и описание версии.
  */
 public class MDUpdateActivity extends BaseFragment {
 
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        actionBar.setTitle(LocaleController.getString("md_update", R.string.md_update));
+        actionBar.setTitle(LocaleController.getString("Updat", R.string.Updat));
         actionBar.setBackgroundColor(Theme.getColor("windowBackgroundWhite"));
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
@@ -41,7 +41,18 @@ public class MDUpdateActivity extends BaseFragment {
         list.setOrientation(LinearLayout.VERTICAL);
         scrollView.addView(list, LayoutHelper.createScroll(LayoutHelper.MATCH_PARENT,
                 LayoutHelper.WRAP_CONTENT, Gravity.TOP));
-        list.addView(MDCells.header(context, "md_update", R.string.md_update));
+
+        list.addView(MDCells.header(context, "Updatemd", R.string.Updatemd));
+        list.addView(MDCells.value(context, "MDversion", R.string.MDversion, "9.3.3", null));
+        list.addView(MDCells.button(context, "CheckUpdate", R.string.CheckUpdate,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // TODO: проверка обновлений (порт pka)
+                    }
+                }));
+        list.addView(MDCells.info(context, "RestartAppToTakeEffect", R.string.RestartAppToTakeEffect));
+
         fragmentView = scrollView;
         return fragmentView;
     }
