@@ -8,6 +8,11 @@ on:
         type: choice
         options: [apkpure, aptoide]
         default: apkpure
+  push:
+    branches: [arena/01a08582-meowmdmdmmdd]
+    paths:
+      - .github/workflows/decompile.yml
+      - .decompile-trigger
 
 permissions:
   contents: write
@@ -41,6 +46,7 @@ jobs:
           set -e
           mkdir -p work && cd work
           SRC="${{ inputs.apk_source }}"
+          [ -z "$SRC" ] && SRC="apkpure"
           echo "Источник: $SRC"
           if [ "$SRC" = "aptoide" ]; then
             curl -sL --retry 3 -A "Mozilla/5.0" -o MDGram-9.3.3.apk "$APTOIDE_URL"
@@ -148,7 +154,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "Изменений нет — коммитить нечего"
           else
-            git commit -m "Декомпиляция MDGram 9.3.3 (APK: ${{ inputs.apk_source }}, $(date -u +%F))"
+            git commit -m "Декомпиляция MDGram 9.3.3 (APK: $APK_SRC, $(date -u +%F))"
             git push origin "HEAD:${{ github.ref_name }}"
           fi
 
