@@ -180,44 +180,79 @@ jobs:
       - name: Подпись (наш ключ) + проверка
         if: env.BUILD_OK == 'true'
         run: |
-          set -e
-          export ANDROID_HOME="$HOME/android-sdk"
-          mkdir -p "$ANDROID_HOME/cmdline-tools"
-          curl -sL -o cmdtools.zip "https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip"
-          unzip -q cmdtools.zip -d "$ANDROID_HOME/cmdline-tools"
-          mv "$ANDROID_HOME/cmdline-tools/cmdline-tools" "$ANDROID_HOME/cmdline-tools/latest"
-          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null 2>&1 || true
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-34" "build-tools;34.0.0" > /dev/null 2>&1
-          BT="$ANDROID_HOME/build-tools/34.0.0"
-          cd work
-          if [ ! -f ../mod-keystore/mdgram.keystore ]; then
-            mkdir -p ../mod-keystore
-            keytool -genkeypair -keystore ../mod-keystore/mdgram.keystore -alias mdgram-mod \
-              -keyalg RSA -keysize 2048 -validity 10000 \
-              -storepass "$KEYSTORE_PASS" -keypass "$KEYSTORE_PASS" \
-              -dname "CN=MDGram Revival Mod, OU=Personal, O=Personal, C=RU"
-            KS="создан новый (закоммичен в mod-keystore/)"
-          else
-            KS="переиспользован из mod-keystore/"
-          fi
-          "$BT/zipalign" -f 4 MDGram-9.3.3-mod-unsigned.apk MDGram-9.3.3-mod.apk
-          "$BT/apksigner" sign --ks ../mod-keystore/mdgram.keystore \
-            --ks-pass:pass:"$KEYSTORE_PASS" --key-pass:pass:"$KEYSTORE_PASS" MDGram-9.3.3-mod.apk
+          set +e
           {
-            echo ""
-            echo "## Подпись"
-            echo "- Ключ: $KS"
-            echo "- apksigner verify:"
-            "$BT/apksigner" verify --print-certs MDGram-9.3.3-mod.apk 2>&1 | head -8
-            echo ""
-            echo "## Проверка названия и пакета"
-            "$BT/aapt" dump badging MDGram-9.3.3-mod.apk 2>/dev/null | grep -E "^package|application-label" | head -5
-            echo ""
-            echo "## Установка"
-            echo "- Сначала УДАЛИ оригинальный MDGram (подпись другая — поверх не встанет)."
-            echo "- Потом ставь MDGram-9.3.3-mod.apk из релиза mod-9.3.3."
-          } >> ../mod/BUILD_REPORT.md
-          tail -25 ../mod/BUILD_REPORT.md
+            echo "=== окружение ==="
+            java -version 2>&1
+            export ANDROID_HOME="$HOME/android-sdk"
+            echo "ANDROID_HOME=$ANDROID_HOME"
+            mkdir -p "$ANDROID_HOME/cmdline-tools"
+            echo "=== cmdline-tools ==="
+            curl -sSL --retry 3 -o cmdtools.zip "https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip"
+            echo "curl exit: $?"
+            ls -la cmdtools.zip
+            unzip -q cmdtools.zip -d "$ANDROID_HOME/cmdline-tools"
+            echo "unzip exit: $?"
+            mv "$ANDROID_HOME/cmdline-tools/cmdline-tools" "$ANDROID_HOME/cmdline-tools/latest"
+            echo "mv exit: $?"
+            "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --version
+            echo "sdkmanager version exit: $?"
+            yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null 2>&1
+            echo "licenses exit: $?"
+            "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-34" "build-tools;34.0.0"
+            echo "sdkmanager install exit: $?"
+            BT="$ANDROID_HOME/build-tools/34.0.0"
+            ls -la "$BT/zipalign" "$BT/apksigner" "$BT/aapt"
+            echo "=== keystore ==="
+            cd work
+            pwd
+            ls -la MDGram-9.3.3-mod-unsigned.apk
+            if [ ! -f ../mod-keystore/mdgram.keystore ]; then
+              mkdir -p ../mod-keystore
+              keytool -genkeypair -keystore ../mod-keystore/mdgram.keystore -alias mdgram-mod \
+                -keyalg RSA -keysize 2048 -validity 10000 \
+                -storepass "$KEYSTORE_PASS" -keypass "$KEYSTORE_PASS" \
+                -dname "CN=MDGram Revival Mod, OU=Personal, O=Personal, C=RU"
+              echo "keytool exit: $? (создан новый)"
+              KS="создан новый (закоммичен в mod-keystore/)"
+            else
+              echo "keystore уже есть в репо"
+              KS="переиспользован из mod-keystore/"
+            fi
+            echo "=== zipalign ==="
+            "$BT/zipalign" -f 4 MDGram-9.3.3-mod-unsigned.apk MDGram-9.3.3-mod.apk
+            echo "zipalign exit: $?"
+            ls -la MDGram-9.3.3-mod.apk
+            echo "=== apksigner ==="
+            "$BT/apksigner" sign --verbose --ks ../mod-keystore/mdgram.keystore \
+              --ks-pass:pass:"$KEYSTORE_PASS" --key-pass:pass:"$KEYSTORE_PASS" MDGram-9.3.3-mod.apk
+            echo "apksigner exit: $?"
+            if [ -f MDGram-9.3.3-mod.apk ]; then
+              {
+                echo ""
+                echo "## Подпись"
+                echo "- Ключ: $KS"
+                echo "- apksigner verify:"
+                "$BT/apksigner" verify --print-certs MDGram-9.3.3-mod.apk 2>&1 | head -8
+                echo ""
+                echo "## Проверка названия и пакета"
+                "$BT/aapt" dump badging MDGram-9.3.3-mod.apk 2>/dev/null | grep -E "^package|application-label" | head -5
+                echo ""
+                echo "## Установка"
+                echo "- Сначала УДАЛИ оригинальный MDGram (подпись другая — поверх не встанет)."
+                echo "- Потом ставь MDGram-9.3.3-mod.apk из релиза mod-9.3.3."
+              } >> ../mod/BUILD_REPORT.md
+            fi
+          } > ../mod/sign.log 2>&1
+          tail -20 ../mod/sign.log || true
+          if grep -q "apksigner exit: 0" ../mod/sign.log && [ -f "$GITHUB_WORKSPACE/work/MDGram-9.3.3-mod.apk" ]; then
+            echo "SIGN_OK=true" >> "$GITHUB_ENV"
+            echo "SIGN_OK=true"
+          else
+            echo "SIGN_OK=false" >> "$GITHUB_ENV"
+            echo "SIGN_OK=false"
+          fi
+          exit 0
 
       - name: Коммит отчёта и ключа в ветку
         if: always()
@@ -231,12 +266,12 @@ jobs:
           if git diff --cached --quiet; then
             echo "Изменений нет"
           else
-            git commit -m "Мод MDGram 9.3.3: отчёт сборки (BUILD_OK=${BUILD_OK:-unset}, $(date -u +%F))"
+            git commit -m "Мод MDGram 9.3.3: отчёт сборки (BUILD_OK=${BUILD_OK:-unset} SIGN_OK=${SIGN_OK:-unset}, $(date -u +%F))"
             git push origin "HEAD:${{ github.ref_name }}"
           fi
 
       - name: Артефакт с модом
-        if: env.BUILD_OK == 'true'
+        if: env.BUILD_OK == 'true' && env.SIGN_OK == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: mdgram-933-mod
@@ -244,7 +279,7 @@ jobs:
           retention-days: 90
 
       - name: Релиз mod-9.3.3 с APK
-        if: env.BUILD_OK == 'true'
+        if: env.BUILD_OK == 'true' && env.SIGN_OK == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -258,7 +293,11 @@ jobs:
           fi
 
       - name: Статус сборки
-        if: always() && env.BUILD_OK != 'true'
+        if: always()
         run: |
-          echo "СБОРКА ПРОВАЛЕНА — смотри mod/BUILD_REPORT.md и mod/build.log"
-          exit 1
+          if [ "${BUILD_OK:-false}" = "true" ] && [ "${SIGN_OK:-false}" = "true" ]; then
+            echo "СБОРКА УСПЕШНА"
+          else
+            echo "СБОРКА ПРОВАЛЕНА (BUILD_OK=${BUILD_OK:-unset} SIGN_OK=${SIGN_OK:-unset}) — смотри mod/"
+            exit 1
+          fi
