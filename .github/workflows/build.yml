@@ -1,0 +1,77 @@
+name: Сборка APK (база Telegram 9.3.3)
+
+# Собирает БАЗУ (папка android/) — проверяем, что движок вообще компилируется.
+# Пока без МД-слоя: цель — получить первый зелёный билд и APK.
+on:
+  workflow_dispatch:
+    inputs:
+      variant:
+        description: 'Что собирать'
+        required: false
+        default: 'assembleRelease'
+  push:
+    branches: [arena/01a0865a-meowmdmdmmdd]
+    paths:
+      - .github/workflows/build.yml
+      - .build-trigger
+      - android/**
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - name: Checkout ветки
+        uses: actions/checkout@v4
+        with:
+          ref: arena/01a0865a-meowmdmdmmdd
+          lfs: false
+
+      - name: JDK 11 (AGP 7.0.3 / Gradle 7.0.2)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '11'
+
+      - name: Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Пакеты SDK/NDK/CMake
+        run: |
+          yes | sdkmanager --licenses || true
+          sdkmanager --install \
+            "platforms;android-33" "platforms;android-31" \
+            "build-tools;33.0.0" "build-tools;31.0.0" \
+            "ndk;21.4.7075529" "cmake;3.10.2.4988404"
+          sdkmanager --list_installed | head -30
+
+      - name: Сборка APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew :TMessagesProj_App:${{ github.event.inputs.variant || 'assembleRelease' }} \
+            --no-daemon --stacktrace -x lint
+
+      - name: Куда делись APK
+        if: always()
+        run: find android -name "*.apk" -printf "%p  %k KB\n" | head -20
+
+      - name: Артефакт APK
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: base-apk
+          path: android/TMessagesProj_App/build/outputs/apk/**/*.apk
+          if-no-files-found: warn
+
+      - name: Лог при падении
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-failure-logs
+          path: |
+            android/**/build/reports/**
+            android/**/build/outputs/logs/**
