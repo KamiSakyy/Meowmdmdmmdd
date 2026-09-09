@@ -7,17 +7,16 @@ Auto-selecting single ABI x86_64
 == список AVD ==
 mdtest
 total 16
-drwxr-xr-x 3 runner runner 4096 Sep  9 20:19 .
-drwxr-xr-x 3 runner runner 4096 Sep  9 20:19 ..
-drwxr-xr-x 2 runner runner 4096 Sep  9 20:19 mdtest.avd
--rw-r--r-- 1 runner runner   83 Sep  9 20:19 mdtest.ini
+drwxr-xr-x 3 runner runner 4096 Sep  9 21:05 .
+drwxr-xr-x 3 runner runner 4096 Sep  9 21:05 ..
+drwxr-xr-x 2 runner runner 4096 Sep  9 21:05 mdtest.avd
+-rw-r--r-- 1 runner runner   83 Sep  9 21:05 mdtest.ini
 AVDNAME=mdtest
 adb devices: emulator-5554	device
-boot_completed=1 (попыток 33)
+boot_completed=1 (попыток 41)
 == ставим apk/app-release.apk ==
-Performing Streamed Install
-adb: failed to install apk/app-release.apk: cmd: Failure calling service package: Broken pipe (32)
-
+apk/app-release.apk: 1 file pushed, 0 skipped. 0.5 MB/s (81274193 bytes in 145.130s)
+cmd: Can't find service: package
 == запуск приложения ==
   bash arg: -p
   bash arg: org.telegram.mdgram
@@ -35,167 +34,161 @@ data="android.intent.category.LAUNCHER"
 ** Error: Unable to connect to activity manager; is the system running?
 == процесс ==
 == окно ==
-  mCurrentFocus=Window{f7de832 u0 com.android.settings/com.android.settings.FallbackHome}
-  mFocusedApp=ActivityRecord{2dd367d u0 com.android.settings/.FallbackHome t2}
+  mCurrentFocus=Window{fa2133d u0 com.android.settings/com.android.settings.FallbackHome}
+  mFocusedApp=ActivityRecord{f52f4a2 u0 com.android.settings/.FallbackHome t2}
 == пакеты mdgram ==
 == краши ==
-09-09 20:29:23.185  1025  1685 E AndroidRuntime: FATAL EXCEPTION: Thread-5
-09-09 20:29:23.185  1025  1685 E AndroidRuntime: Process: com.android.networkstack.process, PID: 1025
-09-09 20:29:23.185  1025  1685 E AndroidRuntime: DeadSystemException: The system died; earlier logs will point to the root cause
-09-09 20:29:23.202  1660  1660 D AndroidRuntime: Shutting down VM
-09-09 20:29:23.204  1660  1660 E AndroidRuntime: FATAL EXCEPTION: main
-09-09 20:29:23.204  1660  1660 E AndroidRuntime: Process: com.android.phone, PID: 1660
-09-09 20:29:23.204  1660  1660 E AndroidRuntime: DeadSystemException: The system died; earlier logs will point to the root cause
-09-09 20:29:23.219   741   861 E AndroidRuntime: FATAL EXCEPTION: SysUiBg
-09-09 20:29:23.219   741   861 E AndroidRuntime: Process: com.android.systemui, PID: 741
-09-09 20:29:23.219   741   861 E AndroidRuntime: DeadSystemException: The system died; earlier logs will point to the root cause
-09-09 20:29:23.230  1137  1164 E AndroidRuntime: FATAL EXCEPTION: GoogleApiHandler
-09-09 20:29:23.230  1137  1164 E AndroidRuntime: Process: com.google.android.setupwizard, PID: 1137
-09-09 20:29:23.230  1137  1164 E AndroidRuntime: DeadSystemException: The system died; earlier logs will point to the root cause
-09-09 20:29:23.232  1137  1137 D AndroidRuntime: Shutting down VM
-09-09 20:29:23.238  1441  1441 D AndroidRuntime: Shutting down VM
-09-09 20:29:23.239  1441  1441 E AndroidRuntime: FATAL EXCEPTION: main
-09-09 20:29:23.239  1441  1441 E AndroidRuntime: Process: com.google.android.inputmethod.latin, PID: 1441
-09-09 20:29:23.239  1441  1441 E AndroidRuntime: DeadSystemException: The system died; earlier logs will point to the root cause
-09-09 20:29:23.251  1493  1568 E AndroidRuntime: FATAL EXCEPTION: GoogleApiHandler
-09-09 20:29:23.251  1493  1568 E AndroidRuntime: Process: com.google.android.apps.wellbeing, PID: 1493
-09-09 20:29:23.251  1493  1568 E AndroidRuntime: DeadSystemException: The system died; earlier logs will point to the root cause
-09-09 20:29:24.213   741   741 D AndroidRuntime: Shutting down VM
-09-09 20:29:24.219   741   741 E AndroidRuntime: FATAL EXCEPTION: main
-09-09 20:29:24.219   741   741 E AndroidRuntime: Process: com.android.systemui, PID: 741
-09-09 20:29:24.219   741   741 E AndroidRuntime: DeadSystemException: The system died; earlier logs will point to the root cause
-09-09 20:29:26.814  1716  1716 D AndroidRuntime: >>>>>> START com.android.internal.os.ZygoteInit uid 0 <<<<<<
-09-09 20:29:28.310  1725  1725 D AndroidRuntime: >>>>>> START com.android.internal.os.ZygoteInit uid 0 <<<<<<
-09-09 20:29:28.343  1725  1725 I AndroidRuntime: Using default boot image
-09-09 20:29:28.343  1725  1725 I AndroidRuntime: Leaving lock profiling enabled
-09-09 20:29:31.559  1736  1736 D AndroidRuntime: >>>>>> START com.android.internal.os.ZygoteInit uid 0 <<<<<<
+09-09 21:14:42.529  1973  1973 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-09 21:14:42.622  1973  1973 I AndroidRuntime: Using default boot image
+09-09 21:14:42.623  1973  1973 I AndroidRuntime: Leaving lock profiling enabled
+09-09 21:14:45.810  1973  1973 D AndroidRuntime: Calling main entry com.android.commands.monkey.Monkey
+09-09 21:14:46.582  1973  1973 I AndroidRuntime: VM exiting with result code -3.
+09-09 21:16:04.288  2415  2415 I AndroidRuntime: VM exiting with result code 0, cleanup skipped.
+09-09 21:16:04.450  2367  2367 I AndroidRuntime: VM exiting with result code 0, cleanup skipped.
+09-09 21:16:34.986  2704  2704 F DEBUG   :       #10 pc 00000000000b588c  /system/lib64/libandroid_runtime.so (android::AndroidRuntime::javaThreadShell(void*)+140) (BuildId: 84eb9c8bad06a5ac4720d16d40f66380)
+09-09 21:17:44.002  2742  2742 I AndroidRuntime: VM exiting with result code 0, cleanup skipped.
+09-09 21:20:05.423  3186  3186 I AndroidRuntime: VM exiting with result code 0, cleanup skipped.
+09-09 21:20:27.452  2309  2309 D AndroidRuntime: Shutting down VM
+09-09 21:20:27.539  2309  2309 E AndroidRuntime: FATAL EXCEPTION: main
+09-09 21:20:27.539  2309  2309 E AndroidRuntime: Process: com.android.systemui, PID: 2309
+09-09 21:20:27.539  2309  2309 E AndroidRuntime: DeadSystemException: The system died; earlier logs will point to the root cause
+09-09 21:20:27.759  3070  3070 D AndroidRuntime: Shutting down VM
+09-09 21:20:27.760  3070  3070 E AndroidRuntime: FATAL EXCEPTION: main
+09-09 21:20:27.760  3070  3070 E AndroidRuntime: Process: com.google.android.inputmethod.latin, PID: 3070
+09-09 21:20:27.760  3070  3070 E AndroidRuntime: DeadSystemException: The system died; earlier logs will point to the root cause
+09-09 21:20:33.075  3368  3368 D AndroidRuntime: >>>>>> START com.android.internal.os.ZygoteInit uid 0 <<<<<<
+09-09 21:20:33.154  3368  3368 I AndroidRuntime: Using default boot image
+09-09 21:20:33.154  3368  3368 I AndroidRuntime: Leaving lock profiling enabled
+09-09 21:20:36.667  3376  3376 D AndroidRuntime: >>>>>> START com.android.internal.os.ZygoteInit uid 0 <<<<<<
+09-09 21:20:36.727  3376  3376 I AndroidRuntime: Using default boot image
+09-09 21:20:36.727  3376  3376 I AndroidRuntime: Leaving lock profiling enabled
 == хвост logcat ==
 --------- beginning of main
-09-09 20:35:35.853  3210  3210 I mediaserver: ServiceManager: 0xe9b40830
-09-09 20:35:35.863  3210  3210 D mediaserver: Time zone APEX ICU file found: /apex/com.android.tzdata/etc/icu/icu_tzdata.dat
-09-09 20:35:35.875  3206  3211 W zygote64: Verification of void com.android.org.conscrypt.NativeSsl.configureServerCertificate() took 100.507ms (606.92 bytecodes/s) (2808B approximate peak alloc)
-09-09 20:35:35.878  3210  3210 D mediaserver: I18n APEX ICU file found: /apex/com.android.i18n/etc/icu/icudt66l.dat
-09-09 20:35:35.893  3210  3210 W BatteryNotifier: batterystats service unavailable!
-09-09 20:35:35.896  3200  3200 I BootAnimation: boot animation disabled
-09-09 20:35:35.900  3228  3228 I FastMixerState: sMaxFastTracks = 8
-09-09 20:35:35.911  3210  3210 W BatteryNotifier: batterystats service unavailable!
-09-09 20:35:35.917  3207  3216 W zygote  : Verification of void com.android.org.conscrypt.Conscrypt.setBufferAllocator(javax.net.ssl.SSLSocket, com.android.org.conscrypt.BufferAllocator) took 166.739ms (89.96 bytecodes/s) (1000B approximate peak alloc)
-09-09 20:35:35.993  3209  3209 I cameraserver: ServiceManager: 0xf68c0cd0
-09-09 20:35:36.000  3209  3209 I CameraService: CameraService started (pid=3209)
-09-09 20:35:36.000  3209  3209 I CameraService: CameraService process starting
-09-09 20:35:36.008  3209  3209 W BatteryNotifier: batterystats service unavailable!
-09-09 20:35:36.009  3209  3209 W BatteryNotifier: batterystats service unavailable!
-09-09 20:35:36.064  3207  3216 W zygote  : Verification of void com.android.org.conscrypt.Conscrypt.setDefaultBufferAllocator(com.android.org.conscrypt.BufferAllocator) took 144.957ms (27.59 bytecodes/s) (744B approximate peak alloc)
-09-09 20:35:36.083  3209  3209 I CameraProviderManager: Connecting to new camera provider: internal/0, isRemote? 1
-09-09 20:35:36.097  3228  3228 V MediaUtils: physMem: 2077552640
-09-09 20:35:36.097  3228  3228 V MediaUtils: requested limit: 415510520
-09-09 20:35:36.098  3228  3228 I libc    : malloc_limit: Allocation limit enabled, max size 415510520 bytes
-09-09 20:35:36.110  3209  3209 I CameraProviderManager: Camera provider internal/0 ready with 0 camera devices
-09-09 20:35:36.119  3209  3209 I CameraProviderManager: Connecting to new camera provider: legacy/0, isRemote? 1
-09-09 20:35:36.127  3209  3209 I CameraProviderManager: Camera provider legacy/0 ready with 0 camera devices
-09-09 20:35:36.128  3209  3251 W CameraProviderManager: addProviderLocked: Camera provider HAL with name 'internal/0' already registered
-09-09 20:35:36.133  3209  3253 W CameraProviderManager: addProviderLocked: Camera provider HAL with name 'legacy/0' already registered
-09-09 20:35:36.134  3209  3209 I cameraserver: Waiting for activity service
-09-09 20:35:36.143  3254  3254 I audioserver: ServiceManager: 0x7d8cf51161c0
-09-09 20:35:36.152  3206  3211 W zygote64: Verification of com.android.org.conscrypt.NativeSslSession com.android.org.conscrypt.NativeSslSession.newInstance(com.android.org.conscrypt.AbstractSessionContext, byte[], java.lang.String, int) took 131.521ms (1969.25 bytecodes/s) (6432B approximate peak alloc)
-09-09 20:35:36.157  3254  3254 W BatteryNotifier: batterystats service unavailable!
-09-09 20:35:36.290   391   484 W AudioAnalytics: (key=audio.flinger) Audioflinger constructor event detected
-09-09 20:35:36.293  3254  3254 I AudioFlinger: Using default 3000 mSec as standby time.
-09-09 20:35:36.311   388   607 I ServiceManager: Waiting for service 'package_native' on '/dev/binder'...
-09-09 20:35:36.319  3254  3254 E APM::Serializer: deserialize: Could not parse /odm/etc/audio_policy_configuration.xml document.
-09-09 20:35:36.370  3254  3254 D APM_EngineLoader: Loaded engine from libaudiopolicyenginedefault.so
-09-09 20:35:36.373  3254  3254 E APM::AudioPolicyEngine/Config: parse: Could not parse document /vendor/etc/audio_policy_engine_configuration.xml
-09-09 20:35:36.373  3254  3254 E libxml2 : I/O warning : failed to load external entity "/vendor/etc/audio_policy_engine_configuration.xml"
-09-09 20:35:36.373  3254  3254 W APM::AudioPolicyEngine/Base: loadAudioPolicyEngineConfig: No configuration found, using default matching phone experience.
-09-09 20:35:36.376  3254  3254 E APM::AudioPolicyEngine/Config: parseLegacyVolumeFile: Could not parse document /odm/etc/audio_policy_configuration.xml
-09-09 20:35:36.376  3254  3254 E libxml2 : I/O warning : failed to load external entity "/odm/etc/audio_policy_configuration.xml"
-09-09 20:35:36.431  3254  3254 W APM::AudioPolicyEngine/Base: loadAudioPolicyEngineConfig: No configuration of AUDIO_STREAM_CALL_ASSISTANT found, using default volume configuration
-09-09 20:35:36.447  3254  3254 I AudioFlinger: loadHwModule() Loaded primary audio interface, handle 10
-09-09 20:35:36.452  3254  3254 I AudioFlinger: openOutput() this 0x7d8de511a680, module 10 Device type:0x2,@:, SamplingRate 44100, Format 0x000001, Channels 0x3, flags 0x2
-09-09 20:35:36.472  3254  3254 I AudioFlinger: HAL output buffer size 976 frames, normal sink buffer size 976 frames
-09-09 20:35:36.557  3254  3254 I BufferProvider: found effect "Multichannel Downmix To Stereo" from The Android Open Source Project
-09-09 20:35:36.561  3229  3237 E android.hardware.audio.service.ranchu: device/generic/goldfish/audio/stream_out.cpp:setEventCallback:469 failure: Result::NOT_SUPPORTED
-09-09 20:35:36.562  3254  3254 E AudioFlinger: Failed to add event callback
-09-09 20:35:36.567  3229  3237 E android.hardware.audio.service.ranchu: device/generic/goldfish/audio/primary_device.cpp:getParameters:234 failure: Result::NOT_SUPPORTED
-09-09 20:35:36.573  3254  3265 I AudioFlinger: AudioFlinger's thread 0x7d8f67978040 tid=3265 ready to run
-09-09 20:35:36.574  3254  3265 W AudioFlinger: no wake lock to update, system not ready yet
-09-09 20:35:36.574  3254  3265 D AudioFlinger: ro.audio.silent is ignored since no output device is set
-09-09 20:35:36.577  3229  3237 E android.hardware.audio.service.ranchu: device/generic/goldfish/audio/stream_out.cpp:getPresentationPosition:501 failure: Result::INVALID_STATE
-09-09 20:35:36.580  3207  3216 W zygote  : Verification of void com.android.org.conscrypt.ECParameters.engineInit(byte[]) took 105.104ms (294.94 bytecodes/s) (1320B approximate peak alloc)
-09-09 20:35:36.596  3254  3265 W AudioFlinger: no wake lock to update, system not ready yet
-09-09 20:35:36.597  3254  3265 D AudioFlinger: ro.audio.silent is ignored since no output device is set
-09-09 20:35:36.628  3254  3254 W AudioFlinger: moveEffects() bad srcOutput 0
-09-09 20:35:36.688  3254  3254 I AudioFlinger: openOutput() this 0x7d8de511a680, module 10 Device type:0x10000,@:, SamplingRate 44100, Format 0x000001, Channels 0x3, flags 0
-09-09 20:35:36.696  3254  3254 I AudioFlinger: HAL output buffer size 976 frames, normal sink buffer size 976 frames
-09-09 20:35:36.699  3229  3229 E android.hardware.audio.service.ranchu: device/generic/goldfish/audio/stream_out.cpp:setEventCallback:469 failure: Result::NOT_SUPPORTED
-09-09 20:35:36.699  3254  3254 E AudioFlinger: Failed to add event callback
-09-09 20:35:36.701  3229  3229 E android.hardware.audio.service.ranchu: device/generic/goldfish/audio/primary_device.cpp:getParameters:234 failure: Result::NOT_SUPPORTED
-09-09 20:35:36.716  3254  3266 I AudioFlinger: AudioFlinger's thread 0x7d8f67416040 tid=3266 ready to run
-09-09 20:35:36.717  3254  3266 W AudioFlinger: no wake lock to update, system not ready yet
-09-09 20:35:36.717  3254  3266 D AudioFlinger: ro.audio.silent is ignored since no output device is set
-09-09 20:35:36.717  3229  3229 E android.hardware.audio.service.ranchu: device/generic/goldfish/audio/stream_out.cpp:getPresentationPosition:501 failure: Result::INVALID_STATE
-09-09 20:35:36.720  3254  3266 W AudioFlinger: no wake lock to update, system not ready yet
-09-09 20:35:36.720  3254  3266 D AudioFlinger: ro.audio.silent is ignored since no output device is set
-09-09 20:35:36.774  3254  3268 I AudioFlinger: AudioFlinger's thread 0x7d8f672e5040 tid=3268 ready to run
-09-09 20:35:36.782  3254  3268 W AudioFlinger: no wake lock to update, system not ready yet
-09-09 20:35:36.785  3254  3268 W AudioFlinger: no wake lock to update, system not ready yet
-09-09 20:35:36.826  3254  3270 I AudioFlinger: AudioFlinger's thread 0x7d8f672e5040 tid=3270 ready to run
-09-09 20:35:36.826  3254  3270 W AudioFlinger: no wake lock to update, system not ready yet
-09-09 20:35:36.831  3254  3270 W AudioFlinger: no wake lock to update, system not ready yet
-09-09 20:35:36.862  3254  3272 I AudioFlinger: AudioFlinger's thread 0x7d8f672e5040 tid=3272 ready to run
-09-09 20:35:36.863  3254  3272 W AudioFlinger: no wake lock to update, system not ready yet
-09-09 20:35:36.865  3254  3272 W AudioFlinger: no wake lock to update, system not ready yet
-09-09 20:35:36.876  3229  3267 I r_submix: adev_open(name=audio_hw_if)
-09-09 20:35:36.886  3229  3236 I r_submix: adev_init_check()
-09-09 20:35:36.887  3254  3254 I AudioFlinger: loadHwModule() Loaded r_submix audio interface, handle 18
-09-09 20:35:36.889  3229  3236 D r_submix: adev_open_input_stream(addr=0)
-09-09 20:35:36.890  3229  3236 D r_submix: submix_audio_device_create_pipe_l(addr=0, idx=9)
-09-09 20:35:36.890  3229  3236 D r_submix:   now using address 0 for route 9
-09-09 20:35:36.920  3254  3274 I AudioFlinger: AudioFlinger's thread 0x7d8f672e5040 tid=3274 ready to run
-09-09 20:35:36.920  3229  3267 I r_submix: in_standby()
-09-09 20:35:36.921  3254  3274 W AudioFlinger: no wake lock to update, system not ready yet
-09-09 20:35:36.921  3229  3267 I r_submix: in_standby()
-09-09 20:35:36.924  3254  3274 W AudioFlinger: no wake lock to update, system not ready yet
-09-09 20:35:36.924  3229  3267 D r_submix: adev_close_input_stream()
-09-09 20:35:36.925  3229  3267 D r_submix: submix_audio_device_release_pipe_l(idx=9) addr=0
-09-09 20:35:36.925  3229  3267 D r_submix: submix_audio_device_destroy_pipe_l(): pipe destroyed
-09-09 20:35:36.936  3254  3254 W APM::AudioPolicyEngine: getDevicesForStrategy() unknown strategy: -1
-09-09 20:35:36.936  3254  3254 W APM::AudioPolicyEngine: getDevicesForStrategy() unknown strategy: -1
-09-09 20:35:36.949  3254  3254 I audioserver: Waiting for activity service
-09-09 20:35:37.312   388   607 I ServiceManager: Waiting for service 'package_native' on '/dev/binder'...
-09-09 20:35:38.314   388   607 W ServiceManager: Service package_native didn't start. Returning NULL
+09-09 21:20:44.173  3378  3424 D r_submix: adev_open_input_stream(addr=0)
+09-09 21:20:44.174  3378  3424 D r_submix: submix_audio_device_create_pipe_l(addr=0, idx=9)
+09-09 21:20:44.174  3378  3424 D r_submix:   now using address 0 for route 9
+09-09 21:20:44.217  3396  3434 I AudioFlinger: AudioFlinger's thread 0x7cc2bef5d040 tid=3434 ready to run
+09-09 21:20:44.218  3378  3424 I r_submix: in_standby()
+09-09 21:20:44.218  3396  3434 W AudioFlinger: no wake lock to update, system not ready yet
+09-09 21:20:44.219  3378  3424 I r_submix: in_standby()
+09-09 21:20:44.239  3379  3379 I CameraProviderManager: Camera provider internal/0 ready with 0 camera devices
+09-09 21:20:44.255  3396  3434 W AudioFlinger: no wake lock to update, system not ready yet
+09-09 21:20:44.257  3378  3424 D r_submix: adev_close_input_stream()
+09-09 21:20:44.257  3378  3424 D r_submix: submix_audio_device_release_pipe_l(idx=9) addr=0
+09-09 21:20:44.257  3378  3424 D r_submix: submix_audio_device_destroy_pipe_l(): pipe destroyed
+09-09 21:20:44.274  3396  3396 W APM::AudioPolicyEngine: getDevicesForStrategy() unknown strategy: -1
+09-09 21:20:44.275  3396  3396 W APM::AudioPolicyEngine: getDevicesForStrategy() unknown strategy: -1
+09-09 21:20:44.278  3379  3379 I CameraProviderManager: Connecting to new camera provider: legacy/0, isRemote? 1
+09-09 21:20:44.311  3396  3396 I audioserver: Waiting for activity service
+09-09 21:20:44.363  3379  3379 I CameraProviderManager: Camera provider legacy/0 ready with 0 camera devices
+09-09 21:20:44.368  3379  3431 W CameraProviderManager: addProviderLocked: Camera provider HAL with name 'internal/0' already registered
+09-09 21:20:44.382  3379  3431 W CameraProviderManager: addProviderLocked: Camera provider HAL with name 'legacy/0' already registered
+09-09 21:20:44.397  3379  3379 I cameraserver: Waiting for activity service
+09-09 21:20:44.441  3376  3387 W zygote64: Verification of java.security.spec.AlgorithmParameterSpec com.android.org.conscrypt.ECParameters.engineGetParameterSpec(java.lang.Class) took 125.201ms (399.36 bytecodes/s) (2568B approximate peak alloc)
+09-09 21:20:44.445  3368  3371 W zygote  : Verification of int com.android.org.conscrypt.OpenSSLBIOSink.available() took 126.893ms (78.81 bytecodes/s) (840B approximate peak alloc)
+09-09 21:20:44.554  3368  3371 W zygote  : Verification of long com.android.org.conscrypt.OpenSSLBIOSink.skip(long) took 108.010ms (249.97 bytecodes/s) (1032B approximate peak alloc)
+09-09 21:20:44.556   311  2188 E SensorsMultiHal: Dropping 1 events after blockingWrite failed.
+09-09 21:20:44.593   419   634 I ServiceManager: Waiting for service 'package_native' on '/dev/binder'...
+09-09 21:20:44.930  3368  3371 W zygote  : Verification of void com.android.org.conscrypt.OpenSSLContextImpl.<init>(java.lang.String[], boolean) took 169.738ms (494.88 bytecodes/s) (2216B approximate peak alloc)
+09-09 21:20:45.608   419   634 W ServiceManager: Service package_native didn't start. Returning NULL
 --------- beginning of system
-09-09 20:35:38.315   388   607 E iorapd  : Cannot get package manager service!
-09-09 20:35:39.108   299  1982 E SensorsMultiHal: Dropping 1 events after blockingWrite failed.
-09-09 20:35:39.316   388   607 W iorapd  : Reconnect to package manager service: 4 times
-09-09 20:35:39.317   388   607 I ServiceManager: Waiting for service 'package_native' on '/dev/binder'...
-09-09 20:35:39.371   716   716 I wpa_supplicant: wlan0: CTRL-EVENT-BEACON-LOSS 
-09-09 20:35:39.809   400   863 D BufferPoolAccessor2.0: evictor expired: 3, evicted: 0
-09-09 20:35:40.319   388   607 I ServiceManager: Waiting for service 'package_native' on '/dev/binder'...
-09-09 20:35:42.322   388   607 I chatty  : uid=1071(iorapd) Binder:388_1 identical 2 lines
-09-09 20:35:43.325   388   607 I ServiceManager: Waiting for service 'package_native' on '/dev/binder'...
-09-09 20:35:44.109   299  1982 E SensorsMultiHal: Dropping 1 events after blockingWrite failed.
-09-09 20:35:44.327   388   607 W ServiceManager: Service package_native didn't start. Returning NULL
-09-09 20:35:44.328   388   607 E iorapd  : Cannot get package manager service!
-09-09 20:35:45.188  3206  3211 I zygote64: Verified 1359 classes from mainline modules in 1.107s
-09-09 20:35:45.333   388   607 W iorapd  : Reconnect to package manager service: 5 times
-09-09 20:35:45.374   388   607 I ServiceManager: Waiting for service 'package_native' on '/dev/binder'...
-09-09 20:35:46.492   388   607 I ServiceManager: Waiting for service 'package_native' on '/dev/binder'...
-09-09 20:35:46.835  3206  3206 D Zygote  : Forked child process 3277
-09-09 20:35:46.836  3206  3206 I Zygote  : System server process 3277 has been created
-09-09 20:35:46.898  3277  3277 W system_server: Unexpected CPU variant for X86 using defaults: x86_64
-09-09 20:35:46.925   377   427 I adbd    : jdwp connection from 3277
-09-09 20:35:46.936  3206  3206 I Zygote  : Accepting command socket connections
-09-09 20:35:46.972  3207  3216 W zygote  : Verification of void android.net.wifi.WifiNetworkSuggestion.<init>() took 1.789s (13.41 bytecodes/s) (992B approximate peak alloc)
-09-09 20:35:47.494   388   607 I ServiceManager: Waiting for service 'package_native' on '/dev/binder'...
-09-09 20:35:47.560   716   716 I wpa_supplicant: wlan0: CTRL-EVENT-BEACON-LOSS 
-09-09 20:35:47.824  3277  3277 I SystemServerTiming: InitBeforeStartServices
-09-09 20:35:47.834  3277  3277 I SystemServer: Entered the Android system server!
+09-09 21:20:45.608   419   634 E iorapd  : Cannot get package manager service!
+09-09 21:20:45.656  3376  3387 W zygote64: Verification of java.security.PublicKey com.android.org.conscrypt.OpenSSLRSAKeyFactory.engineGeneratePublic(java.security.spec.KeySpec) took 193.316ms (346.58 bytecodes/s) (3064B approximate peak alloc)
+09-09 21:20:45.866  3376  3387 W zygote64: Verification of java.security.spec.KeySpec com.android.org.conscrypt.OpenSSLRSAKeyFactory.engineGetKeySpec(java.security.Key, java.lang.Class) took 121.097ms (4830.81 bytecodes/s) (12736B approximate peak alloc)
+09-09 21:20:45.914  3368  3371 W zygote  : Verification of boolean com.android.org.conscrypt.OpenSSLX509CRL.isRevoked(java.security.cert.Certificate) took 277.248ms (205.59 bytecodes/s) (1920B approximate peak alloc)
+09-09 21:20:46.035  3368  3371 W zygote  : Verification of void com.android.org.conscrypt.OpenSSLX509CertPath$1.<clinit>() took 118.419ms (287.11 bytecodes/s) (1376B approximate peak alloc)
+09-09 21:20:46.245  3376  3387 W zygote64: Verification of void com.android.org.conscrypt.OpenSSLRSAKeyPairGenerator.<init>() took 109.624ms (200.69 bytecodes/s) (1688B approximate peak alloc)
+09-09 21:20:46.339  3376  3389 I zygote64: Background concurrent copying GC freed 67661(3965KB) AllocSpace objects, 22(704KB) LOS objects, 49% free, 4199KB/8398KB, paused 22.304ms total 865.074ms
+09-09 21:20:46.358  3376  3387 W zygote64: Verification of void com.android.org.conscrypt.OpenSSLRSAKeyPairGenerator.initialize(java.security.spec.AlgorithmParameterSpec, java.security.SecureRandom) took 112.217ms (302.98 bytecodes/s) (2312B approximate peak alloc)
+09-09 21:20:46.374  3368  3371 W zygote  : Verification of byte[] com.android.org.conscrypt.OpenSSLX509CertPath.getEncoded(com.android.org.conscrypt.OpenSSLX509CertPath$Encoding) took 173.867ms (511.88 bytecodes/s) (2304B approximate peak alloc)
+09-09 21:20:46.617   419   634 W iorapd  : Reconnect to package manager service: 4 times
+09-09 21:20:46.621   419   634 I ServiceManager: Waiting for service 'package_native' on '/dev/binder'...
+09-09 21:20:46.825  3368  3371 W zygote  : Verification of com.android.org.conscrypt.SSLUtils$SessionType com.android.org.conscrypt.SSLUtils$SessionType.valueOf(java.lang.String) took 103.160ms (87.24 bytecodes/s) (784B approximate peak alloc)
+09-09 21:20:46.922  3376  3387 W zygote64: Verification of int com.android.org.conscrypt.SSLUtils.unsignedShort(short) took 137.909ms (36.26 bytecodes/s) (1248B approximate peak alloc)
+09-09 21:20:47.062  3376  3387 W zygote64: Verification of java.security.cert.X509Certificate[] com.android.org.conscrypt.TrustManagerImpl.acceptedIssuers(java.security.KeyStore) took 117.818ms (432.87 bytecodes/s) (2696B approximate peak alloc)
+09-09 21:20:47.394  3368  3371 W zygote  : Verification of com.android.org.conscrypt.ct.VerifiedSCT$Status com.android.org.conscrypt.ct.CTLogInfo.verifySingleSCT(com.android.org.conscrypt.ct.SignedCertificateTimestamp, com.android.org.conscrypt.ct.CertificateEntry) took 134.116ms (626.32 bytecodes/s) (2048B approximate peak alloc)
+09-09 21:20:47.398  3376  3387 W zygote64: Verification of java.util.List com.android.org.conscrypt.ct.CTVerifier.getSCTsFromOCSPResponse(byte[], com.android.org.conscrypt.OpenSSLX509Certificate[]) took 106.136ms (621.84 bytecodes/s) (2896B approximate peak alloc)
+09-09 21:20:47.633  3376  3387 W zygote64: Verification of byte[] com.android.org.conscrypt.ct.Serialization.readFixedBytes(java.io.InputStream, int) took 100.861ms (723.76 bytecodes/s) (2784B approximate peak alloc)
+09-09 21:20:47.641   419   634 I ServiceManager: Waiting for service 'package_native' on '/dev/binder'...
+09-09 21:20:48.331  3376  3376 I zygote64: Thread[1,tid=3376,Native,Thread*=0x76a1ec927be0,peer=0x132005f0,"main"] recursive attempt to load library "libmedia_jni.so"
+09-09 21:20:48.336  3376  3376 I zygote64: Thread[1,tid=3376,Native,Thread*=0x76a1ec927be0,peer=0x132005f0,"main"] recursive attempt to load library "libmedia_jni.so"
+09-09 21:20:48.342  3376  3376 D MtpDeviceJNI: register_android_mtp_MtpDevice
+09-09 21:20:48.343  3376  3376 I zygote64: Thread[1,tid=3376,Native,Thread*=0x76a1ec927be0,peer=0x132005f0,"main"] recursive attempt to load library "libmedia_jni.so"
+09-09 21:20:48.344  3376  3376 I zygote64: Thread[1,tid=3376,Native,Thread*=0x76a1ec927be0,peer=0x132005f0,"main"] recursive attempt to load library "libmedia_jni.so"
+09-09 21:20:48.427  3376  3376 W Zygote  : Class not found for preloading: android.media.MediaRouter$Static$Client$1
+09-09 21:20:48.428  3376  3376 W Zygote  : Class not found for preloading: android.media.MediaRouter$Static$Client$2
+09-09 21:20:48.586  3376  3376 W Zygote  : Class not found for preloading: android.net.shared.Inet4AddressUtils
+09-09 21:20:48.587  3376  3376 W Zygote  : Class not found for preloading: android.net.shared.InetAddressUtils
+09-09 21:20:48.643   419   634 I ServiceManager: Waiting for service 'package_native' on '/dev/binder'...
+09-09 21:20:48.721  3368  3371 W zygote  : Verification of void com.android.org.conscrypt.OpenSSLSignature$RSAPSSPadding.engineSetParameter(java.security.spec.AlgorithmParameterSpec) took 105.547ms (3524.47 bytecodes/s) (5496B approximate peak alloc)
+09-09 21:20:49.102  3368  3371 W zygote  : Verification of byte[] com.android.org.conscrypt.ConscryptFileDescriptorSocket.exportKeyingMaterial(java.lang.String, byte[], int) took 241.177ms (120.24 bytecodes/s) (1504B approximate peak alloc)
+09-09 21:20:49.118  3376  3376 W Zygote  : Class not found for preloading: android.view.-$$Lambda$cZhmLzK8aetUdx4VlP9w5jR7En0
+09-09 21:20:49.149  3376  3387 W zygote64: Verification of void com.android.org.conscrypt.ConscryptEngineSocket.doHandshake() took 113.131ms (1175.62 bytecodes/s) (4816B approximate peak alloc)
+09-09 21:20:49.178  3376  3376 W Zygote  : Class not found for preloading: android.view.autofill.-$$Lambda$AutofillManager$AutofillManagerClient$vxNm6RuuD-r5pkiSxNSBBd1w_Qc
+09-09 21:20:49.180  3376  3376 W Zygote  : Class not found for preloading: android.view.contentcapture.-$$Lambda$MainContentCaptureSession$1$JPRO-nNGZpgXrKr4QC_iQiTbQx0
+09-09 21:20:49.186  3376  3376 W Zygote  : Class not found for preloading: android.view.contentcapture.-$$Lambda$MainContentCaptureSession$1$Xhq3WJibbalS1G_W3PRC2m7muhM
+09-09 21:20:49.192  3376  3376 W Zygote  : Class not found for preloading: android.view.contentcapture.MainContentCaptureSession$1
+09-09 21:20:49.391  3368  3371 W zygote  : Verification of void com.android.org.conscrypt.ConscryptFileDescriptorSocket.startHandshake() took 184.791ms (2099.66 bytecodes/s) (7840B approximate peak alloc)
+09-09 21:20:49.441  3376  3387 W zygote64: Verification of void com.android.org.conscrypt.ConscryptFileDescriptorSocket.shutdownAndFreeSslNative() took 168.653ms (189.74 bytecodes/s) (2232B approximate peak alloc)
+09-09 21:20:49.460  3376  3376 W Zygote  : Class not found for preloading: com.android.internal.telephony.-$$Lambda$SubscriptionController$VCQsMNqRHpN3RyoXYzh2YUwA2yc
+09-09 21:20:49.464  3376  3376 W Zygote  : Class not found for preloading: com.android.internal.telephony.-$$Lambda$SubscriptionController$u5xE-urXR6ElZ50305_6guo20Fc
+09-09 21:20:49.493  3368  3371 W zygote  : Verification of void com.android.org.conscrypt.Java8ExtendedSSLSession.<init>(com.android.org.conscrypt.ExternalSession) took 100.590ms (39.77 bytecodes/s) (784B approximate peak alloc)
+09-09 21:20:49.558   311  2188 E SensorsMultiHal: Dropping 1 events after blockingWrite failed.
+09-09 21:20:49.574  3376  3389 I zygote64: Background young concurrent copying GC freed 88418(3604KB) AllocSpace objects, 3(96KB) LOS objects, 45% free, 4542KB/8398KB, paused 3.381ms total 392.987ms
+09-09 21:20:49.645   419   634 I ServiceManager: Waiting for service 'package_native' on '/dev/binder'...
+09-09 21:20:49.810  3368  3371 W zygote  : Verification of long com.android.org.conscrypt.OpenSSLAeadCipherAES$GCM_SIV.getEVP_AEAD(int) took 109.039ms (376.01 bytecodes/s) (1304B approximate peak alloc)
+09-09 21:20:50.665   419   634 I ServiceManager: Waiting for service 'package_native' on '/dev/binder'...
+09-09 21:20:50.723  3376  3376 W Zygote  : Class not found for preloading: com.android.internal.telephony.IccSmsInterfaceManager$2
+09-09 21:20:50.882  3376  3376 W Zygote  : Class not found for preloading: com.android.internal.widget.-$$Lambda$gPQuiuEDuOmrh2MixBcV6a5gu5s
+09-09 21:20:50.884  3376  3376 W Zygote  : Class not found for preloading: com.android.internal.widget.LockPatternUtils$2
+09-09 21:20:50.890  3376  3387 W zygote64: Verification of void android.media.internal.exo.extractor.mkv.MatroskaExtractor$Track.initializeOutput(android.media.internal.exo.extractor.ExtractorOutput, int) took 117.751ms (11447.84 bytecodes/s) (29024B approximate peak alloc)
+09-09 21:20:51.224  3376  3376 I Zygote  : ...preloaded 12110 classes in 11905ms.
+09-09 21:20:51.226  3376  3376 I zygote64: VMRuntime.preloadDexCaches starting
+09-09 21:20:51.404  3376  3376 I zygote64: VMRuntime.preloadDexCaches strings total=418008 before=11372 after=11372
+09-09 21:20:51.404  3376  3376 I zygote64: VMRuntime.preloadDexCaches types total=40946 before=10033 after=10507
+09-09 21:20:51.406  3376  3376 I zygote64: VMRuntime.preloadDexCaches fields total=173619 before=12618 after=13732
+09-09 21:20:51.407  3376  3376 I zygote64: VMRuntime.preloadDexCaches methods total=315786 before=15717 after=16379
+09-09 21:20:51.407  3376  3376 I zygote64: VMRuntime.preloadDexCaches finished
+09-09 21:20:51.408  3376  3376 D Zygote64Timing: PreloadClasses took to complete: 12089ms
+09-09 21:20:51.435  3376  3376 I zygote64: The ClassLoaderContext is a special shared library.
+09-09 21:20:51.466  3376  3376 D ApplicationLoaders: Created zygote-cached class loader: /system/framework/android.hidl.base-V1.0-java.jar
+09-09 21:20:51.484  3376  3376 I zygote64: The ClassLoaderContext is a special shared library.
+09-09 21:20:51.492  3376  3376 D ApplicationLoaders: Created zygote-cached class loader: /system/framework/android.hidl.manager-V1.0-java.jar
+09-09 21:20:51.513  3376  3376 I zygote64: The ClassLoaderContext is a special shared library.
+09-09 21:20:51.520  3376  3376 D ApplicationLoaders: Created zygote-cached class loader: /system/framework/android.test.base.jar
+09-09 21:20:51.520  3376  3376 D Zygote64Timing: CacheNonBootClasspathClassLoaders took to complete: 112ms
+09-09 21:20:51.522  3376  3376 I Zygote  : Preloading resources...
+09-09 21:20:51.647  3376  3376 W Resources: Preloaded drawable resource #0x108028b (android:drawable/dialog_background_material) that varies with configuration!!
+09-09 21:20:51.670   419   634 W ServiceManager: Service package_native didn't start. Returning NULL
+09-09 21:20:51.670   419   634 E iorapd  : Cannot get package manager service!
+09-09 21:20:51.836  3376  3376 I Zygote  : ...preloaded 64 resources in 313ms.
+09-09 21:20:51.904  3376  3376 I Zygote  : ...preloaded 41 resources in 63ms.
+09-09 21:20:51.904  3376  3376 D Zygote64Timing: PreloadResources took to complete: 384ms
+09-09 21:20:51.994  3368  3371 W zygote  : Verification of android.util.Pair android.media.internal.exo.extractor.wav.WavHeaderReader.skipToData(android.media.internal.exo.extractor.ExtractorInput) took 101.227ms (1738.66 bytecodes/s) (2704B approximate peak alloc)
+09-09 21:20:52.027  3376  3376 I Zygote  : Preloading shared libraries...
+09-09 21:20:52.032   766   766 I wpa_supplicant: wlan0: CTRL-EVENT-BEACON-LOSS 
+09-09 21:20:52.145  3376  3376 I Zygote  : Called ZygoteHooks.endPreload()
+09-09 21:20:52.152  3376  3376 I Zygote  : Installed AndroidKeyStoreProvider in 6ms.
+09-09 21:20:52.226  3376  3376 I Zygote  : Warmed up JCA providers in 73ms.
+09-09 21:20:52.226  3376  3376 D Zygote  : end preload
+09-09 21:20:52.226  3376  3376 D Zygote64Timing: ZygotePreload took to complete: 13243ms
+09-09 21:20:52.382  3376  3387 W zygote64: Verification of int android.media.internal.exo.extractor.mkv.MatroskaExtractor.writeSampleData(android.media.internal.exo.extractor.ExtractorInput, android.media.internal.exo.extractor.mkv.MatroskaExtractor$Track, int) took 119.148ms (5144.86 bytecodes/s) (11256B approximate peak alloc)
+09-09 21:20:52.437  3368  3371 W zygote  : Verification of java.lang.String android.media.internal.exo.util.Util.maybeReplaceGrandfatheredLanguageTags(java.lang.String) took 152.767ms (340.39 bytecodes/s) (1256B approximate peak alloc)
+09-09 21:20:52.496  3376  3376 I zygote64: Explicit concurrent copying GC freed 30425(1697KB) AllocSpace objects, 0(0B) LOS objects, 49% free, 4721KB/9443KB, paused 14.559ms total 268.917ms
+09-09 21:20:52.502  3376  3387 W zygote64: Verification of void android.media.internal.exo.extractor.mkv.MatroskaExtractor.binaryElement(int, int, android.media.internal.exo.extractor.ExtractorInput) took 119.342ms (5873.87 bytecodes/s) (15440B approximate peak alloc)
+09-09 21:20:52.645  3376  3387 W zygote64: Verification of boolean android.media.internal.exo.extractor.mkv.MatroskaExtractor.sniff(android.media.internal.exo.extractor.ExtractorInput) took 136.789ms (73.11 bytecodes/s) (1456B approximate peak alloc)
+09-09 21:20:52.671   419   634 W iorapd  : Reconnect to package manager service: 5 times
+09-09 21:20:52.677   419   634 I ServiceManager: Waiting for service 'package_native' on '/dev/binder'...
+09-09 21:20:52.688  3376  3376 I zygote64: Explicit concurrent copying GC freed 4041(182KB) AllocSpace objects, 0(0B) LOS objects, 49% free, 4586KB/9173KB, paused 193us total 175.843ms
+09-09 21:20:52.690  3376  3376 D Zygote64Timing: PostZygoteInitGC took to complete: 463ms
+09-09 21:20:52.692  3376  3376 D Zygote64Timing: ZygoteInit took to complete: 13711ms
+09-09 21:20:53.681   419   634 I ServiceManager: Waiting for service 'package_native' on '/dev/binder'...
+09-09 21:20:53.755  3376  3387 W zygote64: Verification of boolean android.os.IStatsd$Stub.onTransact(int, android.os.Parcel, android.os.Parcel, int) took 118.631ms (4922.81 bytecodes/s) (11272B approximate peak alloc)
 --------- beginning of kernel
-09-09 20:35:48.156     0     0 D logd    : logdr: UID=2000 GID=2000 PID=3291 n tail=120 logMask=99 pid=0 start=0ns timeout=0ns
-total 92
-drwxr-xr-x  2 runner runner  4096 Sep  9 20:35 .
-drwxr-xr-x 17 runner runner  4096 Sep  9 20:18 ..
--rw-r--r--  1 runner runner 49253 Sep  9 20:35 emu.log
--rw-r--r--  1 runner runner 15658 Sep  9 20:30 emulator.log
--rw-r--r--  1 runner runner 12504 Sep  9 20:36 screen.png
+09-09 21:20:53.816     0     0 D logd    : logdr: UID=2000 GID=2000 PID=3438 n tail=120 logMask=99 pid=0 start=0ns timeout=0ns
+total 100
+drwxr-xr-x  2 runner runner  4096 Sep  9 21:20 .
+drwxr-xr-x 17 runner runner  4096 Sep  9 21:04 ..
+-rw-r--r--  1 runner runner 52841 Sep  9 21:20 emu.log
+-rw-r--r--  1 runner runner 21528 Sep  9 21:15 emulator.log
+-rw-r--r--  1 runner runner 12504 Sep  9 21:21 screen.png

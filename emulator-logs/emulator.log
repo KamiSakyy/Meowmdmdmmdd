@@ -3,7 +3,6 @@ INFO         | Graphics backend: gfxstream
 INFO         | Found systemPath /usr/local/lib/android/sdk/system-images/android-30/google_apis/x86_64/
 INFO         | Saving last run QEMU version for the AVD to 2
 WARNING      | Please update the emulator to one that supports the feature(s): Vulkan
-INFO         | Increasing RAM size to 2048MB
 ##############################################################################
 ##                        WARNING - ACTION REQUIRED                         ##
 ##  Consider using the '-metrics-collection' flag to help improve the       ##
@@ -24,12 +23,12 @@ INFO         |      Ok: Disk space requirements to run avd: `mdtest` are met
 INFO         |   Checking: hasSufficientHwGpu
 INFO         |      Ok: Hardware GPU compatibility checks are not required
 INFO         |   Checking: hasSufficientSystem
-INFO         |      Warning: AVD 'mdtest' will run more smoothly with 4 CPU cores (currently using 2)
-USER_WARNING | AVD 'mdtest' will run more smoothly with 4 CPU cores (currently using 2).
+INFO         |      Ok: System requirements to run avd: `mdtest` are met
 WARNING      | Feature QuickbootFileBacked is disabled due to stability issues, if you really want that, the environment variable ANDROID_EMU_FORCE_QUICKBOOT_FILE_BACKED need to set to 1
 WARNING      | x86_64 emulation may not work without hardware acceleration!
 WARNING      | FeatureControl is requesting a non existing feature.
-INFO         | Storing crashdata in: /tmp/android-runner/emu-crash-37.1.11.db, detection is enabled for process: 2173
+ERROR        | Unable to connect to adb daemon on port: 5037
+INFO         | Storing crashdata in: /tmp/android-runner/emu-crash-37.1.11.db, detection is enabled for process: 2509
 INFO         | Initializing gfxstream backend
 INFO         | startOpenglesRendererImpl: gpu info
 INFO         | 
@@ -81,7 +80,7 @@ INFO         |   qemu=1
 INFO         |   qemu.avd_name=mdtest
 INFO         |   qemu.camera_hq_edge_processing=0
 INFO         |   qemu.camera_protocol_ver=1
-INFO         |   qemu.dalvik.vm.heapsize=512m
+INFO         |   qemu.dalvik.vm.heapsize=576m
 INFO         |   qemu.encrypt=1
 INFO         |   qemu.gles=1
 INFO         |   qemu.gltransport=pipe
@@ -97,27 +96,36 @@ INFO         |   qemu.virtiowifi=1
 INFO         |   qemu.vsync=60
 TCG doesn't support requested feature: CPUID.01H:ECX.avx [bit 28]
 TCG doesn't support requested feature: CPUID.01H:ECX.f16c [bit 29]
-WARNING: cannnot unmap ptr 0x7efdf0e01000 as it is in the protected range from 0x7efd70e00000 to 0x7efdf1000000
+TCG doesn't support requested feature: CPUID.01H:ECX.avx [bit 28]
+TCG doesn't support requested feature: CPUID.01H:ECX.f16c [bit 29]
+WARNING: cannnot unmap ptr 0x7fe243c01000 as it is in the protected range from 0x7fe183c00000 to 0x7fe243e00000
 INFO         | Monitoring duration of emulator setup.
 WARNING      | The emulator now requires a signed jwt token for gRPC access! Use the -grpc flag if you really want an open unprotected grpc port
 INFO         | Using security allow list from: /usr/local/lib/android/sdk/emulator/lib/emulator_access.json
-INFO         | The active JSON Web Key Sets can be found here: /run/user/1001/avd/running/2173/jwks/dd3e34d7-e950-40f7-a82b-cac6070e06bf/active.jwk
-INFO         | Scanning /run/user/1001/avd/running/2173/jwks/dd3e34d7-e950-40f7-a82b-cac6070e06bf for jwk keys.
+INFO         | The active JSON Web Key Sets can be found here: /run/user/1001/avd/running/2509/jwks/a7f1faeb-69a0-48a1-b9af-e06c38b772db/active.jwk
+INFO         | Scanning /run/user/1001/avd/running/2509/jwks/a7f1faeb-69a0-48a1-b9af-e06c38b772db for jwk keys.
 INFO         | Started GRPC server at 127.0.0.1:8554, security: Local, auth: +token
-INFO         | Advertising in: /run/user/1001/avd/running/pid_2173.ini
+INFO         | Advertising in: /run/user/1001/avd/running/pid_2509.ini
 INFO         | Successfully initialized netsim WiFi
 INFO         | Setting display: 0 configuration to: 1080x1920, dpi: 420x420 
 INFO         | setDisplayActiveConfig: id:0, 1080x1920
 INFO         | emulatorSetupEnvironment: Environment scene is not required
-INFO         | Loading snapshot 'default_boot'...
+USER_INFO    | Emulator is performing a full startup. This may take upto two minutes, or more.
 WARNING      | Failed to process .ini file /home/runner/.android/emu-update-last-check.ini for reading.
-WARNING      | Device 'cache' does not have the requested snapshot 'default_boot'
-
-WARNING      | Failed to load snapshot 'default_boot'
-USER_INFO    | The emulator is performing a cold boot without a saved state because there's no snapshot and you have configured it not to save on exit.
 WARNING      | Failed to process .ini file /home/runner/.android/emu-update-last-check.ini for reading.
-INFO         | Boot completed in 370144 ms
+INFO         | Boot completed in 379433 ms
 INFO         | Increasing screen off timeout, logcat buffer size to 2M.
+WARNING      | adb command '/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell settings put system screen_off_timeout 2147483647 ' failed: 'cmd: Failure calling service settings: Broken pipe (32)'
+WARNING      | adb command '/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell settings put system screen_off_timeout 2147483647 ' failed: 'cmd: Can't find service: settings'
+WARNING      | adb command '/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell settings put system screen_off_timeout 2147483647 ' failed: 'cmd: Can't find service: settings'
+WARNING      | adb command '/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell settings put system screen_off_timeout 2147483647 ' failed: 'cmd: Can't find service: settings'
+WARNING      | adb command '/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell settings put system screen_off_timeout 2147483647 ' failed: 'cmd: Can't find service: settings'
+WARNING      | adb command '/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell settings put system screen_off_timeout 2147483647 ' failed: 'cmd: Can't find service: settings'
+WARNING      | adb command '/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell settings put system screen_off_timeout 2147483647 ' failed: 'cmd: Can't find service: settings'
+WARNING      | adb command '/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell settings put system screen_off_timeout 2147483647 ' failed: 'cmd: Can't find service: settings'
+WARNING      | adb command '/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell settings put system screen_off_timeout 2147483647 ' failed: 'cmd: Can't find service: settings'
+WARNING      | adb command '/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell settings put system screen_off_timeout 2147483647 ' failed: 'cmd: Can't find service: settings'
+WARNING      | adb command '/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell settings put system screen_off_timeout 2147483647 ' failed: 'cmd: Can't find service: settings'
 WARNING      | adb command '/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell settings put system screen_off_timeout 2147483647 ' failed: 'cmd: Can't find service: settings'
 WARNING      | adb command '/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell settings put system screen_off_timeout 2147483647 ' failed: 'cmd: Can't find service: settings'
 WARNING      | adb command '/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell settings put system screen_off_timeout 2147483647 ' failed: 'cmd: Can't find service: settings'
@@ -135,9 +143,57 @@ WARNING      | adb command '/usr/local/lib/android/sdk/platform-tools/adb -s emu
 WARNING      | adb command '/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell settings put system accelerometer_rotation 1 ' failed: 'cmd: Can't find service: settings'
 WARNING      | adb command '/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell settings put system accelerometer_rotation 1 ' failed: 'cmd: Can't find service: settings'
 WARNING      | adb command '/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell settings put system accelerometer_rotation 1 ' failed: 'cmd: Can't find service: settings'
-WARNING      | adb command '/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell settings put system accelerometer_rotation 1 ' failed: 'cmd: Can't find service: settings'
-WARNING      | adb command '/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell am broadcast -a com.android.emulator.multidisplay.START -n com.android.emulator.multidisplay/.MultiDisplayServiceReceiver --user 0 ' failed: 'cmd: Can't find service: activity'
-WARNING      | adb command '/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell am broadcast -a com.android.emulator.multidisplay.START -n com.android.emulator.multidisplay/.MultiDisplayServiceReceiver --user 0 ' failed: 'cmd: Can't find service: activity'
+WARNING      | adb command '/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell am broadcast -a com.android.emulator.multidisplay.START -n com.android.emulator.multidisplay/.MultiDisplayServiceReceiver --user 0 ' failed: 'Broadcasting: Intent { act=com.android.emulator.multidisplay.START flg=0x400000 cmp=com.android.emulator.multidisplay/.MultiDisplayServiceReceiver }
+
+Exception occurred while executing 'broadcast':
+java.lang.IllegalStateException: Cannot broadcast before boot completed
+	at com.android.server.am.ActivityManagerService.verifyBroadcastLocked(ActivityManagerService.java:16689)
+	at com.android.server.am.ActivityManagerService.broadcastIntentWithFeature(ActivityManagerService.java:16735)
+	at com.android.server.am.ActivityManagerShellCommand.runSendBroadcast(ActivityManagerShellCommand.java:747)
+	at com.android.server.am.ActivityManagerShellCommand.onCommand(ActivityManagerShellCommand.java:199)
+	at android.os.BasicShellCommandHandler.exec(BasicShellCommandHandler.java:98)
+	at android.os.ShellCommand.exec(ShellCommand.java:44)
+	at com.android.server.am.ActivityManagerService.onShellCommand(ActivityManagerService.java:10521)
+	at android.os.Binder.shellCommand(Binder.java:929)
+	at android.os.Binder.onTransact(Binder.java:813)
+	at android.app.IActivityManager$Stub.onTransact(IActivityManager.java:5027)
+	at com.android.server.am.ActivityManagerService.onTransact(ActivityManagerService.java:2883)
+	at android.os.Binder.execTransactInternal(Binder.java:1159)
+	at android.os.Binder.execTransact(Binder.java:1123)'
+WARNING      | adb command '/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell am broadcast -a com.android.emulator.multidisplay.START -n com.android.emulator.multidisplay/.MultiDisplayServiceReceiver --user 0 ' failed: 'Broadcasting: Intent { act=com.android.emulator.multidisplay.START flg=0x400000 cmp=com.android.emulator.multidisplay/.MultiDisplayServiceReceiver }
+
+Exception occurred while executing 'broadcast':
+java.lang.IllegalStateException: Cannot broadcast before boot completed
+	at com.android.server.am.ActivityManagerService.verifyBroadcastLocked(ActivityManagerService.java:16689)
+	at com.android.server.am.ActivityManagerService.broadcastIntentWithFeature(ActivityManagerService.java:16735)
+	at com.android.server.am.ActivityManagerShellCommand.runSendBroadcast(ActivityManagerShellCommand.java:747)
+	at com.android.server.am.ActivityManagerShellCommand.onCommand(ActivityManagerShellCommand.java:199)
+	at android.os.BasicShellCommandHandler.exec(BasicShellCommandHandler.java:98)
+	at android.os.ShellCommand.exec(ShellCommand.java:44)
+	at com.android.server.am.ActivityManagerService.onShellCommand(ActivityManagerService.java:10521)
+	at android.os.Binder.shellCommand(Binder.java:929)
+	at android.os.Binder.onTransact(Binder.java:813)
+	at android.app.IActivityManager$Stub.onTransact(IActivityManager.java:5027)
+	at com.android.server.am.ActivityManagerService.onTransact(ActivityManagerService.java:2883)
+	at android.os.Binder.execTransactInternal(Binder.java:1159)
+	at android.os.Binder.execTransact(Binder.java:1123)'
+WARNING      | adb command '/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell am broadcast -a com.android.emulator.multidisplay.START -n com.android.emulator.multidisplay/.MultiDisplayServiceReceiver --user 0 ' failed: 'Broadcasting: Intent { act=com.android.emulator.multidisplay.START flg=0x400000 cmp=com.android.emulator.multidisplay/.MultiDisplayServiceReceiver }
+
+Exception occurred while executing 'broadcast':
+java.lang.IllegalStateException: Cannot broadcast before boot completed
+	at com.android.server.am.ActivityManagerService.verifyBroadcastLocked(ActivityManagerService.java:16689)
+	at com.android.server.am.ActivityManagerService.broadcastIntentWithFeature(ActivityManagerService.java:16735)
+	at com.android.server.am.ActivityManagerShellCommand.runSendBroadcast(ActivityManagerShellCommand.java:747)
+	at com.android.server.am.ActivityManagerShellCommand.onCommand(ActivityManagerShellCommand.java:199)
+	at android.os.BasicShellCommandHandler.exec(BasicShellCommandHandler.java:98)
+	at android.os.ShellCommand.exec(ShellCommand.java:44)
+	at com.android.server.am.ActivityManagerService.onShellCommand(ActivityManagerService.java:10521)
+	at android.os.Binder.shellCommand(Binder.java:929)
+	at android.os.Binder.onTransact(Binder.java:813)
+	at android.app.IActivityManager$Stub.onTransact(IActivityManager.java:5027)
+	at com.android.server.am.ActivityManagerService.onTransact(ActivityManagerService.java:2883)
+	at android.os.Binder.execTransactInternal(Binder.java:1159)
+	at android.os.Binder.execTransact(Binder.java:1123)'
 WARNING      | adb command '/usr/local/lib/android/sdk/platform-tools/adb -s emulator-5554 shell am broadcast -a com.android.emulator.multidisplay.START -n com.android.emulator.multidisplay/.MultiDisplayServiceReceiver --user 0 ' failed: 'Broadcasting: Intent { act=com.android.emulator.multidisplay.START flg=0x400000 cmp=com.android.emulator.multidisplay/.MultiDisplayServiceReceiver }
 
 Exception occurred while executing 'broadcast':
