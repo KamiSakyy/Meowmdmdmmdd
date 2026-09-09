@@ -182,13 +182,13 @@ jobs:
           echo "sdkmanager=$SDKMAN"
           {
             yes | "$SDKMAN" --licenses > /dev/null 2>&1
-            "$SDKMAN" --install "platform-tools" "platforms;android-30" \
-                                "emulator" "system-images;android-30;google_apis;x86_64" 2>&1 | tail -10
+            "$SDKMAN" --install "platform-tools" "platforms;android-24" \
+                                "emulator" "system-images;android-24;google_apis;x86_64" 2>&1 | tail -10
             echo "== создаём AVD =="
             export ANDROID_AVD_HOME="$HOME/.android/avd"
             mkdir -p "$ANDROID_AVD_HOME"
             echo no | "$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager" create avd \
-                -n mdtest -k "system-images;android-30;google_apis;x86_64" \
+                -n mdtest -k "system-images;android-24;google_apis;x86_64" \
                 -p "$ANDROID_AVD_HOME/mdtest.avd" --device "pixel_2" --force 2>&1 | tail -20
             echo "== список AVD =="
             "$ANDROID_HOME/emulator/emulator" -list-avds 2>&1 | tail -5
@@ -201,7 +201,7 @@ jobs:
           [ "$(uname)" != "Darwin" ] && EXTRA="-no-accel"
           "$ANDROID_HOME/emulator/emulator" -avd "$AVDNAME" -no-window $EXTRA \
               -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none \
-              -memory 3072 -partition-size 4096 -no-snapshot -wipe-data \
+              -memory 2048 -partition-size 2048 -no-snapshot -wipe-data \
               > out/emulator.log 2>&1 &
           export PATH="$ANDROID_HOME/platform-tools:$PATH"
           timeout 300 adb wait-for-device || echo "устройство не появилось за 300 с"
