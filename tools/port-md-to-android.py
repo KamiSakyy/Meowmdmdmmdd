@@ -291,6 +291,13 @@ def resolve_all(passes=3):
 MDG_RES = ROOT / "MDGram/app/src/main/res"
 
 
+def valid_res_name(path):
+    """aapt2 не пропускает имена файлов вне [a-z0-9_.] (в APK встречаются
+    приватные ресурсы библиотек вида $fingerprint_dialog_error_to_fp__0)."""
+    import re as _re
+    return bool(_re.match(r"^[a-z0-9_.]+$", path.stem))
+
+
 def is_values(path):
     """values*/**/*.xml — мержим по записям, остальные файлы копируем целиком."""
     parts = path.parts
@@ -346,6 +353,8 @@ def main():
         # Качаем ВСЁ, чего у нас нет: res из APK — это официальный res 9.3.3
         # плюс добавки MDGram. Не хватает любого файла — стили из APK
         # (уже смерженные в values) ссылаются на несуществующий ресурс.
+        if not valid_res_name(src):
+            continue
         if not (DST_RES / rel).exists():
             copy_file(src, DST_RES / rel)
             md_files.append(DST_RES / rel)

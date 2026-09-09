@@ -100,3 +100,62 @@ jobs:
           name: mdgram-apk-${{ github.run_number }}
           path: MDGram/app/build/outputs/apk/release/*.apk
           if-no-files-found: warn
+
+  emulator:
+    name: Проверка APK в эмуляторе
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 45
+
+    steps:
+      - name: Код
+        uses: actions/checkout@v4
+
+      - name: APK из сборки
+        uses: actions/download-artifact@v4
+        with:
+          name: mdgram-apk-${{ github.run_number }}
+          path: apk
+
+      - name: Включаем KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Прогон в эмуляторе (API 30, Google APIs)
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          script: |
+            set -x
+            adb devices
+            APK=$(ls apk/*.apk | head -1)
+            echo "ставим $APK"
+            adb install -r "$APK"
+            adb logcat -c
+            adb shell monkey -p org.telegram.mdgram -c android.intent.category.LAUNCHER 1
+            sleep 60
+            echo "=== процесс ==="
+            adb shell pidof org.telegram.mdgram || echo "ПРОЦЕСС НЕ НАЙДЕН"
+            echo "=== краши ==="
+            adb logcat -d | grep -iE "FATAL EXCEPTION|AndroidRuntime|force finishing|mdgram.*(Error|Exception)" | head -40 || echo "крашей нет"
+            echo "=== список окон ==="
+            adb shell dumpsys window | grep -E "mCurrentFocus|mFocusedApp" | head -4
+            mkdir -p out
+            adb exec-out screencap -p > out/screen.png
+            adb logcat -d > out/logcat.txt
+            ls -la out
+
+      - name: Скриншот и логи
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: emulator-check-${{ github.run_number }}
+          path: out/
+          if-no-files-found: warn
