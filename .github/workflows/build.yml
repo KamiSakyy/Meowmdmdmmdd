@@ -214,18 +214,27 @@ jobs:
           done
           boot=$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')
           echo "boot_completed=$boot (попыток $i)" | tee -a "$LOG"
-          echo "== ждём PackageManager ==" | tee -a "$LOG"
+          echo "== ждём сервис package ==" | tee -a "$LOG"
           j=0
-          while [ "$j" -lt 60 ]; do
-            if adb shell pm list packages 2>/dev/null | grep -q "com.android.settings"; then break; fi
-            j=$((j+1)); sleep 5
+          while [ "$j" -lt 90 ]; do
+            out=$(adb shell cmd package list packages 2>&1 | head -2)
+            echo "$out" | grep -q "Can't find service" || break
+            j=$((j+1)); sleep 10
           done
-          echo "PackageManager готов (попыток $j)" | tee -a "$LOG"
-          sleep 20
+          echo "сервис package готов (попыток $j), последний ответ: $out" | tee -a "$LOG"
+          sleep 30
+          echo "== окно после загрузки ==" | tee -a "$LOG"
+          adb shell dumpsys window 2>/dev/null | grep -E "mCurrentFocus" | head -2 | tee -a "$LOG"
           APK=$(ls apk/*.apk | head -1)
           echo "== ставим $APK ==" | tee -a "$LOG"
           timeout 900 adb push "$APK" /data/local/tmp/md.apk 2>&1 | tee -a "$LOG"
-          timeout 900 adb shell pm install -r -t /data/local/tmp/md.apk 2>&1 | tee -a "$LOG"
+          for try in 1 2 3 4; do
+            echo "== попытка установки $try ==" | tee -a "$LOG"
+            if timeout 900 adb shell pm install -r -t /data/local/tmp/md.apk 2>&1 | tee -a "$LOG" | grep -qi "success"; then
+              echo "УСТАНОВЛЕНО (попытка $try)" | tee -a "$LOG"; break
+            fi
+            sleep 25
+          done
           adb shell pm list packages 2>/dev/null | grep mdgram | tee -a "$LOG"
           echo "== запуск приложения ==" | tee -a "$LOG"
           adb logcat -c
