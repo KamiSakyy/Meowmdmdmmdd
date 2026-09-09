@@ -568,6 +568,178 @@
             </intent-filter>
         </activity>
 
+        <activity-alias android:enabled="true" android:exported="true" android:name="org.telegram.mdgram.DefaultIcon" android:targetActivity="org.telegram.ui.LaunchActivity">
+                    <intent-filter>
+                        <action android:name="android.intent.action.MAIN"/>
+                        <category android:name="android.intent.category.LAUNCHER"/>
+                        <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER"/>
+                    </intent-filter>
+                </activity-alias>
+                <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/ic_materialyou" android:name="org.telegram.mdgram.MaterialYou" android:roundIcon="@mipmap/ic_materialyou" android:targetActivity="org.telegram.ui.LaunchActivity">
+                    <intent-filter>
+                        <action android:name="android.intent.action.MAIN"/>
+                        <category android:name="android.intent.category.LAUNCHER"/>
+                        <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER"/>
+                    </intent-filter>
+                </activity-alias>
+                <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/ic_orange" android:name="org.telegram.mdgram.Orange" android:roundIcon="@mipmap/ic_orange_round" android:targetActivity="org.telegram.ui.LaunchActivity">
+                    <intent-filter>
+                        <action android:name="android.intent.action.MAIN"/>
+                        <category android:name="android.intent.category.LAUNCHER"/>
+                        <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER"/>
+                    </intent-filter>
+                </activity-alias>
+                <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/ic_green" android:name="org.telegram.mdgram.Green" android:roundIcon="@mipmap/ic_green_round" android:targetActivity="org.telegram.ui.LaunchActivity">
+                    <intent-filter>
+                        <action android:name="android.intent.action.MAIN"/>
+                        <category android:name="android.intent.category.LAUNCHER"/>
+                        <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER"/>
+                    </intent-filter>
+                </activity-alias>
+                <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/ic_yellow" android:name="org.telegram.mdgram.MatYouV2" android:roundIcon="@mipmap/ic_yellow_round" android:targetActivity="org.telegram.ui.LaunchActivity">
+                    <intent-filter>
+                        <action android:name="android.intent.action.MAIN"/>
+                        <category android:name="android.intent.category.LAUNCHER"/>
+                        <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER"/>
+                    </intent-filter>
+                </activity-alias>
+                <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/ic_color" android:name="org.telegram.mdgram.Color" android:roundIcon="@mipmap/ic_color_round" android:targetActivity="org.telegram.ui.LaunchActivity">
+                    <intent-filter>
+                        <action android:name="android.intent.action.MAIN"/>
+                        <category android:name="android.intent.category.LAUNCHER"/>
+                        <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER"/>
+                    </intent-filter>
+                </activity-alias>
+                <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/icon_6_launcher" android:name="org.telegram.mdgram.VintageIcon" android:roundIcon="@mipmap/icon_6_launcher_round" android:targetActivity="org.telegram.ui.LaunchActivity">
+                    <intent-filter>
+                        <action android:name="android.intent.action.MAIN"/>
+                        <category android:name="android.intent.category.LAUNCHER"/>
+                        <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER"/>
+                    </intent-filter>
+                </activity-alias>
+                <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/icon_4_launcher" android:name="org.telegram.mdgram.AquaIcon" android:roundIcon="@mipmap/icon_4_launcher_round" android:targetActivity="org.telegram.ui.LaunchActivity">
+                    <intent-filter>
+                        <action android:name="android.intent.action.MAIN"/>
+                        <category android:name="android.intent.category.LAUNCHER"/>
+                        <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER"/>
+                    </intent-filter>
+                </activity-alias>
+                <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/icon_3_launcher" android:name="org.telegram.mdgram.PremiumIcon" android:roundIcon="@mipmap/icon_3_launcher_round" android:targetActivity="org.telegram.ui.LaunchActivity">
+                    <intent-filter>
+                        <action android:name="android.intent.action.MAIN"/>
+                        <category android:name="android.intent.category.LAUNCHER"/>
+                        <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER"/>
+                    </intent-filter>
+                </activity-alias>
+                <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/icon_5_launcher" android:name="org.telegram.mdgram.TurboIcon" android:roundIcon="@mipmap/icon_5_launcher_round" android:targetActivity="org.telegram.ui.LaunchActivity">
+                    <intent-filter>
+                        <action android:name="android.intent.action.MAIN"/>
+                        <category android:name="android.intent.category.LAUNCHER"/>
+                        <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER"/>
+                    </intent-filter>
+                </activity-alias>
+                <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/icon_2_launcher" android:name="org.telegram.mdgram.NoxIcon" android:roundIcon="@mipmap/icon_2_launcher_round" android:targetActivity="org.telegram.ui.LaunchActivity">
+                    <intent-filter>
+                        <action android:name="android.intent.action.MAIN"/>
+                        <category android:name="android.intent.category.LAUNCHER"/>
+                        <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER"/>
+                    </intent-filter>
+                </activity-alias>
+                <activity-alias android:exported="true" android:name="org.telegram.ui.CallsActivity" android:permission="android.permission.CALL_PHONE" android:targetActivity="org.telegram.ui.LaunchActivity">
+                    <intent-filter>
+                        <action android:name="android.intent.action.VIEW"/>
+                        <category android:name="android.intent.category.DEFAULT"/>
+                        <data android:mimeType="vnd.android.cursor.item/vnd.org.telegram.mdgram.android.call"/>
+                        <data android:mimeType="vnd.android.cursor.item/vnd.org.telegram.mdgram.android.call.video"/>
+                    </intent-filter>
+                </activity-alias>
+                <activity android:allowEmbedded="true" android:configChanges="keyboard|keyboardHidden|orientation|uiMode|screenSize" android:documentLaunchMode="always" android:hardwareAccelerated="@bool/useHardwareAcceleration" android:name="org.telegram.ui.BubbleActivity" android:resizeableActivity="true" android:windowSoftInputMode="adjustResize"/>
+                <activity android:configChanges="keyboard|keyboardHidden|orientation|uiMode|screenSize" android:excludeFromRecents="true" android:exported="true" android:hardwareAccelerated="@bool/useHardwareAcceleration" android:name="org.telegram.ui.ShareActivity" android:stateNotNeeded="true" android:theme="@style/Theme.TMessages.Transparent" android:windowSoftInputMode="adjustPan">
+                    <intent-filter android:icon="@mipmap/ic_launcher" android:priority="1" android:roundIcon="@mipmap/ic_launcher_round">
+                        <action android:name="android.intent.action.VIEW"/>
+                        <category android:name="android.intent.category.BROWSABLE"/>
+                        <category android:name="android.intent.category.DEFAULT"/>
+                        <data android:scheme="tgb"/>
+                    </intent-filter>
+                </activity>
+        <activity android:configChanges="keyboard|keyboardHidden|orientation|uiMode|screenSize" android:excludeFromRecents="true" android:name="org.telegram.ui.VoIPPermissionActivity" android:taskAffinity="org.telegram.mdgram.voip" android:theme="@style/Theme.TMessages.Transparent"/>
+        <activity android:configChanges="keyboard|keyboardHidden|orientation|uiMode|screenSize" android:excludeFromRecents="true" android:name="org.telegram.ui.VoIPFeedbackActivity" android:taskAffinity="org.telegram.mdgram.voip_feedback" android:theme="@style/Theme.TMessages.TransparentWithAlerts"/>
+        <provider android:authorities="org.telegram.mdgram.provider" android:exported="false" android:grantUriPermissions="true" android:name="androidx.core.content.FileProvider">
+                    <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/provider_paths"/>
+                </provider>
+        <provider android:authorities="org.telegram.mdgram.notification_image_provider" android:exported="false" android:grantUriPermissions="true" android:name="org.telegram.messenger.NotificationImageProvider"/>
+                <provider android:authorities="org.telegram.mdgram.call_sound_provider" android:exported="true" android:name="org.telegram.messenger.voip.CallNotificationSoundProvider"/>
+                <receiver android:exported="false" android:name="org.telegram.messenger.ChatsWidgetProvider">
+                    <meta-data android:name="android.appwidget.provider" android:resource="@xml/chats_widget_info"/>
+                    <intent-filter>
+                        <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                    </intent-filter>
+                </receiver>
+                <service android:exported="false" android:name="org.telegram.messenger.ChatsWidgetService" android:permission="android.permission.BIND_REMOTEVIEWS"/>
+                <receiver android:exported="false" android:name="org.telegram.messenger.ContactsWidgetProvider">
+                    <meta-data android:name="android.appwidget.provider" android:resource="@xml/contacts_widget_info"/>
+                    <intent-filter>
+                        <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                    </intent-filter>
+                </receiver>
+                <service android:exported="false" android:name="org.telegram.messenger.ContactsWidgetService" android:permission="android.permission.BIND_REMOTEVIEWS"/>
+                <service android:exported="false" android:name="org.telegram.messenger.FilesMigrationService"/>
+                <service android:exported="false" android:name="org.telegram.messenger.GcmPushListenerService">
+                    <intent-filter>
+                        <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                    </intent-filter>
+                </service>
+                <receiver android:enabled="false" android:exported="false" android:name="com.google.android.gms.measurement.AppMeasurementReceiver">
+                    <intent-filter>
+                        <action android:name="com.google.android.gms.measurement.UPLOAD"/>
+                    </intent-filter>
+                </receiver>
+                <service android:enabled="false" android:exported="false" android:name="com.google.android.gms.measurement.AppMeasurementService"/>
+                <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true"/>
+                <meta-data android:name="google_analytics_adid_collection_enabled" android:value="false"/>
+                <uses-library android:name="com.sec.android.app.multiwindow" android:required="false"/>
+                <meta-data android:name="com.sec.android.support.multiwindow" android:value="true"/>
+                <meta-data android:name="com.sec.android.multiwindow.DEFAULT_SIZE_W" android:value="632dp"/>
+                <meta-data android:name="com.sec.android.multiwindow.DEFAULT_SIZE_H" android:value="598dp"/>
+                <meta-data android:name="com.sec.android.multiwindow.MINIMUM_SIZE_W" android:value="632dp"/>
+                <meta-data android:name="com.sec.android.multiwindow.MINIMUM_SIZE_H" android:value="598dp"/>
+                <meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="AIzaSyBeOexQ_kI-jb3-KQyMubX38JXbDHphTtA"/>
+                <uses-library android:name="com.google.android.maps" android:required="false"/>
+                <meta-data android:name="com.google.android.gms.wallet.api.enabled" android:value="true"/>
+                <meta-data android:name="com.google.android.gms.car.notification.SmallIcon" android:resource="@drawable/ic_player"/>
+                <meta-data android:name="com.google.android.gms.car.application" android:resource="@xml/automotive_app_desc"/>
+                <meta-data android:name="com.google.android.gms.vision.DEPENDENCIES" android:value="face,barcode"/>
+                <meta-data android:name="android.max_aspect" android:value="2.5"/>
+                <meta-data android:name="com.google.android.actions" android:resource="@xml/actions"/>
+                <activity android:name="org.telegram.mdgram.Activies.Ab" android:theme="@style/ToolbarNo"/>
+                <activity android:name="org.telegram.mdgram.MDsettings.MDsetting"/>
+                <activity android:name="org.telegram.mdgram.fontStyle.BasePreferenceActivity" android:theme="@style/ToolbarNo"/>
+                <activity android:name="org.telegram.mdgram.fontStyle.UniversalStyle" android:theme="@style/ToolbarNo"/>
+                <activity android:name="org.telegram.mdgram.Activies.AbV" android:theme="@style/ToolbarNo"/>
+                <meta-data android:name="com.google.firebase.messaging.default_notification_color" android:resource="@color/divider"/>
+                <meta-data android:name="com.google.firebase.messaging.default_notification_channel_id" android:value="@string/AppName"/>
+                <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/notification"/>
+                <activity android:name="cat.ereza.customactivityoncrash.activity.DefaultErrorActivity" android:process=":error_activity"/>
+                <provider android:authorities="org.telegram.mdgram.customactivityoncrashinitprovider" android:exported="false" android:initOrder="101" android:name="cat.ereza.customactivityoncrash.provider.CaocInitProvider"/>
+                <activity android:configChanges="keyboardHidden|orientation|screenSize" android:name="com.blankj.utilcode.util.UtilsTransActivity4MainProcess" android:theme="@style/ActivityTranslucent" android:windowSoftInputMode="stateAlwaysHidden"/>
+                <activity android:configChanges="keyboardHidden|orientation|screenSize" android:multiprocess="true" android:name="com.blankj.utilcode.util.UtilsTransActivity" android:theme="@style/ActivityTranslucent" android:windowSoftInputMode="stateAlwaysHidden"/>
+                <provider android:authorities="org.telegram.mdgram.utilcode.fileprovider" android:exported="false" android:grantUriPermissions="true" android:name="com.blankj.utilcode.util.UtilsFileProvider">
+                    <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/util_code_provider_paths"/>
+                </provider>
+        <provider android:authorities="org.telegram.mdgram.firebaseinitprovider" android:directBootAware="true" android:exported="false" android:initOrder="100" android:name="com.google.firebase.provider.FirebaseInitProvider"/>
+                <provider android:authorities="org.telegram.mdgram.mlkitinitprovider" android:exported="false" android:initOrder="99" android:name="com.google.mlkit.common.internal.MlKitInitProvider"/>
+                <activity android:exported="false" android:name="com.google.android.gms.common.api.GoogleApiActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+                <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
+                <service android:exported="true" android:name="androidx.sharetarget.ChooserTargetServiceCompat" android:permission="android.permission.BIND_CHOOSER_TARGET_SERVICE">
+                    <intent-filter>
+                        <action android:name="android.service.chooser.ChooserTargetService"/>
+                    </intent-filter>
+                </service>
+                <provider android:authorities="org.telegram.mdgram.androidx-startup" android:exported="false" android:name="androidx.startup.InitializationProvider">
+                    <meta-data android:name="androidx.emoji2.text.EmojiCompatInitializer" android:value="androidx.startup"/>
+                    <meta-data android:name="androidx.lifecycle.ProcessLifecycleInitializer" android:value="androidx.startup"/>
+                </provider>
+
     </application>
 
 </manifest>

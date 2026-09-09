@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+  <style name="Base.Theme.AppCompat" parent="@style/Base.V22.Theme.AppCompat" />
+  <style name="Base.Theme.AppCompat.Light" parent="@style/Base.V22.Theme.AppCompat.Light" />
+  <style name="Base.V22.Theme.AppCompat" parent="@style/Base.V21.Theme.AppCompat">
+    <item name="actionModeShareDrawable">?android:actionModeShareDrawable</item>
+    <item name="editTextBackground">?android:editTextBackground</item>
+  </style>
+  <style name="Base.V22.Theme.AppCompat.Light" parent="@style/Base.V21.Theme.AppCompat.Light">
+    <item name="actionModeShareDrawable">?android:actionModeShareDrawable</item>
+    <item name="editTextBackground">?android:editTextBackground</item>
+  </style>
+  <style name="Settings_row" parent="@android:style/Widget.TextView">
+    <item name="android:textSize">16.0sp</item>
+    <item name="android:textColor">@color/list_item_title</item>
+    <item name="android:layout_gravity">left|center</item>
+    <item name="android:paddingLeft">@dimen/info_screen_padding</item>
+    <item name="android:paddingRight">@dimen/info_screen_padding</item>
+    <item name="android:layout_width">match_parent</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:singleLine">true</item>
+    <item name="android:paddingStart">@dimen/info_screen_padding</item>
+    <item name="android:paddingEnd">@dimen/info_screen_padding</item>
+    <item name="android:drawableTint">@color/conversations_text_gray</item>
+  </style>
+  <style name="Settings_row_more" parent="@style/Settings_row">
+    <item name="android:drawableRight">@drawable/chevron_right</item>
+    <item name="android:drawableEnd">@drawable/chevron_right</item>
+    <item name="android:drawableTint">@color/conversations_text_gray</item>
+  </style>
+</resources>
