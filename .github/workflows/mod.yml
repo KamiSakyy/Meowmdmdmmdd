@@ -38,17 +38,28 @@ jobs:
           java-version: "17"
 
       - name: Скачивание APK + apktool decode
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -e
           mkdir -p work mod && cd work
           curl -sL --retry 3 -A "Mozilla/5.0" -o MDGram-9.3.3.apk "$APKPURE_URL"
           echo "$APKPURE_SHA1  MDGram-9.3.3.apk" | sha1sum -c -
-          curl -sL --retry 3 -o apktool.jar "https://github.com/iBotPeaches/Apktool/releases/download/v2.9.3/apktool_2.9.3.jar"
+          # Свежий apktool (в старых сломана пересборка enum в styles.xml)
+          APKTOOL_TAG=$(gh release view --repo iBotPeaches/Apktool --json tagName --jq .tagName 2>/dev/null || echo v2.9.3)
+          echo "apktool tag: $APKTOOL_TAG"
+          curl -sL --retry 3 -o apktool.jar "https://github.com/iBotPeaches/Apktool/releases/download/${APKTOOL_TAG}/apktool_${APKTOOL_TAG#v}.jar" || true
+          if ! java -jar apktool.jar --version 2>/dev/null; then
+            echo "fallback на v2.9.3"
+            curl -sL --retry 3 -o apktool.jar "https://github.com/iBotPeaches/Apktool/releases/download/v2.9.3/apktool_2.9.3.jar"
+          fi
+          java -jar apktool.jar --version
           java -jar apktool.jar d -f -o apktool_out MDGram-9.3.3.apk
           {
             echo "# Мод MDGram 9.3.3 — отчёт сборки ($(date -u +%F\ %T) UTC)"
             echo ""
             echo "- APK: APKPure 9.3.3 (30275), SHA1 сверен: $APKPURE_SHA1"
+            echo "- apktool: $APKTOOL_TAG"
             echo "- Название: \`$NEW_NAME\`"
             echo "- Дизайн: не менялся. API-ключи: родные из APK."
           } > ../mod/BUILD_REPORT.md
@@ -58,7 +69,7 @@ jobs:
           set -e
           cd work
           cat > patch.py <<'PYEOF'
-          import re, pathlib
+          import re, pathlib, glob
           root = pathlib.Path("apktool_out")
           rep = []
           # P1: название во всех локалях
@@ -120,6 +131,15 @@ jobs:
               p3 = f"OK ({f}, {reg}=1)"
               break
           rep.append(f"P3 Ab.d0 OFICIAL: {p3}")
+          # DIAG: строки styles.xml со значениями 0/1 (подозрение на enum-ошибки aapt2)
+          diag = []
+          for f in glob.glob("apktool_out/res/values*/styles.xml"):
+              for i, ln in enumerate(open(f, encoding="utf-8", errors="ignore"), 1):
+                  if re.search(r'>[01]<', ln):
+                      diag.append(f"{f}:{i}: {ln.strip()[:220]}")
+          rep.append(f"DIAG styles со значениями 0/1: {len(diag)}")
+          for x in diag[:40]:
+              rep.append(f"  {x}")
           # Информация: все http-строки в smali (для следующей итерации, если наг останется)
           urls = set()
           for f in root.rglob("*.smali"):
