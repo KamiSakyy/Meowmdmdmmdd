@@ -63,11 +63,14 @@ def merge_values_names(src, dst, wanted):
         dt = ET.Element("resources")
         have = set()
         dst.parent.mkdir(parents=True, exist_ok=True)
+    defined = dir_defined(dst.parent)
     added = 0
     for e in want:
-        if e.get("name") not in have:
+        name = e.get("name")
+        if name not in have and (entry_type(e), name) not in defined:
             dt.append(e)
-            have.add(e.get("name"))
+            have.add(name)
+            defined.add((entry_type(e), name))
             added += 1
     if added:
         ET.indent(dt)
@@ -114,6 +117,27 @@ def merge_values(src, dst):
         ET.ElementTree(dt).write(dst, encoding="utf-8", xml_declaration=True)
         merged_values += added
     return added
+
+
+def dir_defined(values_dir):
+    """Все (тип, имя), уже объявленные в этом values*-каталоге.
+
+    Дубль внутри одной конфигурации ломает mergeReleaseResources, поэтому
+    перед добавлением записи проверяем не только файл, но и весь каталог.
+    """
+    defined = set()
+    if not values_dir.exists():
+        return defined
+    for f in values_dir.glob("*.xml"):
+        try:
+            root = ET.parse(f).getroot()
+        except ET.ParseError:
+            continue
+        for e in root:
+            name = e.get("name")
+            if name:
+                defined.add((entry_type(e), name))
+    return defined
 
 
 TYPE_MAP = {"string-array": "array", "integer-array": "array", "array": "array",

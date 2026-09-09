@@ -15,15 +15,15 @@
 | # | Фаза | Готово | Что осталось |
 |---|---|---|---|
 | 0 | Декомпиляция APK 9.3.3 (apktool + jadx) | **100 %** | — |
-| 1 | Карта обфускации (классы / ресурсы / методы) | **55 %** | методы и поля движка |
-| 2 | Порт МД-слоя Java (29 файлов) | **25 %** | 21 файл |
-| 3 | Порт 63 флагов движка (MDConfig) | **3 %** | найти точки хуков в чистом исходнике |
-| 4 | Ресурсы в `android/` (темы, шрифты, иконки, макеты) | **75 %** | темы .attheme в код, часть стилей |
-| 5 | Gradle-проект (структура, зависимости, манифест) | **55 %** | манифест МД, зависимости МД-библиотек |
-| 6 | Сборка APK (GitHub Actions) | **10 %** | первый успешный билд |
+| 1 | Карта обфускации (классы / ресурсы / методы) | **60 %** | методы и поля движка |
+| 2 | Порт МД-слоя Java (29 файлов) | **45 %** | движковые хуки, ChatHelper, обновлятор |
+| 3 | Порт 63 флагов движка (MDConfig) | **5 %** | найти точки хуков в чистом исходнике |
+| 4 | Ресурсы в проекте (темы, шрифты, иконки, макеты) | **95 %** | темы .attheme в код |
+| 5 | Gradle-проект (структура, зависимости, манифест) | **75 %** | манифест МД (активити-алиасы иконок) |
+| 6 | Сборка APK (GitHub Actions) | **70 %** | первая успешная компиляция Java |
 | 7 | Обновляемость (мерж апстрима, релизы) | **0 %** | стратегия обновлений |
 
-**ИТОГО: ~35 %**
+**ИТОГО: ~55 %**
 
 ## Что сделано
 
@@ -50,21 +50,36 @@
 - Экраны: `m55`=General, `d55`=Chats, `o55`=Home, `s55`=Others, `u55`=Update,
   `u73`=Filters, `y52`=DataSettings, `i0`=Notifications, `t0`=Privacy
 
-### Перенесено в `android/`
-- Ресурсы МД: 257 файлов (`md_*`, иконки-алиасы) + 403 записи `values*` + догнанные `@id/@dimen/@style/@color`
+### Перенесено в проект (android/ + MDGram/)
+- Ресурсы МД: 257 файлов (`md_*`, иконки-алиасы) + **15 871 values-запись**
+  (правило портера: res из APK = официальный res 9.3.3 + добавки МД → мержим всё, чего нет)
 - Ассеты: 58 файлов (55 шрифтов, темы `.attheme`)
-- Java МД-слоя: `Views/*`, `fontStyle/NoScrollListView`, `MDsettings/MDConfig`
+- Java МД-слоя: `Views/*`, `fontStyle/NoScrollListView`, `MDsettings/{MDConfig,MDsetting,MDCells}`
+- Экраны настроек МД (чистый Java на ячейках Telegram): `MDGeneralActivity` (порт m55),
+  `MDChatsActivity` (d55), `MDHomeActivity` (o55), `MDOthersActivity` (s55),
+  `MDUpdateActivity` (u55)
+- Новый инструмент `tools/md-screen.py` — разбор обфусцированного экрана (строки, поля MDConfig)
 
 ### Сборка
-- `.github/workflows/build.yml` — сборка `:TMessagesProj_App` в Actions (JDK 11, SDK/NDK 21, CMake 3.10.2)
-- Проблемы, решённые по ходу: `setup-android` падал → ставим SDK руками;
-  свежий `cmdline-tools` требует JDK 17 → берём `commandlinetools-linux-7583922`
+- `.github/workflows/build.yml` собирает **`MDGram/`** (`:app:assembleRelease`): JDK 11, AGP 7.4.2,
+  Gradle 7.6, готовые `.so` (без NDK), keystore в репо. Логи складываются в `build-logs/`.
+- Решено по ходу (каждая правка — отдельный ран Actions):
+  - `gradle-wrapper.jar` не в репе (`.gitignore` на `*.jar`) → генерируем на раннере;
+  - установка SDK через `sdkmanager` падала → используем предустановленный SDK раннера
+    (`/usr/local/lib/android/sdk`) и принимаем лицензии файлами в `licenses/`,
+    недостающие platform/build-tools AGP докачивает сам;
+  - `com.ruffian.library:RWidgetHelper` нет ни в одном репозитории → `MDView`/`MDImageView`
+    переведены на `AppCompatTextView`;
+  - `com.github.H07000223:FlycoTabLayout` → `io.github.h07000223:flycoTabLayout:3.0.0` (Maven Central);
+  - `com.jakewharton.processphoenix` → `com.jakewharton:process-phoenix:2.1.2`;
+  - `com.github.moxy-community:Moxy` — JitPack не отдаёт артефакт → временно убран
+    (вернётся вместе с экранами MD на MVP).
 
 ## Дальнейшие шаги
-1. Дождаться первого успешного билда базы (NDK-сборка ~30–60 мин).
-2. Порт экранов настроек МД: `MDsetting` + 5 подэкранов (General/Chats/Home/Others/Update).
-3. Порт `fontStyle/*`, `Activies/Ab|AbV`, `MDsettings/ChatHelper/*`.
-4. Манифест МД в `android/`: активности, алиасы иконок, провайдеры (CaocInitProvider и др.).
-5. Зависимости МД-библиотек в `TMessagesProj/build.gradle` (RWidgetHelper, BRVAH, Moxy, EventBus…).
-6. Про точку входа: `package` оставить `org.telegram.messenger`, `applicationId` → `org.telegram.mdgram`.
-7. Разбор и порт 63 флагов `MDConfig` на чистый движок.
+1. Добиться зелёной компиляции Java в ранe (править ошибки по логу `build-logs/`).
+2. Получить первый APK и выложить его артефактом/релизом.
+3. Порт движковых хуков (63 флага `MDConfig`) в чистый исходник.
+4. Порт `fontStyle/*`, `Activies/Ab|AbV`, `MDsettings/ChatHelper/*` (тут понадобятся
+   виджеты RTextView/RFrameLayout — перенести `com.ruffian.library` в исходники проекта).
+5. Манифест МД: активности, алиасы иконок, провайдеры (CaocInitProvider и др.).
+6. Мерж-стратегия обновлений: `android/` как чистая база, `MDGram/` — сборка с МД-слоем.
