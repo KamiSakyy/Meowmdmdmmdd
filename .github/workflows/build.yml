@@ -114,6 +114,25 @@ jobs:
           git pull --rebase || true
           git push || true
 
+      - name: APK в ветку и в handof (версия)
+        if: success()
+        run: |
+          set -e
+          N=$(cat handof/VERSION 2>/dev/null | tr -d ' \n')
+          [ -z "$N" ] && N=1
+          mkdir -p apk handof
+          for f in MDGram/app/build/outputs/apk/release/*.apk; do
+            cp "$f" "apk/MDGram-9.3.3.apk"
+            cp "$f" "handof/MDGram-9.3.3-v${N}.apk"
+          done
+          ls -la apk/ handof/
+          git config user.name  "arena-agent"
+          git config user.email "agent@arena.ai"
+          git add -f apk/ handof/ || true
+          git commit -m "APK 9.3.3 v${N} в apk/ и handof/" || echo "нечего коммитить"
+          git pull --rebase || true
+          git push || true
+
       - name: APK
         if: always()
         uses: actions/upload-artifact@v4
