@@ -360,7 +360,10 @@ public class VideoTimelineView extends View {
         synchronized (sync) {
             try {
                 if (mediaMetadataRetriever != null) {
-                    mediaMetadataRetriever.release();
+                    try {
+                        mediaMetadataRetriever.release();
+                    } catch (Exception ignore) {
+                    }
                     mediaMetadataRetriever = null;
                 }
             } catch (Exception e) {

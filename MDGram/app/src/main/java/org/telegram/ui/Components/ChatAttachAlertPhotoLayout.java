@@ -2145,7 +2145,10 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
             } finally {
                 try {
                     if (mediaMetadataRetriever != null) {
-                        mediaMetadataRetriever.release();
+                        try {
+                            mediaMetadataRetriever.release();
+                        } catch (Exception ignore) {
+                        }
                     }
                 } catch (Exception e) {
                     FileLog.e(e);
