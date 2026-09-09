@@ -132,16 +132,20 @@ jobs:
           print("\n".join(rep))
           pathlib.Path("../mod/PATCH_REPORT.txt").write_text("\n".join(rep), encoding="utf-8")
           PYEOF
-          python3 patch.py | tee -a ../mod/BUILD_REPORT.md
+          python3 patch.py | tee ../mod/PATCH_REPORT.txt
           {
             echo ""
-            echo "## Патчи — детали в mod/PATCH_REPORT.txt"
+            echo "## Патчи"
+            cat ../mod/PATCH_REPORT.txt
           } >> ../mod/BUILD_REPORT.md
 
       - name: Пересборка (apktool b)
         run: |
+          set +e
           cd work
           java -jar apktool.jar b -o MDGram-9.3.3-mod-unsigned.apk apktool_out > build.log 2>&1
+          echo "exit code: $?" >> build.log
+          ls -la >> build.log 2>&1
           if [ -f MDGram-9.3.3-mod-unsigned.apk ]; then
             echo "BUILD_OK=true" >> "$GITHUB_ENV"
             echo "Пересборка: OK ($(stat -c%s MDGram-9.3.3-mod-unsigned.apk) байт)"
@@ -149,7 +153,8 @@ jobs:
             echo "BUILD_OK=false" >> "$GITHUB_ENV"
             echo "Пересборка: ПРОВАЛ"
           fi
-          { echo ""; echo "## Пересборка"; tail -15 build.log; } >> ../mod/BUILD_REPORT.md
+          cp build.log ../mod/build.log
+          { echo ""; echo "## Пересборка"; tail -30 build.log; } >> ../mod/BUILD_REPORT.md
           exit 0
 
       - name: Подпись (наш ключ) + проверка
@@ -192,7 +197,7 @@ jobs:
             echo "- Сначала УДАЛИ оригинальный MDGram (подпись другая — поверх не встанет)."
             echo "- Потом ставь MDGram-9.3.3-mod.apk из релиза mod-9.3.3."
           } >> ../mod/BUILD_REPORT.md
-          cat ../mod/BUILD_REPORT.md | tail -25
+          tail -25 ../mod/BUILD_REPORT.md
 
       - name: Коммит отчёта и ключа в ветку
         if: always()
@@ -200,11 +205,13 @@ jobs:
           set -e
           git config user.name "arena-decompile-bot"
           git config user.email "arena-decompile-bot@users.noreply.github.com"
-          git add mod mod-keystore 2>/dev/null || true
+          git add mod || true
+          if [ -d mod-keystore ]; then git add mod-keystore || true; fi
+          git status --short || true
           if git diff --cached --quiet; then
             echo "Изменений нет"
           else
-            git commit -m "Мод MDGram 9.3.3: отчёт сборки ($(date -u +%F))"
+            git commit -m "Мод MDGram 9.3.3: отчёт сборки (BUILD_OK=${BUILD_OK:-unset}, $(date -u +%F))"
             git push origin "HEAD:${{ github.ref_name }}"
           fi
 
@@ -231,7 +238,7 @@ jobs:
           fi
 
       - name: Статус сборки
-        if: env.BUILD_OK != 'true'
+        if: always() && env.BUILD_OK != 'true'
         run: |
-          echo "СБОРКА ПРОВАЛЕНА — смотри mod/BUILD_REPORT.md"
+          echo "СБОРКА ПРОВАЛЕНА — смотри mod/BUILD_REPORT.md и mod/build.log"
           exit 1
