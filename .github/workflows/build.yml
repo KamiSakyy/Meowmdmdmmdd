@@ -102,10 +102,14 @@ jobs:
           if-no-files-found: warn
 
   emulator:
-    name: Проверка APK в эмуляторе
-    runs-on: ubuntu-latest
+    name: Проверка APK в эмуляторе (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     needs: build
     timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
 
     steps:
       - name: Код
@@ -124,39 +128,77 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Прогон в эмуляторе (API 30, Google APIs)
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 30
-          target: google_apis
-          arch: x86_64
-          profile: pixel_2
-          disable-animations: true
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          script: |
-            set -x
-            adb devices
-            APK=$(ls apk/*.apk | head -1)
-            echo "ставим $APK"
-            adb install -r "$APK"
-            adb logcat -c
-            adb shell monkey -p org.telegram.mdgram -c android.intent.category.LAUNCHER 1
-            sleep 60
-            echo "=== процесс ==="
-            adb shell pidof org.telegram.mdgram || echo "ПРОЦЕСС НЕ НАЙДЕН"
-            echo "=== краши ==="
-            adb logcat -d | grep -iE "FATAL EXCEPTION|AndroidRuntime|force finishing|mdgram.*(Error|Exception)" | head -40 || echo "крашей нет"
-            echo "=== список окон ==="
-            adb shell dumpsys window | grep -E "mCurrentFocus|mFocusedApp" | head -4
-            mkdir -p out
-            adb exec-out screencap -p > out/screen.png
-            adb logcat -d > out/logcat.txt
-            ls -la out
+      - name: Прогон в эмуляторе (свой запуск AVD)
+        id: emu
+        continue-on-error: true
+        run: |
+          set +e
+          mkdir -p out
+          LOG=out/emu.log
+          echo "=== ОС: $(uname -a) ==="
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          SDKMAN="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          [ -x "$SDKMAN" ] || SDKMAN="$(dirname $(find $ANDROID_HOME -name sdkmanager -type f 2>/dev/null | head -1))"
+          echo "sdkmanager=$SDKMAN"
+          {
+            yes | "$SDKMAN" --licenses > /dev/null 2>&1
+            "$SDKMAN" --install "platform-tools" "platforms;android-30" \
+                                "emulator" "system-images;android-30;google_apis;x86_64" 2>&1 | tail -10
+            echo "== создаём AVD =="
+            echo no | "$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager" create avd \
+                -n mdtest -k "system-images;android-30;google_apis;x86_64" \
+                --device "pixel_2" --force 2>&1 | tail -5
+          } 2>&1 | tee -a "$LOG"
+          EXTRA=""
+          [ "$(uname)" != "Darwin" ] && EXTRA="-no-accel"
+          "$ANDROID_HOME/emulator/emulator" -avd mdtest -no-window $EXTRA \
+              -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none \
+              -partition-size 2048 > out/emulator.log 2>&1 &
+          export PATH="$ANDROID_HOME/platform-tools:$PATH"
+          timeout 300 adb wait-for-device || echo "устройство не появилось за 300 с"
+          echo "adb devices: $(adb devices | tail -2)" | tee -a "$LOG"
+          i=0
+          while [ "$i" -lt 120 ]; do
+            boot=$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')
+            [ "$boot" = "1" ] && break
+            i=$((i+1)); sleep 5
+          done
+          boot=$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')
+          echo "boot_completed=$boot (попыток $i)" | tee -a "$LOG"
+          APK=$(ls apk/*.apk | head -1)
+          echo "== ставим $APK ==" | tee -a "$LOG"
+          timeout 900 adb install -r "$APK" 2>&1 | tee -a "$LOG"
+          echo "== запуск приложения ==" | tee -a "$LOG"
+          adb logcat -c
+          adb shell monkey -p org.telegram.mdgram -c android.intent.category.LAUNCHER 1 2>&1 | tee -a "$LOG"
+          sleep 120
+          echo "== процесс ==" | tee -a "$LOG"
+          adb shell pidof org.telegram.mdgram 2>&1 | tee -a "$LOG" || echo "ПРОЦЕСС НЕ НАЙДЕН" | tee -a "$LOG"
+          echo "== окно ==" | tee -a "$LOG"
+          adb shell dumpsys window 2>/dev/null | grep -E "mCurrentFocus|mFocusedApp" | head -4 | tee -a "$LOG"
+          echo "== пакеты mdgram ==" | tee -a "$LOG"
+          adb shell pm list packages 2>/dev/null | grep mdgram | tee -a "$LOG"
+          echo "== краши ==" | tee -a "$LOG"
+          adb logcat -d 2>/dev/null | grep -iE "FATAL EXCEPTION|AndroidRuntime|force finishing" | head -30 | tee -a "$LOG" || echo "крашей нет" | tee -a "$LOG"
+          echo "== хвост logcat ==" | tee -a "$LOG"
+          adb logcat -d -t 120 2>/dev/null | tee -a "$LOG"
+          adb exec-out screencap -p > out/screen.png 2>/dev/null || echo "скриншот не снят" | tee -a "$LOG"
+          ls -la out | tee -a "$LOG"
+          # сохраняем результат сразу отсюда, иначе логи пропадут
+          mkdir -p emulator-logs
+          cp out/* emulator-logs/ 2>/dev/null || true
+          git config user.name  "arena-agent"
+          git config user.email "agent@arena.ai"
+          git add -f emulator-logs || true
+          git commit -m "проверка APK в эмуляторе (${{ matrix.os }}): логи и скриншот (ран ${{ github.run_number }})" || echo "нечего коммитить"
+          git pull --rebase || true
+          git push || true
+          sleep 3
 
       - name: Скриншот и логи
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: emulator-check-${{ github.run_number }}
+          name: emulator-check-${{ matrix.os }}-${{ github.run_number }}
           path: out/
           if-no-files-found: warn
