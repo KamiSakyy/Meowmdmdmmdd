@@ -36,7 +36,7 @@ jobs:
           ref: ${{ github.ref_name }}
 
       - name: Java 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "17"
@@ -48,7 +48,7 @@ jobs:
           SRC="${{ inputs.apk_source }}"
           [ -z "$SRC" ] && SRC="apkpure"
           echo "Источник: $SRC"
-          echo "APK_SRC=$SRC" >> "$GITHUB_ENV"
+          echo "$SRC" > .apk_source
           if [ "$SRC" = "aptoide" ]; then
             curl -sL --retry 3 -A "Mozilla/5.0" -o MDGram-9.3.3.apk "$APTOIDE_URL"
             echo "$APTOIDE_MD5  MDGram-9.3.3.apk" | md5sum -c -
@@ -89,13 +89,15 @@ jobs:
         run: |
           set -e
           cd work
+          APK_SRC="$(cat .apk_source 2>/dev/null || echo apkpure)"
+          echo "Источник: $APK_SRC"
           OUT=../decompiled
           rm -rf "$OUT"
           mkdir -p "$OUT/themes" "$OUT/java" "$OUT/smali-mdgram"
           {
             echo "# MDGram 9.3.3 — откуда взят APK"
             echo ""
-            echo "- Источник: ${{ inputs.apk_source }} (стороннее зеркало, НЕ GitHub)"
+            echo "- Источник: $APK_SRC (стороннее зеркало, НЕ GitHub)"
             echo "- APKPure URL: \`$APKPURE_URL\`"
             echo "- Файл: MDGram-9.3.3.apk"
             echo "- Размер: $(stat -c%s MDGram-9.3.3.apk) байт"
@@ -186,10 +188,11 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd work
+          APK_SRC="$(cat .apk_source 2>/dev/null || echo apkpure)"
           if gh release view apk-9.3.3 >/dev/null 2>&1; then
             gh release upload apk-9.3.3 MDGram-9.3.3.apk --clobber
           else
             gh release create apk-9.3.3 MDGram-9.3.3.apk \
-              --title "MDGram 9.3.3 APK (зеркало ${{ inputs.apk_source }})" \
-              --notes "MDGram Messenger 9.3.3 (30275), скачан со стороннего зеркала (${{ inputs.apk_source }}), НЕ с GitHub. SHA1 сверен. Декомпиляция — в папке decompiled/ ветки и в артефактах выше."
+              --title "MDGram 9.3.3 APK (зеркало $APK_SRC)" \
+              --notes "MDGram Messenger 9.3.3 (30275), скачан со стороннего зеркала ($APK_SRC), НЕ с GitHub. SHA1 сверен. Декомпиляция — в папке decompiled/ ветки и в артефактах выше."
           fi
