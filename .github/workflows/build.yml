@@ -70,6 +70,24 @@ jobs:
           chmod +x gradlew
           ls -la gradle/wrapper/
 
+      - name: Родные .so из APK MDGram 9.3.3
+        run: |
+          set +e
+          URL="https://d.apkpure.net/b/APK/org.telegram.mdgram?versionCode=30275&nc=arm64-v8a%2Carmeabi-v7a%2Cx86%2Cx86_64&sv=21"
+          curl -sL --retry 5 --max-time 600 -A "Mozilla/5.0" -o /tmp/md-orig.apk "$URL"
+          echo "скачано: $(stat -c%s /tmp/md-orig.apk 2>/dev/null) байт"
+          if [ -s /tmp/md-orig.apk ] && unzip -l /tmp/md-orig.apk | grep -q "lib/x86_64/libtmessages"; then
+            rm -rf /tmp/mdlib && mkdir -p /tmp/mdlib
+            unzip -q -o /tmp/md-orig.apk "lib/*" -d /tmp/mdlib
+            rm -rf MDGram/app/src/main/jniLibs
+            mv /tmp/mdlib/lib MDGram/app/src/main/jniLibs
+            echo "=== взяты родные библиотеки ==="
+            ls -la MDGram/app/src/main/jniLibs/*/ | head -20
+            strings -a MDGram/app/src/main/jniLibs/x86_64/libtmessages*.so 2>/dev/null | grep -m3 "ConnectionsManager_native_1setJava" || echo "(методы регистрируются через RegisterNatives)"
+          else
+            echo "НЕ удалось скачать исходный APK — оставляем текущие .so"
+          fi
+
       - name: Сборка APK
         id: gradle
         continue-on-error: true
