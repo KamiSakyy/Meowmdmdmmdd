@@ -10,3 +10,12 @@ jadx_out/
 *.tar.gz
 # Полный декомпил в ветке (source/) — НЕ игнорировать
 !source/jadx/
+# Каталог версий исходников и APK
+!handof/
+!handof/**
+# Gradle wrapper нужен для CI
+!MDGram/gradle/wrapper/gradle-wrapper.jar
+!android/gradle/wrapper/gradle-wrapper.jar
+# APK из CI, если кладётся в apk/
+!apk/
+!apk/**
