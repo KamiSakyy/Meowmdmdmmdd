@@ -149,6 +149,7 @@ jobs:
       - name: Коммит результата в ветку
         run: |
           set -e
+          APK_SRC="$(cat work/.apk_source 2>/dev/null || echo apkpure)"
           git config user.name "arena-decompile-bot"
           git config user.email "arena-decompile-bot@users.noreply.github.com"
           git add decompiled
