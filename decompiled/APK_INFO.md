@@ -1,6 +1,6 @@
 # MDGram 9.3.3 — откуда взят APK
 
-- Источник:  (стороннее зеркало, НЕ GitHub)
+- Источник: apkpure (стороннее зеркало, НЕ GitHub)
 - APKPure URL: `https://d.apkpure.net/b/APK/org.telegram.mdgram?versionCode=30275&nc=arm64-v8a%2Carmeabi-v7a%2Cx86%2Cx86_64&sv=21`
 - Файл: MDGram-9.3.3.apk
 - Размер: 79302049 байт
