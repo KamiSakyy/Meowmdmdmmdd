@@ -79,6 +79,21 @@ def merge_values_names(src, dst, wanted):
     return added
 
 
+def load_stripped():
+    """Имена, которые нельзя возвращать в res: они приходят из AAR-библиотек.
+
+    Список пополняется скриптом strip-attrs.py по логу сборки — иначе портер
+    при следующем прогоне снова добавит эти attr и сломает мерж ресурсов.
+    """
+    f = ROOT / "tools" / "stripped-attrs.txt"
+    if not f.exists():
+        return set()
+    return {line.strip() for line in f.read_text(encoding="utf-8").splitlines() if line.strip()}
+
+
+STRIPPED = load_stripped()
+
+
 def merge_values(src, dst):
     """Добавляет в dst все записи из src, которых там нет.
 
@@ -93,7 +108,8 @@ def merge_values(src, dst):
         st = ET.parse(src).getroot()
     except ET.ParseError:
         return 0
-    want = [e for e in list(st) if e.get("name")]
+    want = [e for e in list(st)
+            if e.get("name") and (e.tag != "attr" or e.get("name") not in STRIPPED)]
     if not want:
         return 0
     if dst.exists():
