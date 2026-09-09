@@ -123,10 +123,14 @@ jobs:
           gh release upload "$TAG" apk/MDGram-9.3.3.apk --clobber || true
 
   emulator:
-    name: Проверка APK в эмуляторе
-    runs-on: ubuntu-latest
+    name: Проверка APK в эмуляторе (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     needs: build
-    timeout-minutes: 45
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
 
     steps:
       - name: Код
@@ -166,14 +170,16 @@ jobs:
               -n mdtest -k "system-images;android-30;google_apis;x86_64" \
               --device "pixel_2" --force 2>&1 | tail -10
           echo "== старт эмулятора =="
-          "$ANDROID_HOME/emulator/emulator" -avd mdtest -no-window -no-accel \
+          EXTRA=""
+          if [ "$(uname)" != "Darwin" ]; then EXTRA="-no-accel"; fi
+          "$ANDROID_HOME/emulator/emulator" -avd mdtest -no-window $EXTRA \
               -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none \
               -partition-size 2048 > out/emulator.log 2>&1 &
           export PATH="$ANDROID_HOME/platform-tools:$PATH"
-          adb wait-for-device
+          timeout 240 adb wait-for-device || echo "устройство не появилось за 240 c" 
           echo "устройство подключено: $(adb devices | tail -2)"
           i=0
-          while [ "$i" -lt 180 ]; do
+          while [ "$i" -lt 120 ]; do
             boot=$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')
             [ "$boot" = "1" ] && break
             i=$((i+1)); sleep 5
@@ -181,7 +187,7 @@ jobs:
           echo "boot_completed=$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r') (попыток: $i)"
           echo "== установка APK =="
           APK=$(ls apk/*.apk | head -1)
-          adb install -r "$APK"
+          timeout 900 adb install -r "$APK"
           echo "== запуск приложения =="
           adb logcat -c
           adb shell monkey -p org.telegram.mdgram -c android.intent.category.LAUNCHER 1
