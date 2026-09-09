@@ -214,6 +214,14 @@ jobs:
           done
           boot=$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')
           echo "boot_completed=$boot (попыток $i)" | tee -a "$LOG"
+          echo "== ждём PackageManager ==" | tee -a "$LOG"
+          j=0
+          while [ "$j" -lt 60 ]; do
+            if adb shell pm list packages 2>/dev/null | grep -q "com.android.settings"; then break; fi
+            j=$((j+1)); sleep 5
+          done
+          echo "PackageManager готов (попыток $j)" | tee -a "$LOG"
+          sleep 20
           APK=$(ls apk/*.apk | head -1)
           echo "== ставим $APK ==" | tee -a "$LOG"
           timeout 900 adb push "$APK" /data/local/tmp/md.apk 2>&1 | tee -a "$LOG"
