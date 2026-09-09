@@ -5,7 +5,7 @@ plugins {
 // MDGram Revival: движок Telegram 9.3.3 + МД-слой. Нативка — готовые .so (без NDK).
 
 android {
-    namespace 'org.telegram.mdgram'
+    namespace 'org.telegram.messenger'
     compileSdk 33
 
     defaultConfig {
