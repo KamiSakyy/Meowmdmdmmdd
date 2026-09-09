@@ -70,6 +70,14 @@ jobs:
           chmod +x gradlew
           ls -la gradle/wrapper/
 
+      - name: Исходники C++ для NDK-сборки
+        run: |
+          set -e
+          rm -rf MDGram/app/src/main/jni MDGram/app/src/main/jniLibs
+          cp -r android/TMessagesProj/jni MDGram/app/src/main/jni
+          echo "скопировано: $(du -sh MDGram/app/src/main/jni | cut -f1)"
+          ls MDGram/app/src/main/jni | head -8
+
       - name: Сравнение .so с официальной Telegram 9.3.3
         run: |
           set +e

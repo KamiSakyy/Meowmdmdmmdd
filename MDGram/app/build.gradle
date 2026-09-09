@@ -7,6 +7,13 @@ plugins {
 android {
     namespace 'org.telegram.messenger'
     compileSdk 33
+    ndkVersion "21.4.7075529"
+
+    externalNativeBuild {
+        cmake {
+            path 'jni/CMakeLists.txt'
+        }
+    }
 
     defaultConfig {
         applicationId 'org.telegram.mdgram'
@@ -15,6 +22,11 @@ android {
         versionCode 30275
         versionName '9.3.3'
         multiDexEnabled true
+        externalNativeBuild {
+            cmake {
+                arguments '-DANDROID_STL=c++_static', '-DANDROID_PLATFORM=android-21'
+            }
+        }
         multiDexKeepFile file('multidex-config.txt')
         // поля, которые ждёт BuildVars из апстрима
         buildConfigField 'boolean', 'DEBUG_VERSION', 'false'
