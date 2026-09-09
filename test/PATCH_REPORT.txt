@@ -1,0 +1,4 @@
+P1 название: замен=8, файлов=8
+P2 OTA: ОТКЛЮЧЁН (исходные URL на месте)
+P3 Ab.d0 OFICIAL: OK (apktool_out/smali_classes2/org/telegram/mdgram/Activies/Ab.smali, v1=1)
+P6 p2()=true: OK (apktool_out/smali_classes2/org/telegram/ui/LaunchActivity.smali)

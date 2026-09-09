@@ -1,0 +1,2 @@
+BEFORE .so всего: 8, STORED: 0, DEFLATED: 8
+AFTER .so всего: 8, STORED: 8, DEFLATED: 0
