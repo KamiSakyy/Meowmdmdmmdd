@@ -3,15 +3,15 @@ package org.telegram.mdgram.Views;
 import android.content.Context;
 import android.util.AttributeSet;
 
-import com.ruffian.library.widget.RTextView;
+import androidx.appcompat.widget.AppCompatTextView;
 
 import org.telegram.ui.ActionBar.Theme;
 
 /**
  * MDGram: цветная «плашка» (RTextView с фоном profile_title).
- * Требует зависимость com.ruffian.library:RWidgetHelper.
+ * Библиотека RWidgetHelper в Maven недоступна — фон ставим напрямую.
  */
-public class MDView extends RTextView {
+public class MDView extends AppCompatTextView {
 
     public MDView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
@@ -19,6 +19,6 @@ public class MDView extends RTextView {
     }
 
     private void init() {
-        getHelper().setBackgroundColorNormal(Theme.getColor("profile_title"));
+        setBackgroundColor(Theme.getColor("profile_title"));
     }
 }
