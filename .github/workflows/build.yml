@@ -182,7 +182,8 @@ jobs:
           [ "$(uname)" != "Darwin" ] && EXTRA="-no-accel"
           "$ANDROID_HOME/emulator/emulator" -avd "$AVDNAME" -no-window $EXTRA \
               -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none \
-              -partition-size 2048 > out/emulator.log 2>&1 &
+              -memory 3072 -partition-size 4096 -no-snapshot -wipe-data \
+              > out/emulator.log 2>&1 &
           export PATH="$ANDROID_HOME/platform-tools:$PATH"
           timeout 300 adb wait-for-device || echo "устройство не появилось за 300 с"
           echo "adb devices: $(adb devices | tail -2)" | tee -a "$LOG"
@@ -196,7 +197,9 @@ jobs:
           echo "boot_completed=$boot (попыток $i)" | tee -a "$LOG"
           APK=$(ls apk/*.apk | head -1)
           echo "== ставим $APK ==" | tee -a "$LOG"
-          timeout 900 adb install -r "$APK" 2>&1 | tee -a "$LOG"
+          timeout 900 adb push "$APK" /data/local/tmp/md.apk 2>&1 | tee -a "$LOG"
+          timeout 900 adb shell pm install -r -t /data/local/tmp/md.apk 2>&1 | tee -a "$LOG"
+          adb shell pm list packages 2>/dev/null | grep mdgram | tee -a "$LOG"
           echo "== запуск приложения ==" | tee -a "$LOG"
           adb logcat -c
           adb shell monkey -p org.telegram.mdgram -c android.intent.category.LAUNCHER 1 2>&1 | tee -a "$LOG"
