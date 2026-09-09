@@ -156,30 +156,40 @@ jobs:
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           script: |
-            set -x
             mkdir -p out
-            adb wait-for-device
-            i=0
-            while [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" != "1" ]; do
-              i=$((i+1)); [ $i -gt 120 ] && break; sleep 5
-            done
-            echo " boot_completed=$(adb shell getprop sys.boot_completed | tr -d '\r')"
-            adb devices
             APK=$(ls apk/*.apk | head -1)
-            echo "ставим $APK"
-            adb install -r "$APK" 2>&1 | tee out/install.txt
-            adb logcat -c
-            adb shell monkey -p org.telegram.mdgram -c android.intent.category.LAUNCHER 1 2>&1 | tee out/monkey.txt
-            sleep 90
-            echo "=== процесс ==="
-            adb shell pidof org.telegram.mdgram || echo "ПРОЦЕСС НЕ НАЙДЕН"
-            echo "=== окно ==="
-            adb shell dumpsys window | grep -E "mCurrentFocus|mFocusedApp" | head -4
-            echo "=== краши ==="
-            adb logcat -d | grep -iE "FATAL EXCEPTION|AndroidRuntime|force finishing" | head -40 || echo "крашей нет"
-            adb exec-out screencap -p > out/screen.png
-            adb logcat -d > out/logcat.txt
+            {
+              set -x
+              echo "APK=$APK"
+              adb devices
+              adb install -r "$APK"
+              adb logcat -c
+              adb shell monkey -p org.telegram.mdgram -c android.intent.category.LAUNCHER 1
+              sleep 90
+              echo "=== процесс ==="
+              adb shell pidof org.telegram.mdgram || echo "ПРОЦЕСС НЕ НАЙДЕН"
+              echo "=== текущее окно ==="
+              adb shell dumpsys window | grep -E "mCurrentFocus|mFocusedApp" | head -4
+              echo "=== список пакетов ==="
+              adb shell pm list packages | grep mdgram
+              echo "=== краши ==="
+              adb logcat -d | grep -iE "FATAL EXCEPTION|AndroidRuntime|force finishing" | head -40 || echo "крашей нет"
+              echo "=== хвост logcat ==="
+              adb logcat -d -t 200
+            } > out/emu.log 2>&1 || true
+            adb exec-out screencap -p > out/screen.png 2>/dev/null || true
             ls -la out
+            head -80 out/emu.log || true
+            # логи проверки сохраняем прямо отсюда: после действия рабочая папка чистится
+            cd "$GITHUB_WORKSPACE"
+            mkdir -p emulator-logs
+            cp out/* emulator-logs/ 2>/dev/null || true
+            git config user.name  "arena-agent"
+            git config user.email "agent@arena.ai"
+            git add -f emulator-logs || true
+            git commit -m "проверка в эмуляторе: логи и скриншот (ран ${GITHUB_RUN_NUMBER})" || echo "нечего коммитить"
+            git pull --rebase || true
+            git push || true
 
       - name: Скриншот и логи
         if: always()
