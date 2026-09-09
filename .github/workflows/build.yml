@@ -79,6 +79,17 @@ jobs:
           } > "$LOG" 2>&1
           echo "exit=$?" >> "$LOG"
 
+      - name: Gradle wrapper (в репе его нет: .gitignore скрывает *.jar)
+        working-directory: android
+        run: |
+          if [ ! -f gradle/wrapper/gradle-wrapper.jar ]; then
+            curl -sSL -o /tmp/gradle.zip https://services.gradle.org/distributions/gradle-7.0.2-bin.zip
+            unzip -q /tmp/gradle.zip -d /tmp/gradle-dist
+            /tmp/gradle-dist/gradle-7.0.2/bin/gradle wrapper \
+              --gradle-version 7.0.2 --distribution-type bin --no-daemon
+          fi
+          ls -la gradle/wrapper
+
       - name: Сборка APK
         id: gradle
         continue-on-error: true
@@ -112,7 +123,8 @@ jobs:
           git config user.name "Arena Agent"
           git config user.email "agent@arena.ai"
           git add build-logs
-          git commit -m "build-logs: прогон ${{ github.run_number }}" || echo "нечего коммитить"
+          git add -f android/gradle/wrapper/gradle-wrapper.jar 2>/dev/null || true
+          git commit -m "build-logs: прогон ${{ github.run_number }} (+ gradle-wrapper.jar)" || echo "нечего коммитить"
           for i in 1 2 3; do
             git pull --rebase -q origin arena/01a0865a-meowmdmdmmdd && break || sleep 5
           done
