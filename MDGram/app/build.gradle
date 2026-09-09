@@ -15,6 +15,10 @@ android {
         versionCode 30275
         versionName '9.3.3'
         multiDexEnabled true
+        // поля, которые ждёт BuildVars из апстрима
+        buildConfigField 'boolean', 'DEBUG_VERSION', 'false'
+        buildConfigField 'boolean', 'DEBUG_PRIVATE_VERSION', 'false'
+        buildConfigField 'boolean', 'BUILD_HOST_IS_WINDOWS', 'false'
         vectorDrawables {
             useSupportLibrary true
         }
