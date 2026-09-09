@@ -1,0 +1,11 @@
+## Файлы апдейтера
+- smali-smali_classes2-ska.smali (14868b)
+- smali-smali_classes2-ska_a.smali (5558b)
+- smali-smali_classes2-pka.smali (16060b)
+- smali-smali_classes2-pka_a.smali (7234b)
+- smali-smali_classes2-ip6.smali (19008b)
+- smali-smali_classes2-ip6_b.smali (6108b)
+- smali-smali_classes2-ip6_a.smali (2008b)
+- java-defpackage-ska.java (5923b)
+- java-defpackage-pka.java (6760b)
+- java-defpackage-ip6.java (7505b)
