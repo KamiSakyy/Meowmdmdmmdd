@@ -1,4 +1,4 @@
-# Мод MDGram 9.3.3 — отчёт сборки (2026-09-09 10:04:49 UTC)
+# Мод MDGram 9.3.3 — отчёт сборки (2026-09-09 10:07:47 UTC)
 
 - APK: APKPure 9.3.3 (30275), SHA1 сверен: 4fa5ae96754b910045d1d84dac7a8261c59793e9
 - apktool: v3.0.3
@@ -51,11 +51,11 @@ I: Importing unknown files...
 I: Built apk into: MDGram-9.3.3-mod-unsigned.apk
 exit code: 0
 total 170016
-drwxr-xr-x  3 runner runner     4096 Sep  9 10:05 .
-drwxr-xr-x  7 runner runner     4096 Sep  9 10:04 ..
--rw-r--r--  1 runner runner 79289406 Sep  9 10:05 MDGram-9.3.3-mod-unsigned.apk
--rw-r--r--  1 runner runner 79302049 Sep  9 10:04 MDGram-9.3.3.apk
--rw-r--r--  1 runner runner 15478013 Sep  9 10:04 apktool.jar
-drwxr-xr-x 12 runner runner     4096 Sep  9 10:05 apktool_out
--rw-r--r--  1 runner runner      459 Sep  9 10:05 build.log
--rw-r--r--  1 runner runner     3868 Sep  9 10:04 patch.py
+drwxr-xr-x  3 runner runner     4096 Sep  9 10:08 .
+drwxr-xr-x  8 runner runner     4096 Sep  9 10:07 ..
+-rw-r--r--  1 runner runner 79289406 Sep  9 10:08 MDGram-9.3.3-mod-unsigned.apk
+-rw-r--r--  1 runner runner 79302049 Sep  9 10:07 MDGram-9.3.3.apk
+-rw-r--r--  1 runner runner 15478013 Sep  9 10:07 apktool.jar
+drwxr-xr-x 12 runner runner     4096 Sep  9 10:08 apktool_out
+-rw-r--r--  1 runner runner      459 Sep  9 10:08 build.log
+-rw-r--r--  1 runner runner     3868 Sep  9 10:07 patch.py
