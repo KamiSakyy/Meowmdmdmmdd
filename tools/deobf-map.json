@@ -1,0 +1,1760 @@
+{
+ "b0": {
+  "path": "source/apktool/smali_classes3/b0.smali",
+  "real": "org.telegram.ui.Components.Premium.AboutPremiumView",
+  "score": 0.597,
+  "super": "android.widget.LinearLayout"
+ },
+ "b29": {
+  "path": "source/apktool/smali_classes2/b29.smali",
+  "real": "org.telegram.ui.Cells.SharedDocumentCell",
+  "score": 0.571,
+  "super": "android.widget.FrameLayout"
+ },
+ "d42": {
+  "path": "source/apktool/smali/d42.smali",
+  "real": "com.google.android.exoplayer2.source.dash.manifest.DashManifestParser",
+  "score": 0.602,
+  "super": "org.xml.sax.helpers.DefaultHandler"
+ },
+ "da8": {
+  "path": "source/apktool/smali_classes3/da8.smali",
+  "real": "org.telegram.ui.Components.ReactionTabHolderView",
+  "score": 0.561,
+  "super": "android.widget.FrameLayout"
+ },
+ "fr3": {
+  "path": "source/apktool/smali_classes2/fr3.smali",
+  "real": "org.telegram.ui.Cells.GroupCallUserCell",
+  "score": 0.582,
+  "super": "android.widget.FrameLayout"
+ },
+ "g3a": {
+  "path": "source/apktool/smali_classes3/g3a.smali",
+  "real": "org.telegram.ui.Components.TimerDrawable",
+  "score": 0.588,
+  "super": "android.graphics.drawable.Drawable"
+ },
+ "gs3": {
+  "path": "source/apktool/smali_classes3/gs3.smali",
+  "real": "org.telegram.ui.Components.GroupCreateSpan",
+  "score": 0.601,
+  "super": "android.view.View"
+ },
+ "h10": {
+  "path": "source/apktool/smali_classes3/h10.smali",
+  "real": "org.telegram.ui.Components.BlockingUpdateView",
+  "score": 0.56,
+  "super": "android.widget.FrameLayout"
+ },
+ "i1a": {
+  "path": "source/apktool/smali_classes2/i1a.smali",
+  "real": "org.telegram.ui.Cells.ThemePreviewMessagesCell",
+  "score": 0.583,
+  "super": "android.widget.LinearLayout"
+ },
+ "is3": {
+  "path": "source/apktool/smali_classes2/is3.smali",
+  "real": "org.telegram.ui.Cells.GroupCreateUserCell",
+  "score": 0.578,
+  "super": "android.widget.FrameLayout"
+ },
+ "jh3": {
+  "path": "source/apktool/smali_classes2/jh3.smali",
+  "real": "org.telegram.ui.GLIconSettingsView",
+  "score": 0.584,
+  "super": "android.widget.LinearLayout"
+ },
+ "ju9": {
+  "path": "source/apktool/smali_classes3/ju9.smali",
+  "real": "org.telegram.ui.Components.TermsOfServiceView",
+  "score": 0.576,
+  "super": "android.widget.FrameLayout"
+ },
+ "kd9": {
+  "path": "source/apktool/smali_classes2/kd9.smali",
+  "real": "org.telegram.ui.Cells.StickerEmojiCell",
+  "score": 0.553,
+  "super": "android.widget.FrameLayout"
+ },
+ "kh9": {
+  "path": "source/apktool/smali_classes3/kh9.smali",
+  "real": "org.telegram.ui.Components.StorageUsageView",
+  "score": 0.57,
+  "super": "android.widget.FrameLayout"
+ },
+ "lp3": {
+  "path": "source/apktool/smali_classes3/lp3.smali",
+  "real": "org.telegram.ui.Components.voip.GroupCallMiniTextureView",
+  "score": 0.556,
+  "super": "android.widget.FrameLayout"
+ },
+ "mc9": {
+  "path": "source/apktool/smali_classes2/mc9.smali",
+  "real": "org.telegram.ui.Cells.StatisticPostInfoCell",
+  "score": 0.586,
+  "super": "android.widget.FrameLayout"
+ },
+ "md1": {
+  "path": "source/apktool/smali_classes3/md1.smali",
+  "real": "org.telegram.ui.Components.ChatGreetingsView",
+  "score": 0.591,
+  "super": "android.widget.LinearLayout"
+ },
+ "n03": {
+  "path": "source/apktool/smali_classes2/n03.smali",
+  "real": "org.telegram.ui.Cells.FeaturedStickerSetCell2",
+  "score": 0.562,
+  "super": "android.widget.FrameLayout"
+ },
+ "ne9": {
+  "path": "source/apktool/smali_classes2/ne9.smali",
+  "real": "org.telegram.ui.Cells.StickerSetNameCell",
+  "score": 0.565,
+  "super": "android.widget.FrameLayout"
+ },
+ "nla": {
+  "path": "source/apktool/smali_classes2/nla.smali",
+  "real": "org.telegram.ui.Cells.UserCell",
+  "score": 0.584,
+  "super": "android.widget.FrameLayout"
+ },
+ "no1": {
+  "path": "source/apktool/smali_classes2/no1.smali",
+  "real": "org.telegram.ui.CodeNumberField",
+  "score": 0.58,
+  "super": "org.telegram.ui.Components.EditTextBoldCursor"
+ },
+ "oa7": {
+  "path": "source/apktool/smali_classes2/oa7.smali",
+  "real": "org.telegram.ui.Cells.PhotoPickerPhotoCell",
+  "score": 0.573,
+  "super": "android.widget.FrameLayout"
+ },
+ "ola": {
+  "path": "source/apktool/smali_classes2/ola.smali",
+  "real": "org.telegram.ui.Cells.UserCell2",
+  "score": 0.573,
+  "super": "android.widget.FrameLayout"
+ },
+ "on5": {
+  "path": "source/apktool/smali_classes2/on5.smali",
+  "real": "org.telegram.ui.Cells.MemberRequestCell",
+  "score": 0.553,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.SQLite.SQLiteCursor": {
+  "path": "source/apktool/smali_classes2/org/telegram/SQLite/SQLiteCursor.smali",
+  "real": "org.telegram.SQLite.SQLiteCursor",
+  "score": 0.492,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.SQLite.SQLiteDatabase": {
+  "path": "source/apktool/smali_classes2/org/telegram/SQLite/SQLiteDatabase.smali",
+  "real": "org.telegram.SQLite.SQLiteDatabase",
+  "score": 0.418,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.SQLite.SQLiteException": {
+  "path": "source/apktool/smali_classes2/org/telegram/SQLite/SQLiteException.smali",
+  "real": "org.telegram.SQLite.SQLiteException",
+  "score": 0.36,
+  "super": "java.lang.Exception"
+ },
+ "org.telegram.SQLite.SQLitePreparedStatement": {
+  "path": "source/apktool/smali_classes2/org/telegram/SQLite/SQLitePreparedStatement.smali",
+  "real": "org.telegram.SQLite.SQLitePreparedStatement",
+  "score": 0.492,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.messenger.AppStartReceiver": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/AppStartReceiver.smali",
+  "real": "org.telegram.messenger.MusicPlayerReceiver",
+  "score": 0.525,
+  "super": "android.content.BroadcastReceiver"
+ },
+ "org.telegram.messenger.AuthenticatorService": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/AuthenticatorService.smali",
+  "real": "org.telegram.messenger.support.customtabs.PostMessageService",
+  "score": 0.525,
+  "super": "android.app.Service"
+ },
+ "org.telegram.messenger.AutoMessageHeardReceiver": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/AutoMessageHeardReceiver.smali",
+  "real": "org.telegram.messenger.AutoMessageReplyReceiver",
+  "score": 0.712,
+  "super": "android.content.BroadcastReceiver"
+ },
+ "org.telegram.messenger.AutoMessageReplyReceiver": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/AutoMessageReplyReceiver.smali",
+  "real": "org.telegram.messenger.AutoMessageHeardReceiver",
+  "score": 0.68,
+  "super": "android.content.BroadcastReceiver"
+ },
+ "org.telegram.messenger.BringAppForegroundService": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/BringAppForegroundService.smali",
+  "real": "org.telegram.messenger.BringAppForegroundService",
+  "score": 0.638,
+  "super": "android.app.IntentService"
+ },
+ "org.telegram.messenger.CallReceiver": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/CallReceiver.smali",
+  "real": "org.telegram.messenger.StopLiveLocationReceiver",
+  "score": 0.525,
+  "super": "android.content.BroadcastReceiver"
+ },
+ "org.telegram.messenger.ChatsWidgetProvider": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/ChatsWidgetProvider.smali",
+  "real": "org.telegram.messenger.ChatsWidgetProvider",
+  "score": 0.661,
+  "super": "android.appwidget.AppWidgetProvider"
+ },
+ "org.telegram.messenger.ChatsWidgetService": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/ChatsWidgetService.smali",
+  "real": "org.telegram.messenger.ContactsWidgetService",
+  "score": 0.525,
+  "super": "android.widget.RemoteViewsService"
+ },
+ "org.telegram.messenger.ContactsSyncAdapterService": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/ContactsSyncAdapterService.smali",
+  "real": "org.telegram.messenger.ContactsSyncAdapterService",
+  "score": 0.712,
+  "super": "android.app.Service"
+ },
+ "org.telegram.messenger.ContactsWidgetProvider": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/ContactsWidgetProvider.smali",
+  "real": "org.telegram.messenger.ContactsWidgetProvider",
+  "score": 0.661,
+  "super": "android.appwidget.AppWidgetProvider"
+ },
+ "org.telegram.messenger.ContactsWidgetService": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/ContactsWidgetService.smali",
+  "real": "org.telegram.messenger.FeedWidgetService",
+  "score": 0.525,
+  "super": "android.widget.RemoteViewsService"
+ },
+ "org.telegram.messenger.CustomTabsCopyReceiver": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/CustomTabsCopyReceiver.smali",
+  "real": "org.telegram.messenger.CustomTabsCopyReceiver",
+  "score": 0.712,
+  "super": "android.content.BroadcastReceiver"
+ },
+ "org.telegram.messenger.FilesMigrationService": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/FilesMigrationService.smali",
+  "real": "org.telegram.messenger.FilesMigrationService",
+  "score": 0.599,
+  "super": "android.app.Service"
+ },
+ "org.telegram.messenger.GcmPushListenerService": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/GcmPushListenerService.smali",
+  "real": "org.telegram.messenger.GcmPushListenerService",
+  "score": 0.712,
+  "super": "com.google.firebase.messaging.FirebaseMessagingService"
+ },
+ "org.telegram.messenger.ImageReceiver": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/ImageReceiver.smali",
+  "real": "org.telegram.messenger.ImageReceiver",
+  "score": 0.492,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.messenger.ImportingService": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/ImportingService.smali",
+  "real": "org.telegram.messenger.ImportingService",
+  "score": 0.712,
+  "super": "android.app.Service"
+ },
+ "org.telegram.messenger.KeepAliveJob": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/KeepAliveJob.smali",
+  "real": "org.telegram.messenger.KeepAliveJob",
+  "score": 0.492,
+  "super": "e84"
+ },
+ "org.telegram.messenger.LocationSharingService": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/LocationSharingService.smali",
+  "real": "org.telegram.messenger.LocationSharingService",
+  "score": 0.699,
+  "super": "android.app.Service"
+ },
+ "org.telegram.messenger.MediaController": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/MediaController.smali",
+  "real": "org.telegram.messenger.MediaController",
+  "score": 0.374,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.messenger.MrzRecognizer": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/MrzRecognizer.smali",
+  "real": "org.telegram.messenger.MrzRecognizer",
+  "score": 0.398,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.messenger.MusicBrowserService": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/MusicBrowserService.smali",
+  "real": "org.telegram.messenger.MusicBrowserService",
+  "score": 0.613,
+  "super": "android.service.media.MediaBrowserService"
+ },
+ "org.telegram.messenger.MusicPlayerReceiver": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/MusicPlayerReceiver.smali",
+  "real": "org.telegram.messenger.voip.VoIPActionsReceiver",
+  "score": 0.525,
+  "super": "android.content.BroadcastReceiver"
+ },
+ "org.telegram.messenger.MusicPlayerService": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/MusicPlayerService.smali",
+  "real": "org.telegram.messenger.MusicPlayerService",
+  "score": 0.602,
+  "super": "android.app.Service"
+ },
+ "org.telegram.messenger.NativeLoader": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/NativeLoader.smali",
+  "real": "org.telegram.messenger.NativeLoader",
+  "score": 0.334,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.messenger.NotificationCallbackReceiver": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/NotificationCallbackReceiver.smali",
+  "real": "org.telegram.messenger.NotificationCallbackReceiver",
+  "score": 0.712,
+  "super": "android.content.BroadcastReceiver"
+ },
+ "org.telegram.messenger.NotificationDismissReceiver": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/NotificationDismissReceiver.smali",
+  "real": "org.telegram.messenger.NotificationDismissReceiver",
+  "score": 0.712,
+  "super": "android.content.BroadcastReceiver"
+ },
+ "org.telegram.messenger.NotificationImageProvider": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/NotificationImageProvider.smali",
+  "real": "org.telegram.messenger.NotificationImageProvider",
+  "score": 0.712,
+  "super": "android.content.ContentProvider"
+ },
+ "org.telegram.messenger.NotificationRepeat": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/NotificationRepeat.smali",
+  "real": "org.telegram.messenger.NotificationRepeat",
+  "score": 0.712,
+  "super": "android.app.IntentService"
+ },
+ "org.telegram.messenger.NotificationsDisabledReceiver": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/NotificationsDisabledReceiver.smali",
+  "real": "org.telegram.messenger.NotificationsDisabledReceiver",
+  "score": 0.697,
+  "super": "android.content.BroadcastReceiver"
+ },
+ "org.telegram.messenger.NotificationsService": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/NotificationsService.smali",
+  "real": "org.telegram.messenger.NotificationsService",
+  "score": 0.712,
+  "super": "android.app.Service"
+ },
+ "org.telegram.messenger.OpenChatReceiver": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/OpenChatReceiver.smali",
+  "real": "org.telegram.messenger.OpenChatReceiver",
+  "score": 0.712,
+  "super": "android.app.Activity"
+ },
+ "org.telegram.messenger.PopupReplyReceiver": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/PopupReplyReceiver.smali",
+  "real": "org.telegram.messenger.PopupReplyReceiver",
+  "score": 0.712,
+  "super": "android.content.BroadcastReceiver"
+ },
+ "org.telegram.messenger.RefererReceiver": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/RefererReceiver.smali",
+  "real": "org.telegram.messenger.RefererReceiver",
+  "score": 0.712,
+  "super": "android.content.BroadcastReceiver"
+ },
+ "org.telegram.messenger.ShareBroadcastReceiver": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/ShareBroadcastReceiver.smali",
+  "real": "org.telegram.messenger.ShareBroadcastReceiver",
+  "score": 0.638,
+  "super": "android.content.BroadcastReceiver"
+ },
+ "org.telegram.messenger.SmsReceiver": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/SmsReceiver.smali",
+  "real": "org.telegram.messenger.SmsReceiver",
+  "score": 0.667,
+  "super": "android.content.BroadcastReceiver"
+ },
+ "org.telegram.messenger.StopLiveLocationReceiver": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/StopLiveLocationReceiver.smali",
+  "real": "org.telegram.messenger.ScreenReceiver",
+  "score": 0.525,
+  "super": "android.content.BroadcastReceiver"
+ },
+ "org.telegram.messenger.Utilities": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/Utilities.smali",
+  "real": "org.telegram.messenger.Utilities",
+  "score": 0.454,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.messenger.VideoEncodingService": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/VideoEncodingService.smali",
+  "real": "org.telegram.messenger.VideoEncodingService",
+  "score": 0.712,
+  "super": "android.app.Service"
+ },
+ "org.telegram.messenger.WearReplyReceiver": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/WearReplyReceiver.smali",
+  "real": "org.telegram.messenger.WearReplyReceiver",
+  "score": 0.687,
+  "super": "android.content.BroadcastReceiver"
+ },
+ "org.telegram.messenger.a": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/a.smali",
+  "real": "org.telegram.messenger.AndroidUtilities",
+  "score": 0.394,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.messenger.a0": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/a0.smali",
+  "real": "org.telegram.messenger.NotificationCenter",
+  "score": 0.492,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.messenger.b": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/b.smali",
+  "real": "org.telegram.messenger.ApplicationLoader",
+  "score": 0.61,
+  "super": "android.app.Application"
+ },
+ "org.telegram.messenger.b0": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/b0.smali",
+  "real": "org.telegram.messenger.PushListenerController",
+  "score": 0.491,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.messenger.c": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/c.smali",
+  "real": "org.telegram.messenger.CacheByChatsController",
+  "score": 0.492,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.messenger.c0": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/c0.smali",
+  "real": "org.telegram.messenger.SecretChatHelper",
+  "score": 0.492,
+  "super": "ow"
+ },
+ "org.telegram.messenger.d0": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/d0.smali",
+  "real": "org.telegram.messenger.SendMessagesHelper",
+  "score": 0.435,
+  "super": "ow"
+ },
+ "org.telegram.messenger.e0": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/e0.smali",
+  "real": "org.telegram.messenger.SharedConfig",
+  "score": 0.476,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.messenger.f0": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/f0.smali",
+  "real": "org.telegram.messenger.SvgHelper",
+  "score": 0.37,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.messenger.g0": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/g0.smali",
+  "real": "org.telegram.messenger.TopicsController",
+  "score": 0.461,
+  "super": "ow"
+ },
+ "org.telegram.messenger.h": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/h.smali",
+  "real": "org.telegram.messenger.DownloadController",
+  "score": 0.42,
+  "super": "ow"
+ },
+ "org.telegram.messenger.h0": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/h0.smali",
+  "real": "org.telegram.messenger.VideoEditedInfo",
+  "score": 0.492,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.messenger.i": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/i.smali",
+  "real": "org.telegram.messenger.Emoji",
+  "score": 0.492,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.messenger.j": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/j.smali",
+  "real": "org.telegram.messenger.FileLoadOperation",
+  "score": 0.492,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.messenger.k": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/k.smali",
+  "real": "org.telegram.messenger.FileLoader",
+  "score": 0.487,
+  "super": "ow"
+ },
+ "org.telegram.messenger.l": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/l.smali",
+  "real": "org.telegram.messenger.FileLog",
+  "score": 0.482,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.messenger.m": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/m.smali",
+  "real": "org.telegram.messenger.FilePathDatabase",
+  "score": 0.43,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.messenger.n": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/n.smali",
+  "real": "org.telegram.messenger.FileRefController",
+  "score": 0.488,
+  "super": "ow"
+ },
+ "org.telegram.messenger.o": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/o.smali",
+  "real": "org.telegram.messenger.FileUploadOperation",
+  "score": 0.481,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.messenger.s": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/s.smali",
+  "real": "org.telegram.messenger.ImageLoader",
+  "score": 0.355,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.messenger.t": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/t.smali",
+  "real": "org.telegram.messenger.ImageLocation",
+  "score": 0.492,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.messenger.u": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/u.smali",
+  "real": "org.telegram.messenger.LocaleController",
+  "score": 0.334,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.messenger.v": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/v.smali",
+  "real": "org.telegram.messenger.LocationController",
+  "score": 0.359,
+  "super": "ow"
+ },
+ "org.telegram.messenger.voip.AudioRecordJNI": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/voip/AudioRecordJNI.smali",
+  "real": "org.telegram.messenger.voip.AudioRecordJNI",
+  "score": 0.492,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.messenger.voip.AudioTrackJNI": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/voip/AudioTrackJNI.smali",
+  "real": "org.telegram.messenger.voip.AudioTrackJNI",
+  "score": 0.492,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.messenger.voip.CallNotificationSoundProvider": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/voip/CallNotificationSoundProvider.smali",
+  "real": "org.telegram.messenger.voip.CallNotificationSoundProvider",
+  "score": 0.712,
+  "super": "android.content.ContentProvider"
+ },
+ "org.telegram.messenger.voip.EncryptionKeyEmojifier": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/voip/EncryptionKeyEmojifier.smali",
+  "real": "org.telegram.messenger.voip.EncryptionKeyEmojifier",
+  "score": 0.478,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.messenger.voip.NativeInstance": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/voip/NativeInstance.smali",
+  "real": "org.telegram.messenger.voip.NativeInstance",
+  "score": 0.492,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.messenger.voip.TelegramConnectionService": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/voip/TelegramConnectionService.smali",
+  "real": "org.telegram.messenger.voip.TelegramConnectionService",
+  "score": 0.712,
+  "super": "android.telecom.ConnectionService"
+ },
+ "org.telegram.messenger.voip.VideoCapturerDevice": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/voip/VideoCapturerDevice.smali",
+  "real": "org.telegram.messenger.voip.VideoCapturerDevice",
+  "score": 0.477,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.messenger.voip.VoIPController": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/voip/VoIPController.smali",
+  "real": "org.telegram.messenger.voip.VoIPController",
+  "score": 0.453,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.messenger.voip.VoIPMediaButtonReceiver": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/voip/VoIPMediaButtonReceiver.smali",
+  "real": "org.telegram.messenger.voip.VoIPMediaButtonReceiver",
+  "score": 0.525,
+  "super": "android.content.BroadcastReceiver"
+ },
+ "org.telegram.messenger.voip.VoIPServerConfig": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/voip/VoIPServerConfig.smali",
+  "real": "org.telegram.messenger.voip.VoIPServerConfig",
+  "score": 0.492,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.messenger.voip.VoIPService": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/voip/VoIPService.smali",
+  "real": "org.telegram.messenger.voip.VoIPService",
+  "score": 0.632,
+  "super": "android.app.Service"
+ },
+ "org.telegram.messenger.w": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/w.smali",
+  "real": "org.telegram.messenger.MediaDataController",
+  "score": 0.445,
+  "super": "ow"
+ },
+ "org.telegram.messenger.x": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/x.smali",
+  "real": "org.telegram.messenger.MessageObject",
+  "score": 0.487,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.messenger.y": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/y.smali",
+  "real": "org.telegram.messenger.MessagesController",
+  "score": 0.484,
+  "super": "ow"
+ },
+ "org.telegram.messenger.z": {
+  "path": "source/apktool/smali_classes2/org/telegram/messenger/z.smali",
+  "real": "org.telegram.messenger.MessagesStorage",
+  "score": 0.475,
+  "super": "ow"
+ },
+ "org.telegram.tgnet.ConnectionsManager": {
+  "path": "source/apktool/smali_classes2/org/telegram/tgnet/ConnectionsManager.smali",
+  "real": "org.telegram.tgnet.ConnectionsManager",
+  "score": 0.434,
+  "super": "ow"
+ },
+ "org.telegram.tgnet.NativeByteBuffer": {
+  "path": "source/apktool/smali_classes2/org/telegram/tgnet/NativeByteBuffer.smali",
+  "real": "org.telegram.tgnet.NativeByteBuffer",
+  "score": 0.492,
+  "super": "b1"
+ },
+ "org.telegram.ui.ActionBar.ActionBarLayout": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/ActionBar/ActionBarLayout.smali",
+  "real": "org.telegram.ui.ActionBar.ActionBarLayout",
+  "score": 0.657,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.ActionBar.ActionBarPopupWindow": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/ActionBar/ActionBarPopupWindow.smali",
+  "real": "org.telegram.ui.ActionBar.ActionBarPopupWindow",
+  "score": 0.6,
+  "super": "android.widget.PopupWindow"
+ },
+ "org.telegram.ui.ActionBar.DrawerLayoutContainer": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/ActionBar/DrawerLayoutContainer.smali",
+  "real": "org.telegram.ui.ActionBar.DrawerLayoutContainer",
+  "score": 0.638,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.ActionBar.a": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/ActionBar/a.smali",
+  "real": "org.telegram.ui.ActionBar.ActionBar",
+  "score": 0.475,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.ActionBar.b": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/ActionBar/b.smali",
+  "real": "org.telegram.ui.ActionBar.ActionBarMenu",
+  "score": 0.36,
+  "super": "android.widget.LinearLayout"
+ },
+ "org.telegram.ui.ActionBar.c": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/ActionBar/c.smali",
+  "real": "org.telegram.ui.ActionBar.ActionBarMenuItem",
+  "score": 0.609,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.ActionBar.d": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/ActionBar/d.smali",
+  "real": "org.telegram.ui.ActionBar.ActionBarMenuSubItem",
+  "score": 0.559,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.ActionBar.e": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/ActionBar/e.smali",
+  "real": "org.telegram.ui.ActionBar.AlertDialog",
+  "score": 0.597,
+  "super": "android.app.Dialog"
+ },
+ "org.telegram.ui.ActionBar.g": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/ActionBar/g.smali",
+  "real": "org.telegram.ui.ActionBar.BottomSheet",
+  "score": 0.398,
+  "super": "android.app.Dialog"
+ },
+ "org.telegram.ui.ActionBar.i": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/ActionBar/i.smali",
+  "real": "org.telegram.ui.ActionBar.EmojiThemes",
+  "score": 0.443,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.ui.ActionBar.l": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/ActionBar/l.smali",
+  "real": "org.telegram.ui.ActionBar.Theme",
+  "score": 0.474,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.ui.BubbleActivity": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/BubbleActivity.smali",
+  "real": "org.telegram.ui.BubbleActivity",
+  "score": 0.46,
+  "super": "kx"
+ },
+ "org.telegram.ui.Cells.TextColorCell": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/Cells/TextColorCell.smali",
+  "real": "org.telegram.ui.Cells.ThemeTypeCell",
+  "score": 0.525,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.ChatsWidgetConfigActivity": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/ChatsWidgetConfigActivity.smali",
+  "real": "org.telegram.ui.ChatsWidgetConfigActivity",
+  "score": 0.68,
+  "super": "org.telegram.ui.ExternalActionActivity"
+ },
+ "org.telegram.ui.Components.AnimatedArrowDrawable": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/AnimatedArrowDrawable.smali",
+  "real": "org.telegram.ui.Components.spoilers.SpoilerEffect",
+  "score": 0.525,
+  "super": "android.graphics.drawable.Drawable"
+ },
+ "org.telegram.ui.Components.AnimatedFileDrawable": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/AnimatedFileDrawable.smali",
+  "real": "org.telegram.ui.Components.AnimatedFileDrawable",
+  "score": 0.712,
+  "super": "android.graphics.drawable.BitmapDrawable"
+ },
+ "org.telegram.ui.Components.AnimatedPhoneNumberEditText": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/AnimatedPhoneNumberEditText.smali",
+  "real": "org.telegram.ui.Components.AnimatedNumberLayout",
+  "score": 0.492,
+  "super": "gv3"
+ },
+ "org.telegram.ui.Components.ChatActivityEnterView": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/ChatActivityEnterView.smali",
+  "real": "org.telegram.ui.Components.ChatActivityEnterView",
+  "score": 0.334,
+  "super": "p10"
+ },
+ "org.telegram.ui.Components.ChatAttachAlertPhotoLayout": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/ChatAttachAlertPhotoLayout.smali",
+  "real": "org.telegram.ui.Components.ChatAttachAlertPhotoLayout",
+  "score": 0.402,
+  "super": "org.telegram.ui.Components.ChatAttachAlert$y"
+ },
+ "org.telegram.ui.Components.CheckBox": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/CheckBox.smali",
+  "real": "org.telegram.ui.Components.CheckBox",
+  "score": 0.712,
+  "super": "android.view.View"
+ },
+ "org.telegram.ui.Components.CheckBoxBase": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/CheckBoxBase.smali",
+  "real": "org.telegram.ui.Components.CheckBoxBase",
+  "score": 0.357,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.ui.Components.CheckBoxSquare": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/CheckBoxSquare.smali",
+  "real": "org.telegram.ui.Components.TransformableLoginButtonView",
+  "score": 0.525,
+  "super": "android.view.View"
+ },
+ "org.telegram.ui.Components.ClippingImageView": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/ClippingImageView.smali",
+  "real": "org.telegram.ui.Components.UnreadCounterTextView",
+  "score": 0.525,
+  "super": "android.view.View"
+ },
+ "org.telegram.ui.Components.ColorPicker": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/ColorPicker.smali",
+  "real": "org.telegram.ui.Components.ColorPicker",
+  "score": 0.556,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.Crop.CropAreaView": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/Crop/CropAreaView.smali",
+  "real": "org.telegram.ui.Components.Crop.CropAreaView",
+  "score": 0.712,
+  "super": "android.view.ViewGroup"
+ },
+ "org.telegram.ui.Components.Crop.b": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/Crop/b.smali",
+  "real": "org.telegram.ui.Components.Crop.CropView",
+  "score": 0.712,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.EditTextBoldCursor": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/EditTextBoldCursor.smali",
+  "real": "org.telegram.ui.Components.EditTextBoldCursor",
+  "score": 0.481,
+  "super": "org.telegram.ui.Components.f0"
+ },
+ "org.telegram.ui.Components.FragmentContextView": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/FragmentContextView.smali",
+  "real": "org.telegram.ui.Components.FragmentContextView",
+  "score": 0.66,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.GroupCreateCheckBox": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/GroupCreateCheckBox.smali",
+  "real": "org.telegram.ui.Components.GroupCreateCheckBox",
+  "score": 0.601,
+  "super": "android.view.View"
+ },
+ "org.telegram.ui.Components.NumberTextView": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/NumberTextView.smali",
+  "real": "org.telegram.ui.Components.NumberTextView",
+  "score": 0.712,
+  "super": "android.view.View"
+ },
+ "org.telegram.ui.Components.Paint.Views.ColorPicker": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/Paint/Views/ColorPicker.smali",
+  "real": "org.telegram.ui.Components.Paint.Views.ColorPicker",
+  "score": 0.652,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.PipRoundVideoView": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/PipRoundVideoView.smali",
+  "real": "org.telegram.ui.Components.PipRoundVideoView",
+  "score": 0.352,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.ui.Components.RLottieDrawable": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/RLottieDrawable.smali",
+  "real": "org.telegram.ui.Components.RLottieDrawable",
+  "score": 0.712,
+  "super": "android.graphics.drawable.BitmapDrawable"
+ },
+ "org.telegram.ui.Components.RadialProgressView": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/RadialProgressView.smali",
+  "real": "org.telegram.ui.Components.VideoSeekBarView",
+  "score": 0.525,
+  "super": "android.view.View"
+ },
+ "org.telegram.ui.Components.RadioButton": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/RadioButton.smali",
+  "real": "org.telegram.ui.Components.RadioButton",
+  "score": 0.712,
+  "super": "android.view.View"
+ },
+ "org.telegram.ui.Components.ScrollSlidingTextTabStrip": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/ScrollSlidingTextTabStrip.smali",
+  "real": "org.telegram.ui.Components.ScrollSlidingTextTabStrip",
+  "score": 0.545,
+  "super": "android.widget.HorizontalScrollView"
+ },
+ "org.telegram.ui.Components.ShutterButton": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/ShutterButton.smali",
+  "real": "org.telegram.ui.Components.ShutterButton",
+  "score": 0.712,
+  "super": "android.view.View"
+ },
+ "org.telegram.ui.Components.Switch": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/Switch.smali",
+  "real": "org.telegram.ui.Components.VideoTimelinePlayView",
+  "score": 0.525,
+  "super": "android.view.View"
+ },
+ "org.telegram.ui.Components.UndoView": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/UndoView.smali",
+  "real": "org.telegram.ui.Components.UndoView",
+  "score": 0.705,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.a0": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/a0.smali",
+  "real": "org.telegram.ui.Components.ChatAvatarContainer",
+  "score": 0.678,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.a2": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/a2.smali",
+  "real": "org.telegram.ui.Components.SearchViewPager",
+  "score": 0.42,
+  "super": "org.telegram.ui.Components.k3"
+ },
+ "org.telegram.ui.Components.a3": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/a3.smali",
+  "real": "org.telegram.ui.Components.URLSpanBrowser",
+  "score": 0.36,
+  "super": "android.text.style.URLSpan"
+ },
+ "org.telegram.ui.Components.b": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/b.smali",
+  "real": "org.telegram.ui.Components.AlertsCreator",
+  "score": 0.479,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.ui.Components.b0": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/b0.smali",
+  "real": "org.telegram.ui.Components.ChatNotificationsPopupWrapper",
+  "score": 0.455,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.ui.Components.b1": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/b1.smali",
+  "real": "org.telegram.ui.Components.MediaActivity",
+  "score": 0.393,
+  "super": "org.telegram.ui.ActionBar.f"
+ },
+ "org.telegram.ui.Components.b2": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/b2.smali",
+  "real": "org.telegram.ui.Components.SeekBar",
+  "score": 0.492,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.ui.Components.b3": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/b3.smali",
+  "real": "org.telegram.ui.Components.URLSpanMono",
+  "score": 0.525,
+  "super": "android.text.style.MetricAffectingSpan"
+ },
+ "org.telegram.ui.Components.c": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/c.smali",
+  "real": "org.telegram.ui.Components.AnimatedEmojiDrawable",
+  "score": 0.629,
+  "super": "android.graphics.drawable.Drawable"
+ },
+ "org.telegram.ui.Components.c1": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/c1.smali",
+  "real": "org.telegram.ui.Components.MemberRequestsBottomSheet",
+  "score": 0.492,
+  "super": "org.telegram.ui.Components.f3"
+ },
+ "org.telegram.ui.Components.c2": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/c2.smali",
+  "real": "org.telegram.ui.Components.SeekBarView",
+  "score": 0.559,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.c3": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/c3.smali",
+  "real": "org.telegram.ui.Components.URLSpanNoUnderline",
+  "score": 0.712,
+  "super": "android.text.style.URLSpan"
+ },
+ "org.telegram.ui.Components.d": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/d.smali",
+  "real": "org.telegram.ui.Components.TextPaintImageReceiverSpan",
+  "score": 0.525,
+  "super": "android.text.style.ReplacementSpan"
+ },
+ "org.telegram.ui.Components.d0": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/d0.smali",
+  "real": "org.telegram.ui.Components.VideoSeekPreviewImage",
+  "score": 0.525,
+  "super": "android.view.View"
+ },
+ "org.telegram.ui.Components.d3": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/d3.smali",
+  "real": "org.telegram.ui.Components.URLSpanReplacement",
+  "score": 0.36,
+  "super": "android.text.style.URLSpan"
+ },
+ "org.telegram.ui.Components.e": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/e.smali",
+  "real": "org.telegram.ui.Components.CheckBoxSquare",
+  "score": 0.492,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.ui.Components.e0": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/e0.smali",
+  "real": "org.telegram.ui.Components.EditTextCaption",
+  "score": 0.63,
+  "super": "org.telegram.ui.Components.EditTextBoldCursor"
+ },
+ "org.telegram.ui.Components.e1": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/e1.smali",
+  "real": "org.telegram.ui.Components.SlidingTabView",
+  "score": 0.525,
+  "super": "android.widget.LinearLayout"
+ },
+ "org.telegram.ui.Components.f": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/f.smali",
+  "real": "org.telegram.ui.Components.AnimationProperties",
+  "score": 0.492,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.ui.Components.f0": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/f0.smali",
+  "real": "org.telegram.ui.Components.EditTextEffects",
+  "score": 0.36,
+  "super": "android.widget.EditText"
+ },
+ "org.telegram.ui.Components.f1": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/f1.smali",
+  "real": "org.telegram.ui.Components.OutlineTextContainerView",
+  "score": 0.588,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.f2": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/f2.smali",
+  "real": "org.telegram.ui.Components.SenderSelectPopup",
+  "score": 0.431,
+  "super": "org.telegram.ui.ActionBar.ActionBarPopupWindow"
+ },
+ "org.telegram.ui.Components.g": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/g.smali",
+  "real": "org.telegram.ui.Components.URLSpanNoUnderlineBold",
+  "score": 0.418,
+  "super": "org.telegram.ui.Components.p$f"
+ },
+ "org.telegram.ui.Components.g0": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/g0.smali",
+  "real": "org.telegram.ui.Components.PhotoFilterBlurControl",
+  "score": 0.525,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.g1": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/g1.smali",
+  "real": "org.telegram.ui.Components.PagerSlidingTabStrip",
+  "score": 0.638,
+  "super": "android.widget.HorizontalScrollView"
+ },
+ "org.telegram.ui.Components.g2": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/g2.smali",
+  "real": "org.telegram.ui.Components.SenderSelectView",
+  "score": 0.617,
+  "super": "android.view.View"
+ },
+ "org.telegram.ui.Components.g3": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/g3.smali",
+  "real": "org.telegram.ui.Components.Premium.GLIcon.GLIconTextureView",
+  "score": 0.525,
+  "super": "android.view.TextureView"
+ },
+ "org.telegram.ui.Components.h": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/h.smali",
+  "real": "org.telegram.ui.Components.AudioPlayerAlert",
+  "score": 0.392,
+  "super": "org.telegram.ui.ActionBar.g"
+ },
+ "org.telegram.ui.Components.h1": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/h1.smali",
+  "real": "org.telegram.ui.Components.PermanentLinkBottomSheet",
+  "score": 0.441,
+  "super": "org.telegram.ui.ActionBar.g"
+ },
+ "org.telegram.ui.Components.h3": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/h3.smali",
+  "real": "org.telegram.ui.Components.VideoForwardDrawable",
+  "score": 0.712,
+  "super": "android.graphics.drawable.Drawable"
+ },
+ "org.telegram.ui.Components.i": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/i.smali",
+  "real": "org.telegram.ui.Components.AutoDeletePopupWrapper",
+  "score": 0.447,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.ui.Components.i2": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/i2.smali",
+  "real": "org.telegram.ui.Components.SharedMediaLayout",
+  "score": 0.587,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.i3": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/i3.smali",
+  "real": "org.telegram.ui.Components.VideoPlayer",
+  "score": 0.46,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.ui.Components.j": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/j.smali",
+  "real": "org.telegram.ui.Components.BotCommandsMenuView",
+  "score": 0.617,
+  "super": "android.view.View"
+ },
+ "org.telegram.ui.Components.j1": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/j1.smali",
+  "real": "org.telegram.ui.Components.PhotoCropView",
+  "score": 0.667,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.j3": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/j3.smali",
+  "real": "org.telegram.ui.Components.VideoTimelineView",
+  "score": 0.525,
+  "super": "android.view.View"
+ },
+ "org.telegram.ui.Components.k": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/k.smali",
+  "real": "org.telegram.ui.Components.voip.VoIPNotificationsLayout",
+  "score": 0.525,
+  "super": "android.widget.LinearLayout"
+ },
+ "org.telegram.ui.Components.k0": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/k0.smali",
+  "real": "org.telegram.ui.Components.PopupSwipeBackLayout",
+  "score": 0.525,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.k1": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/k1.smali",
+  "real": "org.telegram.ui.Components.voip.AcceptDeclineView",
+  "score": 0.525,
+  "super": "android.view.View"
+ },
+ "org.telegram.ui.Components.k3": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/k3.smali",
+  "real": "org.telegram.ui.Components.voip.VoIPStatusTextView",
+  "score": 0.525,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.l": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/l.smali",
+  "real": "org.telegram.ui.Components.BotWebViewContainer",
+  "score": 0.63,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.l0": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/l0.smali",
+  "real": "org.telegram.ui.Components.FilterGLThread",
+  "score": 0.475,
+  "super": "fi2"
+ },
+ "org.telegram.ui.Components.l1": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/l1.smali",
+  "real": "org.telegram.ui.Components.voip.VoIPTextureView",
+  "score": 0.525,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.l2": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/l2.smali",
+  "real": "org.telegram.ui.Components.Premium.DoubleLimitsPageView",
+  "score": 0.525,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.l3": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/l3.smali",
+  "real": "org.telegram.ui.Components.WallpaperCheckBoxView",
+  "score": 0.667,
+  "super": "android.view.View"
+ },
+ "org.telegram.ui.Components.m": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/m.smali",
+  "real": "org.telegram.ui.Components.BotWebViewMenuContainer",
+  "score": 0.572,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.m1": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/m1.smali",
+  "real": "org.telegram.ui.Components.PhotoFilterCurvesControl",
+  "score": 0.638,
+  "super": "android.view.View"
+ },
+ "org.telegram.ui.Components.m2": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/m2.smali",
+  "real": "org.telegram.ui.Components.voip.VoIPToggleButton",
+  "score": 0.525,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.n": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/n.smali",
+  "real": "org.telegram.ui.Components.BotWebViewSheet",
+  "score": 0.563,
+  "super": "android.app.Dialog"
+ },
+ "org.telegram.ui.Components.n0": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/n0.smali",
+  "real": "org.telegram.ui.Components.SizeNotifierFrameLayoutPhoto",
+  "score": 0.525,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.n1": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/n1.smali",
+  "real": "org.telegram.ui.Components.PhotoFilterView",
+  "score": 0.584,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.n2": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/n2.smali",
+  "real": "org.telegram.ui.Components.StickerMasksAlert",
+  "score": 0.397,
+  "super": "org.telegram.ui.ActionBar.g"
+ },
+ "org.telegram.ui.Components.n3": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/n3.smali",
+  "real": "org.telegram.ui.Components.WallpaperUpdater",
+  "score": 0.447,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.ui.Components.o0": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/o0.smali",
+  "real": "org.telegram.ui.Components.Premium.PremiumButtonView",
+  "score": 0.314,
+  "super": "org.telegram.ui.ActionBar.g"
+ },
+ "org.telegram.ui.Components.o1": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/o1.smali",
+  "real": "org.telegram.ui.Components.PhotoViewerCaptionEnterView",
+  "score": 0.68,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.o2": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/o2.smali",
+  "real": "org.telegram.ui.Components.StickerSetBulletinLayout",
+  "score": 0.488,
+  "super": "org.telegram.ui.Components.p$q"
+ },
+ "org.telegram.ui.Components.o3": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/o3.smali",
+  "real": "org.telegram.ui.Components.WebPlayerView",
+  "score": 0.599,
+  "super": "android.view.ViewGroup"
+ },
+ "org.telegram.ui.Components.p": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/p.smali",
+  "real": "org.telegram.ui.Components.Bulletin",
+  "score": 0.357,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.ui.Components.p0": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/p0.smali",
+  "real": "org.telegram.ui.Components.ForwardingPreviewView",
+  "score": 0.664,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.p2": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/p2.smali",
+  "real": "org.telegram.ui.Components.StickersAlert",
+  "score": 0.391,
+  "super": "org.telegram.ui.ActionBar.g"
+ },
+ "org.telegram.ui.Components.p3": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/p3.smali",
+  "real": "org.telegram.ui.Components.ZoomControlView",
+  "score": 0.712,
+  "super": "android.view.View"
+ },
+ "org.telegram.ui.Components.q": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/q.smali",
+  "real": "org.telegram.ui.Components.BulletinFactory",
+  "score": 0.454,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.ui.Components.q2": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/q2.smali",
+  "real": "org.telegram.ui.Components.StickersArchiveAlert",
+  "score": 0.475,
+  "super": "org.telegram.ui.ActionBar.e$k"
+ },
+ "org.telegram.ui.Components.r": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/r.smali",
+  "real": "org.telegram.ui.Components.ChatActivityBotWebViewButton",
+  "score": 0.617,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.r1": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/r1.smali",
+  "real": "org.telegram.ui.Components.ProximitySheet",
+  "score": 0.664,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.r2": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/r2.smali",
+  "real": "org.telegram.ui.Components.SuggestEmojiView",
+  "score": 0.601,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.s": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/s.smali",
+  "real": "org.telegram.ui.Components.ChatActivityEnterViewAnimatedIconView",
+  "score": 0.492,
+  "super": "e88"
+ },
+ "org.telegram.ui.Components.s1": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/s1.smali",
+  "real": "org.telegram.ui.Components.StickerTabView",
+  "score": 0.525,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.s2": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/s2.smali",
+  "real": "org.telegram.ui.Components.SwipeGestureSettingsView",
+  "score": 0.65,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.t": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/t.smali",
+  "real": "org.telegram.ui.Components.ChatAttachAlertAudioLayout",
+  "score": 0.331,
+  "super": "org.telegram.ui.Components.ChatAttachAlert$y"
+ },
+ "org.telegram.ui.Components.t0": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/t0.smali",
+  "real": "org.telegram.ui.Components.ImageUpdater",
+  "score": 0.422,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.ui.Components.t1": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/t1.smali",
+  "real": "org.telegram.ui.Components.voip.GroupCallGridCell",
+  "score": 0.525,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.t2": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/t2.smali",
+  "real": "org.telegram.ui.Components.voip.CallSwipeView",
+  "score": 0.525,
+  "super": "android.view.View"
+ },
+ "org.telegram.ui.Components.u": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/u.smali",
+  "real": "org.telegram.ui.Components.ChatAttachAlertBotWebViewLayout",
+  "score": 0.308,
+  "super": "org.telegram.ui.Components.ChatAttachAlert$y"
+ },
+ "org.telegram.ui.Components.u0": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/u0.smali",
+  "real": "org.telegram.ui.Components.voip.VoIPButtonsLayout",
+  "score": 0.525,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.u1": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/u1.smali",
+  "real": "org.telegram.ui.Components.RecyclerAnimationScrollHelper",
+  "score": 0.381,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.ui.Components.u2": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/u2.smali",
+  "real": "org.telegram.ui.Components.TypefaceSpan",
+  "score": 0.525,
+  "super": "android.text.style.MetricAffectingSpan"
+ },
+ "org.telegram.ui.Components.v1": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/v1.smali",
+  "real": "org.telegram.ui.Components.RecyclerListView",
+  "score": 0.518,
+  "super": "androidx.recyclerview.widget.RecyclerView"
+ },
+ "org.telegram.ui.Components.v2": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/v2.smali",
+  "real": "org.telegram.ui.Components.ThemeSmallPreviewView",
+  "score": 0.612,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.voip.CallSwipeView": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/voip/CallSwipeView.smali",
+  "real": "org.telegram.ui.Components.voip.VoIPTimerView",
+  "score": 0.525,
+  "super": "android.view.View"
+ },
+ "org.telegram.ui.Components.voip.FabBackgroundDrawable": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/voip/FabBackgroundDrawable.smali",
+  "real": "org.telegram.ui.Components.voip.FabBackgroundDrawable",
+  "score": 0.36,
+  "super": "android.graphics.drawable.Drawable"
+ },
+ "org.telegram.ui.Components.w": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/w.smali",
+  "real": "org.telegram.ui.Components.ChatAttachAlertDocumentLayout",
+  "score": 0.351,
+  "super": "org.telegram.ui.Components.ChatAttachAlert$y"
+ },
+ "org.telegram.ui.Components.w0": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/w0.smali",
+  "real": "org.telegram.ui.Components.InviteMembersBottomSheet",
+  "score": 0.328,
+  "super": "org.telegram.ui.Components.f3"
+ },
+ "org.telegram.ui.Components.w2": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/w2.smali",
+  "real": "org.telegram.ui.Components.TranslateAlert",
+  "score": 0.552,
+  "super": "android.app.Dialog"
+ },
+ "org.telegram.ui.Components.x": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/x.smali",
+  "real": "org.telegram.ui.Components.ChatAttachAlertLocationLayout",
+  "score": 0.314,
+  "super": "org.telegram.ui.Components.ChatAttachAlert$y"
+ },
+ "org.telegram.ui.Components.x0": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/x0.smali",
+  "real": "org.telegram.ui.Components.JoinCallAlert",
+  "score": 0.405,
+  "super": "org.telegram.ui.ActionBar.g"
+ },
+ "org.telegram.ui.Components.y": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/y.smali",
+  "real": "org.telegram.ui.Components.ProgressButton",
+  "score": 0.381,
+  "super": "org.telegram.ui.Components.ChatAttachAlert$y"
+ },
+ "org.telegram.ui.Components.y0": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/y0.smali",
+  "real": "org.telegram.ui.Components.JoinGroupAlert",
+  "score": 0.435,
+  "super": "org.telegram.ui.ActionBar.g"
+ },
+ "org.telegram.ui.Components.y1": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/y1.smali",
+  "real": "org.telegram.ui.Components.ScrollSlidingTabStrip",
+  "score": 0.572,
+  "super": "android.widget.HorizontalScrollView"
+ },
+ "org.telegram.ui.Components.y2": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/y2.smali",
+  "real": "org.telegram.ui.Components.voip.VoIPFloatingLayout",
+  "score": 0.525,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.Components.z0": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/z0.smali",
+  "real": "org.telegram.ui.Components.LinkActionView",
+  "score": 0.658,
+  "super": "android.widget.LinearLayout"
+ },
+ "org.telegram.ui.Components.z1": {
+  "path": "source/apktool/smali_classes3/org/telegram/ui/Components/z1.smali",
+  "real": "org.telegram.ui.Components.voip.VoIPWindowView",
+  "score": 0.525,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.ContactsWidgetConfigActivity": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/ContactsWidgetConfigActivity.smali",
+  "real": "org.telegram.ui.ContactsWidgetConfigActivity",
+  "score": 0.68,
+  "super": "org.telegram.ui.ExternalActionActivity"
+ },
+ "org.telegram.ui.ExternalActionActivity": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/ExternalActionActivity.smali",
+  "real": "org.telegram.ui.ExternalActionActivity",
+  "score": 0.699,
+  "super": "android.app.Activity"
+ },
+ "org.telegram.ui.GroupCreateActivity": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/GroupCreateActivity.smali",
+  "real": "org.telegram.ui.GroupCreateActivity",
+  "score": 0.373,
+  "super": "org.telegram.ui.ActionBar.f"
+ },
+ "org.telegram.ui.LaunchActivity": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/LaunchActivity.smali",
+  "real": "org.telegram.ui.LaunchActivity",
+  "score": 0.461,
+  "super": "kx"
+ },
+ "org.telegram.ui.PhotoViewer": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/PhotoViewer.smali",
+  "real": "org.telegram.ui.PhotoViewer",
+  "score": 0.414,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.ui.PopupNotificationActivity": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/PopupNotificationActivity.smali",
+  "real": "org.telegram.ui.PopupNotificationActivity",
+  "score": 0.662,
+  "super": "android.app.Activity"
+ },
+ "org.telegram.ui.SecretMediaViewer": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/SecretMediaViewer.smali",
+  "real": "org.telegram.ui.SecretMediaViewer",
+  "score": 0.409,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.ui.ShareActivity": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/ShareActivity.smali",
+  "real": "org.telegram.ui.ShareActivity",
+  "score": 0.687,
+  "super": "android.app.Activity"
+ },
+ "org.telegram.ui.VoIPFeedbackActivity": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/VoIPFeedbackActivity.smali",
+  "real": "org.telegram.ui.VoIPFeedbackActivity",
+  "score": 0.712,
+  "super": "android.app.Activity"
+ },
+ "org.telegram.ui.VoIPPermissionActivity": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/VoIPPermissionActivity.smali",
+  "real": "org.telegram.ui.VoIPPermissionActivity",
+  "score": 0.577,
+  "super": "android.app.Activity"
+ },
+ "org.telegram.ui.a": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/a.smali",
+  "real": "org.telegram.ui.ActionIntroActivity",
+  "score": 0.446,
+  "super": "org.telegram.ui.ActionBar.f"
+ },
+ "org.telegram.ui.a0": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/a0.smali",
+  "real": "org.telegram.ui.GroupCreateFinalActivity",
+  "score": 0.315,
+  "super": "org.telegram.ui.ActionBar.f"
+ },
+ "org.telegram.ui.b": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/b.smali",
+  "real": "org.telegram.ui.AutoDeleteMessagesActivity",
+  "score": 0.381,
+  "super": "org.telegram.ui.ActionBar.f"
+ },
+ "org.telegram.ui.b0": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/b0.smali",
+  "real": "org.telegram.ui.KeepMediaPopupView",
+  "score": 0.425,
+  "super": "org.telegram.ui.ActionBar.ActionBarPopupWindow$ActionBarPopupWindowLayout"
+ },
+ "org.telegram.ui.d": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/d.smali",
+  "real": "org.telegram.ui.CacheChatsExceptionsFragment",
+  "score": 0.409,
+  "super": "org.telegram.ui.ActionBar.f"
+ },
+ "org.telegram.ui.d0": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/d0.smali",
+  "real": "org.telegram.ui.LocationActivity",
+  "score": 0.379,
+  "super": "org.telegram.ui.ActionBar.f"
+ },
+ "org.telegram.ui.d1": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/d1.smali",
+  "real": "org.telegram.ui.TopicsFragment",
+  "score": 0.32,
+  "super": "org.telegram.ui.ActionBar.f"
+ },
+ "org.telegram.ui.f": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/f.smali",
+  "real": "org.telegram.ui.CachedMediaLayout",
+  "score": 0.538,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.f1": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/f1.smali",
+  "real": "org.telegram.ui.TwoStepVerificationActivity",
+  "score": 0.374,
+  "super": "org.telegram.ui.ActionBar.f"
+ },
+ "org.telegram.ui.h": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/h.smali",
+  "real": "org.telegram.ui.CameraScanActivity",
+  "score": 0.333,
+  "super": "org.telegram.ui.ActionBar.f"
+ },
+ "org.telegram.ui.i": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/i.smali",
+  "real": "org.telegram.ui.ChannelAdminLogActivity",
+  "score": 0.317,
+  "super": "org.telegram.ui.ActionBar.f"
+ },
+ "org.telegram.ui.j": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/j.smali",
+  "real": "org.telegram.ui.ChatActivity",
+  "score": 0.386,
+  "super": "org.telegram.ui.ActionBar.f"
+ },
+ "org.telegram.ui.j0": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/j0.smali",
+  "real": "org.telegram.ui.PassportActivity",
+  "score": 0.413,
+  "super": "org.telegram.ui.ActionBar.f"
+ },
+ "org.telegram.ui.k": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/k.smali",
+  "real": "org.telegram.ui.ChatEditActivity",
+  "score": 0.45,
+  "super": "org.telegram.ui.ActionBar.f"
+ },
+ "org.telegram.ui.k0": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/k0.smali",
+  "real": "org.telegram.ui.PaymentFormActivity",
+  "score": 0.388,
+  "super": "org.telegram.ui.ActionBar.f"
+ },
+ "org.telegram.ui.m0": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/m0.smali",
+  "real": "org.telegram.ui.PhotoAlbumPickerActivity",
+  "score": 0.333,
+  "super": "org.telegram.ui.ActionBar.f"
+ },
+ "org.telegram.ui.n0": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/n0.smali",
+  "real": "org.telegram.ui.PhotoPickerActivity",
+  "score": 0.316,
+  "super": "org.telegram.ui.ActionBar.f"
+ },
+ "org.telegram.ui.o": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/o.smali",
+  "real": "org.telegram.ui.ChooseSpeedLayout",
+  "score": 0.492,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.ui.p": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/p.smali",
+  "real": "org.telegram.ui.ContactAddActivity",
+  "score": 0.396,
+  "super": "org.telegram.ui.ActionBar.f"
+ },
+ "org.telegram.ui.q": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/q.smali",
+  "real": "org.telegram.ui.ContactsActivity",
+  "score": 0.398,
+  "super": "org.telegram.ui.ActionBar.f"
+ },
+ "org.telegram.ui.r": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/r.smali",
+  "real": "org.telegram.ui.Components.PaintingOverlay",
+  "score": 0.314,
+  "super": "java.lang.Object"
+ },
+ "org.telegram.ui.t": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/t.smali",
+  "real": "org.telegram.ui.DialogOrContactPickerActivity",
+  "score": 0.447,
+  "super": "org.telegram.ui.ActionBar.f"
+ },
+ "org.telegram.ui.u": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/u.smali",
+  "real": "org.telegram.ui.DialogsActivity",
+  "score": 0.351,
+  "super": "org.telegram.ui.ActionBar.f"
+ },
+ "org.telegram.ui.v": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/v.smali",
+  "real": "org.telegram.ui.DilogCacheBottomSheet",
+  "score": 0.423,
+  "super": "org.telegram.ui.Components.o"
+ },
+ "org.telegram.ui.x0": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/x0.smali",
+  "real": "org.telegram.ui.RightSlidingDialogContainer",
+  "score": 0.525,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.y": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/y.smali",
+  "real": "org.telegram.ui.FilteredSearchView",
+  "score": 0.54,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.y0": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/y0.smali",
+  "real": "org.telegram.ui.SelectAnimatedEmojiDialog",
+  "score": 0.536,
+  "super": "android.widget.FrameLayout"
+ },
+ "org.telegram.ui.z": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/z.smali",
+  "real": "org.telegram.ui.GroupCallActivity",
+  "score": 0.363,
+  "super": "org.telegram.ui.ActionBar.g"
+ },
+ "org.telegram.ui.z0": {
+  "path": "source/apktool/smali_classes2/org/telegram/ui/z0.smali",
+  "real": "org.telegram.ui.Cells.SessionCell",
+  "score": 0.383,
+  "super": "org.telegram.ui.ActionBar.g"
+ },
+ "org.webrtc.SurfaceEglRenderer": {
+  "path": "source/apktool/smali_classes3/org/webrtc/SurfaceEglRenderer.smali",
+  "real": "org.webrtc.SurfaceEglRenderer",
+  "score": 0.712,
+  "super": "org.webrtc.EglRenderer"
+ },
+ "org.webrtc.SurfaceViewRenderer": {
+  "path": "source/apktool/smali_classes3/org/webrtc/SurfaceViewRenderer.smali",
+  "real": "org.webrtc.SurfaceViewRenderer",
+  "score": 0.712,
+  "super": "android.view.SurfaceView"
+ },
+ "org.webrtc.TextureViewRenderer": {
+  "path": "source/apktool/smali_classes3/org/webrtc/TextureViewRenderer.smali",
+  "real": "org.webrtc.TextureViewRenderer",
+  "score": 0.638,
+  "super": "android.view.TextureView"
+ },
+ "oz8": {
+  "path": "source/apktool/smali_classes2/oz8.smali",
+  "real": "org.telegram.ui.Cells.SettingsSuggestionCell",
+  "score": 0.573,
+  "super": "android.widget.LinearLayout"
+ },
+ "qg2": {
+  "path": "source/apktool/smali_classes2/qg2.smali",
+  "real": "org.telegram.ui.Cells.DialogsEmptyCell",
+  "score": 0.553,
+  "super": "android.widget.LinearLayout"
+ },
+ "qy1": {
+  "path": "source/apktool/smali_classes3/qy1.smali",
+  "real": "org.telegram.ui.Components.ContactsEmptyView",
+  "score": 0.584,
+  "super": "android.widget.LinearLayout"
+ },
+ "ra1": {
+  "path": "source/apktool/smali_classes3/ra1.smali",
+  "real": "org.telegram.ui.Components.ChatBigEmptyView",
+  "score": 0.608,
+  "super": "android.widget.LinearLayout"
+ },
+ "rja": {
+  "path": "source/apktool/smali_classes2/rja.smali",
+  "real": "org.telegram.ui.UnlockPremiumView",
+  "score": 0.597,
+  "super": "android.widget.FrameLayout"
+ },
+ "rpa": {
+  "path": "source/apktool/smali_classes3/rpa.smali",
+  "real": "org.telegram.ui.Components.Premium.VideoScreenPreview",
+  "score": 0.604,
+  "super": "android.widget.FrameLayout"
+ },
+ "v98": {
+  "path": "source/apktool/smali_classes3/v98.smali",
+  "real": "org.telegram.ui.Components.ReactedHeaderView",
+  "score": 0.553,
+  "super": "android.widget.FrameLayout"
+ },
+ "w10": {
+  "path": "source/apktool/smali_classes2/w10.smali",
+  "real": "org.telegram.ui.Cells.BotHelpCell",
+  "score": 0.565,
+  "super": "android.view.View"
+ },
+ "w65": {
+  "path": "source/apktool/smali_classes2/w65.smali",
+  "real": "org.telegram.ui.Cells.ManageChatUserCell",
+  "score": 0.577,
+  "super": "android.widget.FrameLayout"
+ },
+ "w99": {
+  "path": "source/apktool/smali_classes2/w99.smali",
+  "real": "org.telegram.ui.SponsoredMessageInfoView",
+  "score": 0.584,
+  "super": "android.widget.FrameLayout"
+ },
+ "y87": {
+  "path": "source/apktool/smali_classes2/y87.smali",
+  "real": "org.telegram.ui.Cells.PhotoAttachPhotoCell",
+  "score": 0.575,
+  "super": "android.widget.FrameLayout"
+ },
+ "zp3": {
+  "path": "source/apktool/smali_classes3/zp3.smali",
+  "real": "org.telegram.ui.Components.GroupCallPipButton",
+  "score": 0.62,
+  "super": "android.widget.FrameLayout"
+ },
+ "zz1": {
+  "path": "source/apktool/smali_classes2/zz1.smali",
+  "real": "org.telegram.ui.Cells.ContextLinkCell",
+  "score": 0.557,
+  "super": "android.widget.FrameLayout"
+ }
+}

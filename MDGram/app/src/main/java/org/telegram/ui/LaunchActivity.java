@@ -542,6 +542,9 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     drawerLayoutContainer.closeDrawer(false);
                 } else if (id == 8) {
                     openSettings(false);
+                } else if (id == 16) {
+                    presentFragment(new org.telegram.mdgram.MDsettings.MDsetting());
+                    drawerLayoutContainer.closeDrawer(false);
                 } else if (id == 9) {
                     Browser.openUrl(LaunchActivity.this, LocaleController.getString("TelegramFaqUrl", R.string.TelegramFaqUrl));
                     drawerLayoutContainer.closeDrawer(false);

@@ -1,0 +1,138 @@
+name: Сборка APK (MDGram)
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.build-trigger'
+      - '.github/workflows/build.yml'
+      - 'MDGram/**'
+      - 'handof/**'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Сборка APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Код
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: JDK 11
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 11
+
+      - name: Android SDK (лицензии)
+        run: |
+          set -e
+          SDK="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
+          if [ -z "$SDK" ] || [ ! -d "$SDK" ]; then
+            SDK=/usr/local/lib/android/sdk
+          fi
+          echo "SDK=$SDK"
+          echo "ANDROID_SDK_ROOT=$SDK" >> "$GITHUB_ENV"
+          echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
+          mkdir -p "$SDK/licenses"
+          printf '24333f8a63b6825ea9c5514f83c2829b004d1fee\n' > "$SDK/licenses/android-sdk-license"
+          printf '84831b9409646a918e30573bab4c9c91346d8abd\n' > "$SDK/licenses/android-sdk-preview-license"
+          printf 'd975f751698a77b662f1254ddbeed3901e976f5a\n' > "$SDK/licenses/intel-android-extra-license"
+
+      - name: Доказательства в исходнике
+        run: |
+          set -e
+          echo "=== version / applicationId ==="
+          grep -n "versionCode\|versionName\|applicationId\|namespace" MDGram/app/build.gradle | head
+          echo "=== CHECK_UPDATES / BUILD_VERSION_STRING ==="
+          grep -n "CHECK_UPDATES\|BUILD_VERSION" MDGram/app/src/main/java/org/telegram/messenger/BuildVars.java | head
+          echo "=== AppName ==="
+          grep 'name="AppName"' MDGram/app/src/main/res/values/strings.xml
+          echo "=== drawer id 16 ==="
+          grep -n "new Item(16" MDGram/app/src/main/java/org/telegram/ui/Adapters/DrawerLayoutAdapter.java
+          grep -n "id == 16" MDGram/app/src/main/java/org/telegram/ui/LaunchActivity.java
+          echo "=== ghost / hidePhone / noStickers ==="
+          grep -n "MDConfig.ghostMode" MDGram/app/src/main/java/org/telegram/messenger/MessagesController.java | head
+          grep -n "MDConfig.hidePhone" MDGram/app/src/main/java/org/telegram/ui/Cells/DrawerProfileCell.java
+          grep -n "MDConfig.noStickers" MDGram/app/src/main/java/org/telegram/messenger/MediaDataController.java
+          echo "=== MD java ==="
+          find MDGram/app/src/main/java/org/telegram/mdgram -name '*.java' | sort
+
+      - name: Gradle wrapper
+        run: |
+          set -e
+          cd MDGram
+          if [ ! -f gradle/wrapper/gradle-wrapper.jar ]; then
+            echo "wrapper.jar нет — генерируем"
+            curl -sSL -o /tmp/gradle.zip https://services.gradle.org/distributions/gradle-7.6-bin.zip
+            unzip -q -o /tmp/gradle.zip -d /opt
+            /opt/gradle-7.6/bin/gradle wrapper --gradle-version 7.6 --distribution-type bin --no-daemon
+          fi
+          chmod +x gradlew
+          ls -la gradle/wrapper/
+
+      - name: Сборка APK
+        run: |
+          set -o pipefail
+          cd MDGram
+          # CI runner ~7Gi: не ставить -Xmx6g
+          export GRADLE_OPTS="-Xmx3g -Dorg.gradle.daemon=false"
+          ./gradlew :app:assembleRelease --no-daemon --stacktrace 2>&1 | tee /tmp/build.log
+          tail -40 /tmp/build.log
+
+      - name: Доказательства в APK
+        run: |
+          set -e
+          APK=$(ls MDGram/app/build/outputs/apk/release/*.apk | head -1)
+          echo "APK=$APK"
+          ls -lh "$APK"
+          sha1sum "$APK" | tee /tmp/apk.sha1
+          unzip -l "$APK" | grep -E "mdgram-revival-v2.txt|classes" | head
+          unzip -p "$APK" assets/mdgram-revival-v2.txt || echo "asset missing"
+          AAPT=$(ls "$ANDROID_SDK_ROOT"/build-tools/*/aapt 2>/dev/null | tail -1)
+          if [ -n "$AAPT" ]; then
+            "$AAPT" dump badging "$APK" | grep -E "package:|application-label" | head
+          fi
+
+      - name: Логи
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mdgram-build-log-${{ github.run_number }}
+          path: /tmp/build.log
+          if-no-files-found: warn
+
+      - name: APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mdgram-apk-${{ github.run_number }}
+          path: MDGram/app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+
+      - name: APK в handof/ и релиз
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          mkdir -p handof apk
+          APK=$(ls MDGram/app/build/outputs/apk/release/*.apk | head -1)
+          cp "$APK" "handof/MDGram-apk-v2.apk"
+          cp "$APK" "apk/MDGram-9.3.3-r30.apk"
+          sha1sum handof/MDGram-apk-v2.apk apk/MDGram-9.3.3-r30.apk
+          git config user.name  "arena-agent"
+          git config user.email "agent@arena.ai"
+          git add -f handof/MDGram-apk-v2.apk apk/MDGram-9.3.3-r30.apk
+          git commit -m "APK MDGram 9.3.3-r30 (сборка ${GITHUB_RUN_NUMBER})" || echo "нечего коммитить"
+          git pull --rebase || true
+          git push || true
+          TAG="mdgram-9.3.3-r30-${GITHUB_RUN_NUMBER}"
+          gh release create "$TAG" handof/MDGram-apk-v2.apk \
+            --title "MDGram 9.3.3-r30 (сборка ${GITHUB_RUN_NUMBER})" \
+            --notes "Сборка из ветки arena/01a08789-meowmdmdmmdd. versionName 9.3.3-r30, AppName MDGram Revival, CHECK_UPDATES=false, drawer MD settings." || \
+          gh release upload "$TAG" handof/MDGram-apk-v2.apk --clobber || true

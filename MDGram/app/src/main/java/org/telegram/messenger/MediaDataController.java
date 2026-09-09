@@ -754,6 +754,9 @@ public class MediaDataController extends BaseController {
     }
 
     public ArrayList<TLRPC.Document> getRecentStickers(int type) {
+        if (org.telegram.mdgram.MDsettings.MDConfig.noStickers) {
+            return new ArrayList<>();
+        }
         ArrayList<TLRPC.Document> arrayList = recentStickers[type];
         if (type == TYPE_PREMIUM_STICKERS) {
             return new ArrayList<>(recentStickers[type]);

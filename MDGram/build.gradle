@@ -12,6 +12,8 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        // JitPack нужен для Moxy и FlycoTabLayout (зависимости МД-слоя)
+        maven { url 'https://jitpack.io' }
     }
 }
 

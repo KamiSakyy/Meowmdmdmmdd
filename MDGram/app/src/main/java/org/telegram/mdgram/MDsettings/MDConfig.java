@@ -3,7 +3,6 @@ package org.telegram.mdgram.MDsettings;
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
-import android.graphics.Typeface$Builder;
 import android.os.Build;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -453,7 +452,7 @@ public abstract class MDConfig {
         Typeface createFromFile;
         if (str != null) {
             if (Build.VERSION.SDK_INT >= 26) {
-                createFromFile = new Typeface$Builder(str).build();
+                createFromFile = new Typeface.Builder(str).build();
             } else {
                 createFromFile = Typeface.createFromFile(str);
             }
@@ -610,5 +609,26 @@ public abstract class MDConfig {
         SharedPreferences.Editor edit = ApplicationLoader.applicationContext.getSharedPreferences("mdconfig", 0).edit();
         edit.putBoolean("showReport", showReport);
         edit.commit();
+    }
+
+    // === MDGram Revival: чистый API сохранения флагов (для новых экранов) ===
+    private static SharedPreferences.Editor mdEditor() {
+        return ApplicationLoader.applicationContext.getSharedPreferences("mdconfig", 0).edit();
+    }
+
+    public static void setBool(String key, boolean value) {
+        mdEditor().putBoolean(key, value).apply();
+    }
+
+    public static void setInt(String key, int value) {
+        mdEditor().putInt(key, value).apply();
+    }
+
+    public static void setFloat(String key, float value) {
+        mdEditor().putFloat(key, value).apply();
+    }
+
+    public static void setString(String key, String value) {
+        mdEditor().putString(key, value).apply();
     }
 }

@@ -5,16 +5,20 @@ plugins {
 // MDGram Revival: движок Telegram 9.3.3 + МД-слой. Нативка — готовые .so (без NDK).
 
 android {
-    namespace 'org.telegram.mdgram'
+    namespace 'org.telegram.messenger'
     compileSdk 33
 
     defaultConfig {
         applicationId 'org.telegram.mdgram'
         minSdk 21
         targetSdk 33
-        versionCode 30275
-        versionName '9.3.3'
+        versionCode 30280
+        versionName '9.3.3-r30'
         multiDexEnabled true
+        // поля, которые ждёт BuildVars из апстрима
+        buildConfigField 'boolean', 'DEBUG_VERSION', 'false'
+        buildConfigField 'boolean', 'DEBUG_PRIVATE_VERSION', 'false'
+        buildConfigField 'boolean', 'BUILD_HOST_IS_WINDOWS', 'false'
         vectorDrawables {
             useSupportLibrary true
         }
@@ -58,6 +62,23 @@ android {
         abortOnError false
         checkReleaseBuilds false
     }
+
+    packagingOptions {
+        pickFirst '**/*.so'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/INDEX.LIST'
+    }
+}
+
+// В проекте лежат исходники RecyclerView из APK (org.telegram патчит
+// DefaultItemAnimator: MoveInfo/ChangeInfo сделаны protected). Поэтому
+// библиотеку из Maven исключаем, иначе dex ругается на дубли классов.
+configurations.all {
+    exclude group: 'androidx.recyclerview', module: 'recyclerview'
 }
 
 dependencies {
@@ -86,6 +107,21 @@ dependencies {
     implementation 'com.android.billingclient:billing:5.1.0'
     implementation 'com.google.code.gson:gson:2.10'
     implementation files('libs/libgsaverification-client.aar')
+
+    // === MDGram: библиотеки, которые использует МД-слой (из декомпила) ===
+    // TODO: координаты/версии проверять при первой сборке
+    implementation 'androidx.appcompat:appcompat:1.6.1'                    // Toolbar
+    implementation 'com.google.android.material:material:1.9.0'            // BottomSheetBehavior
+    // com.ruffian.library:RWidgetHelper:1.0.2 больше нет ни в одном репозитории —
+    // виджеты R* при необходимости переносятся в исходники проекта (см. Views/)
+    implementation 'com.blankj:utilcodex:1.31.1'                           // SizeUtils/KeyboardUtils/...
+    implementation 'io.github.cymchad:BaseRecyclerViewAdapterHelper:3.0.11' // BaseQuickAdapter
+    implementation 'io.github.h07000223:flycoTabLayout:3.0.0'                // SegmentTabLayout (AndroidX-форк, Maven Central)
+    implementation 'com.jakewharton:process-phoenix:2.1.2'  // смена иконки/перезапуск
+    implementation 'org.greenrobot:eventbus:3.3.1'
+    implementation 'cat.ereza:customactivityoncrash:2.4.0'
+    // Moxy (com.github.moxy-community) пока убран: JitPack не отдаёт артефакт.
+    // Вернём, когда дойдём до экранов MD на MVP (ChatHelper).
 
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
 }

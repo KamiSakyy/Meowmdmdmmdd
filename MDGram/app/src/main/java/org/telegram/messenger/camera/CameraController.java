@@ -697,7 +697,10 @@ public class CameraController implements MediaRecorder.OnInfoListener {
         } finally {
             try {
                 if (mediaMetadataRetriever != null) {
-                    mediaMetadataRetriever.release();
+                    try {
+                        mediaMetadataRetriever.release();
+                    } catch (Exception ignore) {
+                    }
                 }
             } catch (Exception e) {
                 FileLog.e(e);

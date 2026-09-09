@@ -1,0 +1,9 @@
+MDGram Revival 9.3.3-r30 (versionCode 30280)
+Branch: arena/01a08789-meowmdmdmmdd
+Proof of source change:
+- AppName / md_app = MDGram Revival
+- CHECK_UPDATES = false
+- drawer item 16 opens MDsetting
+- ghostMode blocks sendTyping + completeReadTask
+- hidePhone in DrawerProfileCell
+- noStickers empties getRecentStickers
