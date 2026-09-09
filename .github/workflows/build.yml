@@ -41,25 +41,30 @@ jobs:
           set -x
           export ANDROID_SDK_ROOT="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
           export ANDROID_HOME="$ANDROID_SDK_ROOT"
-          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+          export JAVA_HOME="${JAVA_HOME_11_X64:-$JAVA_HOME}"
           mkdir -p "$ANDROID_SDK_ROOT"
-          java -version 2>&1 | head -3
-          if ! command -v sdkmanager > /dev/null 2>&1; then
+          java -version 2>&1 | head -2 || true
+          ls "$ANDROID_SDK_ROOT" || true
+          SDKMGR="$(command -v sdkmanager || true)"
+          if [ -z "$SDKMGR" ]; then
             cd /tmp
+            # старый cmdline-tools ( Java 11-совместимый; новые требуют JDK 17 )
             curl -sSL -o cmdtools.zip \
-              https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+              https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip
             unzip -q -o cmdtools.zip -d "$ANDROID_SDK_ROOT"
-            export PATH="$ANDROID_SDK_ROOT/cmdline-tools/bin:$PATH"
-            echo "$ANDROID_SDK_ROOT/cmdline-tools/bin" >> $GITHUB_PATH
+            SDKMGR="$ANDROID_SDK_ROOT/cmdline-tools/bin/sdkmanager"
           fi
-          command -v sdkmanager
-          yes 2>/dev/null | sdkmanager --sdk_root="$ANDROID_SDK_ROOT" --licenses || true
-          sdkmanager --sdk_root="$ANDROID_SDK_ROOT" --install \
+          echo "sdkmanager: $SDKMGR"
+          "$SDKMGR" --version || { echo "::error::sdkmanager не запускается"; exit 1; }
+          yes 2>/dev/null | "$SDKMGR" --sdk_root="$ANDROID_SDK_ROOT" --licenses > /dev/null 2>&1
+          "$SDKMGR" --sdk_root="$ANDROID_SDK_ROOT" --install \
             "platforms;android-33" "platforms;android-31" \
             "build-tools;33.0.0" "build-tools;31.0.0" \
             "ndk;21.4.7075529" "cmake;3.10.2.4988404"
-          sdkmanager --sdk_root="$ANDROID_SDK_ROOT" --list_installed || true
+          st=$?
+          "$SDKMGR" --sdk_root="$ANDROID_SDK_ROOT" --list_installed | head -40 || true
           echo "sdk.dir=$ANDROID_SDK_ROOT" > "$GITHUB_WORKSPACE/android/local.properties"
+          exit $st
 
       - name: Сборка APK
         working-directory: android

@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+  <string name="MD_GenStyle">استایل ها</string>
+  <string name="MD_Mess">فوروارد به پیامرسان</string>
+  <string name="MD_SquareProf">عکس پروفایل کروی/مربع</string>
+  <string name="MD_SquareProfAplly">تعویض به عکس پروفایل کروی/مربع</string>
+  <string name="MD_SquareProfT">گفتگوها</string>
+  <string name="MD_Toolbar">نوار ابزار</string>
+  <string name="MD_Wa">فوروارد به واتساپ</string>
+  <string name="MD_WaBus">فوروارد به واتساپ بیزینس</string>
+  <string name="MD_WaGB">فوروارد به واتساپ</string>
+  <string name="MD_WaMB">فوروارد به واتساپ ام بی</string>
+  <string name="MD_Wayo">فوروارد به YoWhatsapp</string>
+  <string name="MD_fontS">استایل فونت</string>
+  <string name="MD_fontS_sum">تغییر متن استایل فونت</string>
+  <string name="MD_forwa_media">فوروارد رسانه</string>
+  <string name="MD_forwa_texto">فوروارد متن</string>
+  <string name="MD_iconLauncher">آیکون برنامه</string>
+  <string name="md_Conv">مکالمه</string>
+  <string name="md_Mods_Others">دیگر قابلیت ها</string>
+  <string name="md_app">MDGram Messenger</string>
+  <string name="md_general">اصلی</string>
+  <string name="md_home">صفحه‌ی اصلی</string>
+  <string name="md_settings">تنظیمات ام دی گرام</string>
+  <string name="md_settings_title">تنظیمات</string>
+  <string name="md_update">ارتقاء</string>
+  <string name="rc_cretaor">سازنده‌ی ام دی گرام.</string>
+  <string name="rc_drawer_T">کشوی برنامه‌ها.</string>
+  <string name="App_stock">تلگرام</string>
+  <string name="abc_action_bar_up_description">رفتن به بالا</string>
+  <string name="getApp">اطلاعات بیشتر</string>
+</resources>

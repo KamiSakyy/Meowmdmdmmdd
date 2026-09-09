@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+  <string name="MD_GenStyle">Стилі</string>
+  <string name="MD_Mess">Переслати до Messenger</string>
+  <string name="MD_SquareProf">Фото профілю коло/закруглений квадрат</string>
+  <string name="MD_SquareProfAplly">Змінити тип фото профілю коло/закруглений квадрат</string>
+  <string name="MD_SquareProfT">Список чатів</string>
+  <string name="MD_Toolbar">Панель інструментів</string>
+  <string name="MD_Wa">Переслати до WhatsApp</string>
+  <string name="MD_WaBus">Переслати до Wa Business</string>
+  <string name="MD_WaGB">Переслати до YMWhastApp</string>
+  <string name="MD_WaMB">Переслати до MBWhatsApp</string>
+  <string name="MD_Wayo">Переслати до YoWhatsapp</string>
+  <string name="MD_fontS">Стилі шрифтів</string>
+  <string name="MD_fontS_sum">Змінити шрифт</string>
+  <string name="MD_forwa_media">Переслати Медіа</string>
+  <string name="MD_forwa_texto">Надіслати текст</string>
+  <string name="MD_iconLauncher">Іконка лаунчера</string>
+  <string name="md_Conv">Бесіди</string>
+  <string name="md_Mods_Others">Інші моди</string>
+  <string name="md_app">MDGram Messenger</string>
+  <string name="md_general">Загальні</string>
+  <string name="md_home">Головний екран</string>
+  <string name="md_settings">MDGram налаштування</string>
+  <string name="md_settings_title">Налаштування</string>
+  <string name="md_update">Поліпшення</string>
+  <string name="rc_cretaor">Творець MDGRAMYou.</string>
+  <string name="rc_drawer_T">Меню.</string>
+  <string name="App_stock">Telegram</string>
+  <string name="abc_action_bar_up_description">Перейти вгору</string>
+  <string name="getApp">Додатковий інформації</string>
+</resources>

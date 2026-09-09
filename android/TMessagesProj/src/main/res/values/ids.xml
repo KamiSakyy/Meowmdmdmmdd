@@ -1,49 +1,99 @@
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <item name="menu_spoiler" type="id"/>
-    <item name="menu_regular" type="id"/>
-    <item name="menu_bold" type="id"/>
-    <item name="menu_italic" type="id"/>
-    <item name="menu_link" type="id"/>
-    <item name="menu_mono" type="id"/>
-    <item name="menu_strike" type="id"/>
-    <item name="menu_underline" type="id"/>
-    <item name="menu_groupbolditalic" type="id"/>
-    <item name="parent_tag" type="id"/>
-    <item name="object_tag" type="id"/>
-    <item name="spring_tag" type="id"/>
-    <item name="spring_was_translation_x_tag" type="id"/>
-    <item name="fit_width_tag" type="id"/>
-    <item name="index_tag" type="id"/>
-    <item name="svg_tag" type="id"/>
-    <item name="width_tag" type="id"/>
-    <item name="color_key_tag" type="id"/>
-    <item name="current_animation" type="id"/>
-    <item name="acc_action_small_button" type="id"/>
-    <item name="acc_action_msg_options" type="id"/>
-    <item name="acc_action_open_photo" type="id"/>
-    <item name="acc_action_chat_preview" type="id"/>
-    <item name="acc_action_open_forwarded_origin" type="id"/>
-    <item name="shake_animation" type="id"/>
-
-    <item name="timeout_callback" type="id"/>
-
-    <item name="menu_open_bot" type="id"/>
-    <item name="menu_settings" type="id"/>
-    <item name="menu_reload_page" type="id"/>
-    <item name="menu_delete_bot" type="id"/>
-
-    <!-- there are required for focusing order customization on the passcode screen -->
-    <item name="passcode_btn_1" type="id"/>
-    <item name="passcode_btn_2" type="id"/>
-    <item name="passcode_btn_3" type="id"/>
-    <item name="passcode_btn_4" type="id"/>
-    <item name="passcode_btn_5" type="id"/>
-    <item name="passcode_btn_6" type="id"/>
-    <item name="passcode_btn_7" type="id"/>
-    <item name="passcode_btn_8" type="id"/>
-    <item name="passcode_btn_9" type="id"/>
-    <item name="passcode_btn_0" type="id"/>
-    <item name="passcode_btn_fingerprint" type="id"/>
-    <item name="passcode_btn_backspace" type="id"/>
-    <item name="passcode_btn_done" type="id"/>
+  <item name="menu_spoiler" type="id" />
+  <item name="menu_regular" type="id" />
+  <item name="menu_bold" type="id" />
+  <item name="menu_italic" type="id" />
+  <item name="menu_link" type="id" />
+  <item name="menu_mono" type="id" />
+  <item name="menu_strike" type="id" />
+  <item name="menu_underline" type="id" />
+  <item name="menu_groupbolditalic" type="id" />
+  <item name="parent_tag" type="id" />
+  <item name="object_tag" type="id" />
+  <item name="spring_tag" type="id" />
+  <item name="spring_was_translation_x_tag" type="id" />
+  <item name="fit_width_tag" type="id" />
+  <item name="index_tag" type="id" />
+  <item name="svg_tag" type="id" />
+  <item name="width_tag" type="id" />
+  <item name="color_key_tag" type="id" />
+  <item name="current_animation" type="id" />
+  <item name="acc_action_small_button" type="id" />
+  <item name="acc_action_msg_options" type="id" />
+  <item name="acc_action_open_photo" type="id" />
+  <item name="acc_action_chat_preview" type="id" />
+  <item name="acc_action_open_forwarded_origin" type="id" />
+  <item name="shake_animation" type="id" />
+  <item name="timeout_callback" type="id" />
+  <item name="menu_open_bot" type="id" />
+  <item name="menu_settings" type="id" />
+  <item name="menu_reload_page" type="id" />
+  <item name="menu_delete_bot" type="id" />
+  <item name="passcode_btn_1" type="id" />
+  <item name="passcode_btn_2" type="id" />
+  <item name="passcode_btn_3" type="id" />
+  <item name="passcode_btn_4" type="id" />
+  <item name="passcode_btn_5" type="id" />
+  <item name="passcode_btn_6" type="id" />
+  <item name="passcode_btn_7" type="id" />
+  <item name="passcode_btn_8" type="id" />
+  <item name="passcode_btn_9" type="id" />
+  <item name="passcode_btn_0" type="id" />
+  <item name="passcode_btn_fingerprint" type="id" />
+  <item name="passcode_btn_backspace" type="id" />
+  <item name="passcode_btn_done" type="id" />
+  <id name="mdConv" />
+  <id name="mdConvText" />
+  <id name="mdGenText" />
+  <id name="mdGeneral" />
+  <id name="mdHome" />
+  <id name="mdHomeText" />
+  <id name="mdMods" />
+  <id name="mdModsText" />
+  <id name="mdSction" />
+  <id name="mdUpdate" />
+  <id name="mdUpdateText" />
+  <id name="rc_dev" />
+  <id name="telNotify" />
+  <id name="MessageNotify" />
+  <id name="acjtoolbar" />
+  <id name="btn_cancel" />
+  <id name="btn_channel" />
+  <id name="btn_download" />
+  <id name="btn_facebook" />
+  <id name="btn_group" />
+  <id name="btn_web" />
+  <id name="bubble_left" />
+  <id name="bubble_right" />
+  <id name="iv_home_top_search" />
+  <id name="ll_home_search" />
+  <id name="ll_home_search_name" />
+  <id name="mCancelButton" />
+  <id name="mChangelog" />
+  <id name="mChannelButton" />
+  <id name="mFacebookButton" />
+  <id name="mGroupButton" />
+  <id name="mHolder" />
+  <id name="mTittle" />
+  <id name="mUpdateButton" />
+  <id name="mVersion" />
+  <id name="mWebButton" />
+  <id name="style_content" />
+  <id name="telChat" />
+  <id name="telChatText" />
+  <id name="telDatText" />
+  <id name="telData" />
+  <id name="telFilter" />
+  <id name="telFiltext" />
+  <id name="telNotText" />
+  <id name="telPriv" />
+  <id name="telPrivText" />
+  <id name="titleTel" />
+  <id name="title_about" />
+  <id name="title_sub" />
+  <id name="tv_home_hello" />
+  <id name="tv_home_name" />
+  <id name="tv_home_search" />
+  <id name="web" />
 </resources>

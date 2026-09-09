@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+  <string name="MD_GenStyle">Gaya</string>
+  <string name="MD_Mess">Teruskan ke Messenger</string>
+  <string name="MD_SquareProf">Foto profil Bulat/Bulat Persegi</string>
+  <string name="MD_SquareProfAplly">Beralih ke Foto Profil Melingkar/SquareRound</string>
+  <string name="MD_SquareProfT">Daftar Percakapan</string>
+  <string name="MD_Wa">Teruskan ke Whatsapp</string>
+  <string name="MD_WaBus">Teruskan ke Wa Bussines</string>
+  <string name="MD_WaGB">Teruskan ke GBMessenger</string>
+  <string name="MD_WaMB">Teruskan ke MBWhatsapp</string>
+  <string name="MD_Wayo">Teruskan ke YoWhatsapp</string>
+  <string name="MD_fontS">Gaya Font</string>
+  <string name="MD_fontS_sum">Ubah gaya font teks</string>
+  <string name="MD_forwa_media">Teruskan Media</string>
+  <string name="MD_forwa_texto">Teruskan teks</string>
+  <string name="md_Conv">Percakapan</string>
+  <string name="md_Mods_Others">Mod Lainnya</string>
+  <string name="md_app">MDGram Messenger</string>
+  <string name="md_general">Beranda</string>
+  <string name="md_home">Beranda</string>
+  <string name="md_settings">Pengaturan MDGram</string>
+  <string name="md_settings_title">Pengaturan</string>
+  <string name="md_update">Perbaharui</string>
+  <string name="rc_cretaor">Creator MDGram</string>
+  <string name="rc_drawer_T">Drawer</string>
+  <string name="App_stock">Telegram</string>
+  <string name="abc_action_bar_up_description">Kembali ke atas</string>
+</resources>

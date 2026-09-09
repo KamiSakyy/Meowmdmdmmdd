@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+  <string name="MD_GenStyle">शैलियों</string>
+  <string name="MD_Mess">मैसेंजर को फॉरवर्ड करें</string>
+  <string name="MD_SquareProf">प्रोफ़ाइल चित्र प्रकार</string>
+  <string name="MD_SquareProfAplly">गोल/चौकोर प्रोफ़ाइल फ़ोटो पर स्विच करें</string>
+  <string name="MD_SquareProfT">संवाद</string>
+  <string name="MD_Toolbar">टूलबार</string>
+  <string name="MD_Wa">व्हाट्सएप पर फॉरवर्ड करें</string>
+  <string name="MD_WaBus">व्हाट्सअप बिजनेस पर फॉरवर्ड करें</string>
+  <string name="MD_WaGB">व्हाट्सएप पर फॉरवर्ड करें</string>
+  <string name="MD_WaMB">व्हाट्सएप पर फॉरवर्ड करें</string>
+  <string name="MD_Wayo">Yo व्हाट्सएप पर फॉरवर्ड करें</string>
+  <string name="MD_fontS">फॉन्ट स्टाइल</string>
+  <string name="MD_fontS_sum">टेक्स्ट फ़ॉन्ट की शैली बदलें</string>
+  <string name="MD_forwa_media">फॉरवर्ड मीडिया</string>
+  <string name="MD_forwa_texto">फॉरवर्ड टेक्स्ट</string>
+  <string name="MD_iconLauncher">आइकन लांचर</string>
+  <string name="md_Conv">वार्तालाप</string>
+  <string name="md_Mods_Others">अन्य मोड</string>
+  <string name="md_app">MDGram मैसेंजर</string>
+  <string name="md_general">सामान्य</string>
+  <string name="md_home">मुख्य स्क्रीन</string>
+  <string name="md_settings">MDGram समायोजन</string>
+  <string name="md_settings_title">सेटिंग्स</string>
+  <string name="md_update">अपग्रेड करें</string>
+  <string name="rc_cretaor">MDGram के निर्माता</string>
+  <string name="rc_drawer_T">ड्रॉवर</string>
+  <string name="App_stock">टेलीग्राम</string>
+  <string name="abc_action_bar_up_description">वापस जाएं</string>
+  <string name="getApp">अधिक जानकारी</string>
+</resources>

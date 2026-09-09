@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:orientation="vertical" android:id="@null" android:paddingBottom="8.0dp" android:layout_width="match_parent" android:layout_height="match_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt">
+    <FrameLayout android:layout_gravity="bottom" android:id="@id/mHolder" android:paddingTop="16.0dp" android:paddingBottom="16.0dp" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_margin="12.0dp">
+        <LinearLayout android:orientation="vertical" android:padding="16.0dp" android:layout_width="match_parent" android:layout_height="wrap_content">
+            <org.telegram.mdgram.Views.TextViewBoldAccent android:textSize="18.0sp" android:textColor="?android:textColorPrimary" android:gravity="center_horizontal" android:layout_gravity="center_horizontal" android:id="@id/mTittle" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+            <org.telegram.mdgram.Views.TextViewNormal android:gravity="center_horizontal" android:id="@id/MessageNotify" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dp" />
+            <LinearLayout android:gravity="center_horizontal" android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16.0dp">
+                <LinearLayout android:gravity="center" android:layout_gravity="left" android:orientation="horizontal" android:id="@id/mChannelButton" android:background="@drawable/rounded_card" android:padding="8.0dp" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dp" android:foreground="?selectableItemBackground" android:layout_weight="1.0">
+                    <ImageView android:id="@id/btn_channel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="5.0dp" android:src="@drawable/btn_channel" />
+                    <org.telegram.mdgram.Views.TextViewBoldAccent android:textSize="12.0sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="5.0dp" android:text="Channel (Telegram)" />
+                </LinearLayout>
+                <LinearLayout android:gravity="center" android:layout_gravity="right" android:orientation="horizontal" android:id="@id/mGroupButton" android:background="@drawable/rounded_card" android:padding="8.0dp" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dp" android:foreground="?selectableItemBackground" android:layout_weight="1.0">
+                    <ImageView android:id="@id/btn_group" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="5.0dp" android:src="@drawable/btn_group" />
+                    <org.telegram.mdgram.Views.TextViewBoldAccent android:textSize="12.0sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="5.0dp" android:text="Group (Telegram)" />
+                </LinearLayout>
+                <LinearLayout android:gravity="center" android:layout_gravity="right" android:orientation="horizontal" android:id="@id/mFacebookButton" android:background="@drawable/rounded_card" android:padding="8.0dp" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dp" android:foreground="?selectableItemBackground" android:layout_weight="1.0">
+                    <ImageView android:id="@id/btn_facebook" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="5.0dp" android:src="@drawable/btn_faceboo" />
+                    <org.telegram.mdgram.Views.TextViewBoldAccent android:textSize="12.0sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="5.0dp" android:text="Facebook (Page)" />
+                </LinearLayout>
+                <LinearLayout android:gravity="center" android:layout_gravity="left" android:orientation="horizontal" android:id="@id/mWebButton" android:background="@drawable/rounded_card" android:padding="8.0dp" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dp" android:foreground="?selectableItemBackground" android:layout_weight="1.0">
+                    <ImageView android:id="@id/btn_web" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="5.0dp" android:src="@drawable/btn_web" />
+                    <org.telegram.mdgram.Views.TextViewBoldAccent android:textSize="12.0sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="5.0dp" android:text="WebSite Official" />
+                </LinearLayout>
+                <LinearLayout android:gravity="center" android:layout_gravity="left" android:orientation="horizontal" android:id="@id/mCancelButton" android:background="@drawable/rounded_card" android:padding="8.0dp" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dp" android:foreground="?selectableItemBackground" android:layout_weight="1.0">
+                    <ImageView android:id="@id/btn_cancel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="5.0dp" android:src="@drawable/md_cancel" />
+                    <org.telegram.mdgram.Views.TextViewBoldAccent android:textSize="12.0sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="5.0dp" android:text="Cancel" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </FrameLayout>
+</FrameLayout>

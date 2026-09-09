@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+  <string-array name="fonts_names">
+    <item>Default</item>
+    <item>GoogleSans</item>
+    <item>IosFontRegular</item>
+    <item>IosFontRegularBold</item>
+    <item>Font_iOS_(Arabic)</item>
+    <item>LinotteFon</item>
+    <item>LinotteFonBold</item>
+    <item>Rubrik</item>
+    <item>SciFlySans</item>
+    <item>UbuntuTitling</item>
+    <item>VolteRound</item>
+    <item>ExpletusSans</item>
+    <item>SamsungOneUI</item>
+    <item>SamsungOneUIBold</item>
+  </string-array>
+</resources>
