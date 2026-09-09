@@ -10,3 +10,6 @@ jadx_out/
 *.tar.gz
 # Полный декомпил в ветке (source/) — НЕ игнорировать
 !source/jadx/
+
+# Python
+__pycache__/
