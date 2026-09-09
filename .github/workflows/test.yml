@@ -214,46 +214,70 @@ jobs:
           { echo ""; echo "## Подпись"; grep -E "apksigner exit|package:|application-label" $GITHUB_WORKSPACE/test/sign.log | head -6; } >> $GITHUB_WORKSPACE/test/TEST_REPORT.md
           exit 0
 
-      - name: Эмулятор + запуск + логкат
+      - name: Эмулятор вручную + запуск + логкат
         if: env.BUILD_OK == 'true' && env.SIGN_OK == 'true'
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 30
-          target: google_apis
-          arch: x86_64
-          profile: pixel_4
-          emulator-options: -no-snapshot-save -no-window -no-audio -no-boot-anim
-          disable-animations: true
-          script: |
-            set +e
-            {
-              echo "=== install ==="
-              adb install -r work/MDGram-test.apk
-              echo "install exit: $?"
-              adb shell pm list packages | grep mdgram || echo "package NOT found"
-              echo "=== launch ==="
-              adb shell monkey -p org.telegram.mdgram -c android.intent.category.LAUNCHER 1
-              echo "monkey exit: $?"
-              sleep 30
-              echo "=== alive check ==="
-              adb shell pidof org.telegram.mdgram
-              echo "pidof exit: $?"
-              adb shell pidof org.telegram.mdgram > test-alive.txt 2>&1 && echo ALIVE >> test-alive.txt || echo DEAD >> test-alive.txt
-              cat test-alive.txt
-              echo "=== screenshots ==="
-              adb exec-out screencap -p > test/screenshot-1.png
-              echo "shot1 exit: $? size: $(wc -c < test/screenshot-1.png 2>/dev/null || echo 0)"
-              sleep 20
-              adb exec-out screencap -p > test/screenshot-2.png
-              echo "shot2 exit: $?"
-              echo "=== logcat ==="
-              adb logcat -d > test/logcat-full.txt
-              echo "logcat exit: $? size: $(wc -c < test/logcat-full.txt 2>/dev/null || echo 0)"
-              ls -la test/
-            } > test/emulator-script.log 2>&1
-            echo "--- script log tail ---"
-            tail -20 test/emulator-script.log
-            exit 0
+        timeout-minutes: 25
+        run: |
+          set +e
+          {
+            echo "=== KVM check ==="
+            ls -la /dev/kvm || echo "NO /dev/kvm"
+            egrep -c "^flags.*(vmx|svm)" /proc/cpuinfo || echo "no vmx/svm"
+            export ANDROID_HOME="$HOME/android-sdk"
+            export PATH="$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:$PATH"
+            echo "=== sdk packages ==="
+            "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$ANDROID_HOME" "platform-tools" "platforms;android-30" "system-images;android-30;google_apis;x86_64" "emulator" > sdk-install.log 2>&1
+            echo "sdkmanager exit: $?"
+            tail -3 sdk-install.log
+            echo "=== create AVD ==="
+            echo no | "$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager" --sdk_root="$ANDROID_HOME" create avd -n test -k "system-images;android-30;google_apis;x86_64" -d pixel --force
+            echo "avdmanager exit: $?"
+            echo "=== launch ==="
+            "$ANDROID_HOME/emulator/emulator" -avd test -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect -no-snapshot -memory 4096 -cores 2 > emulator-boot.log 2>&1 &
+            echo "emulator pid: $!"
+            echo "=== wait boot ==="
+            timeout 180 adb wait-for-device
+            echo "wait-for-device exit: $?"
+            READY=""
+            for i in $(seq 1 60); do
+              B=$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')
+              if [ "$B" = "1" ]; then READY="yes"; echo "boot completed after ~$((i*10))s"; break; fi
+              [ $((i % 6)) -eq 0 ] && echo "...waiting (boot_completed=$B)"
+              sleep 10
+            done
+            [ -z "$READY" ] && echo "BOOT TIMEOUT"
+            adb shell settings put global window_animation_scale 0 || true
+            adb shell settings put global transition_animation_scale 0 || true
+            adb shell settings put global animator_duration_scale 0 || true
+            echo "=== install ==="
+            cd "$GITHUB_WORKSPACE"
+            adb install -r work/MDGram-test.apk
+            echo "install exit: $?"
+            adb shell pm list packages | grep mdgram || echo "package NOT found"
+            echo "=== launch ==="
+            adb shell monkey -p org.telegram.mdgram -c android.intent.category.LAUNCHER 1
+            echo "monkey exit: $?"
+            sleep 30
+            echo "=== alive ==="
+            adb shell pidof org.telegram.mdgram
+            echo "pidof exit: $?"
+            adb shell pidof org.telegram.mdgram > test-alive.txt 2>&1 && echo ALIVE >> test-alive.txt || echo DEAD >> test-alive.txt
+            cat test-alive.txt
+            echo "=== screenshots ==="
+            adb exec-out screencap -p > test/screenshot-1.png
+            echo "shot1 exit: $? size: $(wc -c < test/screenshot-1.png 2>/dev/null || echo 0)"
+            sleep 20
+            adb exec-out screencap -p > test/screenshot-2.png
+            echo "shot2 exit: $?"
+            echo "=== logcat ==="
+            adb logcat -d > test/logcat-full.txt
+            echo "logcat exit: $? size: $(wc -c < test/logcat-full.txt 2>/dev/null || echo 0)"
+            echo "=== kill emulator ==="
+            adb emu kill || true
+            ls -la test/
+          } > $GITHUB_WORKSPACE/test/emulator-manual.log 2>&1
+          tail -25 $GITHUB_WORKSPACE/test/emulator-manual.log || true
+          exit 0
 
       - name: Вердикт по логам
         if: always()
