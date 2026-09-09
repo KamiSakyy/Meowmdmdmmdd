@@ -93,6 +93,27 @@ jobs:
           git pull --rebase || true
           git push || true
 
+      - name: Архив исходников в handof
+        if: success()
+        run: |
+          set -e
+          mkdir -p handof
+          N=0
+          [ -f handof/VERSION ] && N=$(cat handof/VERSION | tr -d ' \n')
+          NEXT=$((N+1))
+          echo "собираем архив исходника v$NEXT"
+          zip -9 -q -r "handof/MDGram-source-v${NEXT}.zip" \
+              MDGram mod-keystore PROGRESS.md ИНСТРУКЦИЯ.md README.md PORT_PLAN.md \
+              -x "*/.gradle/*" "*/build/*" "*/.git/*" || true
+          echo "$NEXT" > handof/VERSION
+          ls -la handof/
+          git config user.name  "arena-agent"
+          git config user.email "agent@arena.ai"
+          git add -f handof/ || true
+          git commit -m "исходник v${NEXT} (полный архив) в handof" || echo "нечего коммитить"
+          git pull --rebase || true
+          git push || true
+
       - name: APK
         if: always()
         uses: actions/upload-artifact@v4
