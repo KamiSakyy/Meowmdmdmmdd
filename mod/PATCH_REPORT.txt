@@ -1,0 +1,18 @@
+P1 название AppName='MDGram Revival': замен=8, файлов=8
+  apktool_out/res/values/strings.xml
+  apktool_out/res/values-pt-rBR/strings.xml
+  apktool_out/res/values-ar/strings.xml
+  apktool_out/res/values-nl/strings.xml
+  apktool_out/res/values-de/strings.xml
+  apktool_out/res/values-it/strings.xml
+  apktool_out/res/values-ko/strings.xml
+  apktool_out/res/values-es/strings.xml
+P2 OTA URL->127.0.0.1: замен=6, файлов=6
+  apktool_out/smali_classes2/ska$a.smali (1)
+  apktool_out/smali_classes2/pka$a.smali (1)
+  apktool_out/smali_classes2/ip6.smali (1)
+  apktool_out/smali_classes2/ip6$b.smali (1)
+  apktool_out/smali_classes2/pka.smali (1)
+  apktool_out/smali_classes2/ska.smali (1)
+P3 Ab.d0 OFICIAL: OK (apktool_out/smali_classes2/org/telegram/mdgram/Activies/Ab.smali, v1=1)
+INFO: уникальных http-строк в smali: 123 (список в mod/update-url-candidates.txt)

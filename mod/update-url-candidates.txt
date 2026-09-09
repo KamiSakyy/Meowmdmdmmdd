@@ -1,0 +1,100 @@
+%s https://
+%s\nhttps://
+(https://)?t.me/([0-9a-zA-Z_]+)/([0-9]+)/?([0-9]+)?
+(https://)?t.me/([0-9a-zA-Z_]+)\\?(voicechat+)
+(https://)?t.me/c/([0-9]+)/([0-9]+)/?([0-9]+)?
+App measurement deactivated via resources. This method is being deprecated. Please refer to https://firebase.google.com/support/guides/disable-analyti
+IOException during API request to Stripe (%s): %s Please check your internet connection and try again. If this problem persists, you should check Stri
+Invalid Publishable Key: You are using a secret key to create a token, instead of the publishable one. For more info, see https://stripe.com/docs/stri
+Invalid Publishable Key: You must use a valid publishable key to create a token.  For more info, see https://stripe.com/docs/stripe.js.
+Invalid google_app_id. Firebase Analytics disabled. See https://goo.gl/NAOOOI. provided id
+MDCAdapter cannot be null. See also http://www.slf4j.org/codes.html#null_MDCA
+Missing google_app_id. Firebase Analytics disabled. See https://goo.gl/NAOOOI
+No API key provided. (HINT: set your API key using \'Stripe.apiKey = <API-KEY>\'. You can generate API keys from the Stripe web interface. See https:/
+Player is accessed on the wrong thread. See https://exoplayer.dev/issues/player-accessed-on-wrong-thread
+Please set a valid API key. A Firebase API key is required to communicate with Firebase server APIs: It authenticates your project with Google.Please 
+Please set your Application ID. A valid Firebase App ID is required to communicate with Firebase server APIs: It identifies your application with Fire
+Please set your Project ID. A valid Firebase Project ID is required to communicate with Firebase server APIs: It identifies your application with Fire
+See also http://www.slf4j.org/codes.html#replay
+See also http://www.slf4j.org/codes.html#substituteLogger
+See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+See http://www.slf4j.org/codes.html#loggerNameMismatch for an explanation
+See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+See http://www.slf4j.org/codes.html#no_static_mdc_binder for further details.
+See http://www.slf4j.org/codes.html#version_mismatch for further details.
+^(https://)?fragment\\.com(/.*|$)
+^(https://)?t\\.me/iv\\??(/.*|$)
+^(https://)?telegram\\.org/(blog|tour)(/.*|$)
+http://
+http://dashif.org/guidelines/last-segment-number
+http://dashif.org/guidelines/trickmode
+http://maps.google.com/maps
+http://ns.adobe.com/xap/1.0/\u0000
+http://schema.org/CompletedActionStatus
+http://schema.org/FailedActionStatus
+http://schemas.android.com/apk/res-auto
+http://schemas.android.com/apk/res/android
+http://t.me/
+http://www.aparat.com/video/video/embed/vt/frame/showvideo/yes/videohash/%s
+http://www.example.com
+http://www.google.com
+http://www.w3.org/ns/ttml#parameter
+https://
+https://%s/%s/%s
+https://127.0.0.1/richar1993/MDGRAM/main/notify.json
+https://127.0.0.1/richar1993/MDGRAM/main/update_mdgram_playstore
+https://127.0.0.1/richar1993/MDGRAM/main/update_mdgramyou.json
+https://accounts.google.com/o/oauth2/revoke?token=
+https://aomedia.org/emsg/ID3
+https://api.stripe.com
+https://api.twitch.tv/api/channels/%s/access_token
+https://api.twitch.tv/kraken/streams/%s?stream_type=all
+https://app-measurement.com/a
+https://attheme.org?slug=
+https://coub.com/api/v2/coubs/%s.json
+https://developer.apple.com/streaming/emsg-id3
+https://developers.google.com/actions?invocation=
+https://dns.google.com/resolve?name=
+https://duckduckgo.com/?q=translate&ia=web
+https://duckduckgo.com/translation.js?vqd=
+https://firebaseremoteconfig.googleapis.com/v1/projects/%s/namespaces/%s:fetch
+https://fragment.com
+https://fragment.com/username/
+https://google.com/search?
+https://instagram.com/
+https://maps.googleapis
+https://maps.googleapis.com/maps/api/staticmap?center=%.6f,%.6f&zoom=%d&size=%dx%d&maptype=roadmap&scale=%d
+https://maps.googleapis.com/maps/api/staticmap?center=%.6f,%.6f&zoom=%d&size=%dx%d&maptype=roadmap&scale=%d&key=%s
+https://maps.googleapis.com/maps/api/staticmap?center=%.6f,%.6f&zoom=%d&size=%dx%d&maptype=roadmap&scale=%d&markers=color:red%%7Csize:mid%%7C%.6f,%.6f
+https://messenger.telegram.org/
+https://mozilla.cloudflare-dns.com/dns-query?name=
+https://pagead2.googlesyndication.com/pagead/gen_204?id=gmob-apps
+https://play.google.com/store/apps/details?id=org.telegram.mdgram
+https://play.google.com/store/apps/details?id=org.telegram.messenger
+https://player.vimeo.com/video/%s/config
+https://plus.google.com/
+https://rcmods-apps.xyz/
+https://ss3.4sqi.net/img/categories_v2/
+https://static-maps
+https://static-maps.yandex.ru/1.x/?ll=%.6f,%.6f&z=%d&size=%d,%d&l=map&scale=%d&lang=%s
+https://static-maps.yandex.ru/1.x/?ll=%.6f,%.6f&z=%d&size=%d,%d&l=map&scale=%d&pt=%.6f,%.6f,vkbkm&lang=%s
+https://t.me/
+https://t.me/$
+https://t.me/+
+https://t.me/+%s
+https://t.me/+PublicChat
+https://t.me/joinchat/
+https://t.me/mdmods_you
+https://t.me/proxy?
+https://t.me/socks?
+https://telegram.org
+https://telegram.org/deactivate?phone=
+https://telegram.org/dl
+https://telegram.org/embed
+https://tgb-playground.smart-glocal.com/cds/v1/tokenize/card
+https://tgb.smart-glocal.com/cds/v1/tokenize/card
+https://translate.google.com/translate_a/single?dj=1&q=
+https://translate.yandex.net/api/v1/tr.json/translate?id=
+https://twitter.com/
+https://twitter.com/FranJeam20?s=20
+https://twitter.com/correarichar25
