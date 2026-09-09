@@ -101,7 +101,8 @@ dependencies {
     implementation 'cat.ereza:customactivityoncrash:2.4.0'
     implementation 'com.github.moxy-community:Moxy:2.2.2'
     implementation 'com.github.moxy-community:Moxy-AndroidX:2.2.2'
-    kapt 'com.github.moxy-community:Moxy-Compiler:2.2.2'
+    // проект без Kotlin-плагина, поэтому кодогенератор цепляем как annotationProcessor
+    annotationProcessor 'com.github.moxy-community:Moxy-Compiler:2.2.2'
 
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
 }

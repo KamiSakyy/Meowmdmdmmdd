@@ -9,4 +9,10 @@
   <color name="widget_action_text">#75ADE5</color>
   <color name="widget_edit_text">#8D949B</color>
   <color name="primary_text">@color/paletteOnSurfacePrimary</color>
+  <color name="about_background">#080808</color>
+  <color name="about_backgroung_version">@color/paletteSurface_3dp</color>
+  <color name="bg_entry">#16dcdcdc</color>
+  <color name="conversations_text_gray">@color/widget_edit_text</color>
+  <color name="list_item_sub_title">@color/paletteOnSurfaceSecondary</color>
+  <color name="list_item_title">@color/paletteOnSurfacePrimary</color>
 </resources>

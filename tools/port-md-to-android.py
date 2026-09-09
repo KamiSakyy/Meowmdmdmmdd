@@ -77,17 +77,22 @@ def merge_values_names(src, dst, wanted):
 
 
 def merge_values(src, dst):
-    """Добавляет в dst записи с name=md_* (и R-идентификаторы @id/md*)."""
+    """Добавляет в dst все записи из src, которых там нет.
+
+    Логика: res из APK = официальный res 9.3.3 + добавки MDGram.
+    Значит всё, чего нет в официальном проекте — добавка MD (или более свежая
+    правка), это и нужно догнать. Существующие записи не трогаем.
+    """
     global merged_values
+    if src.name == "public.xml":
+        return 0
     try:
         st = ET.parse(src).getroot()
     except ET.ParseError:
-        return
-    want = [e for e in list(st)
-            if (e.get("name") or "").startswith(("md_", "MD_", "rc_"))
-            or ((e.get("name") or "").startswith("md"))]
+        return 0
+    want = [e for e in list(st) if e.get("name")]
     if not want:
-        return
+        return 0
     if dst.exists():
         try:
             dt = ET.parse(dst).getroot()
@@ -108,6 +113,7 @@ def merge_values(src, dst):
         ET.indent(dt)
         ET.ElementTree(dt).write(dst, encoding="utf-8", xml_declaration=True)
         merged_values += added
+    return added
 
 
 TYPE_MAP = {"string-array": "array", "integer-array": "array", "array": "array",
@@ -239,6 +245,47 @@ def resolve_all(passes=3):
     return n
 
 
+MDG_RES = ROOT / "MDGram/app/src/main/res"
+
+
+def is_values(path):
+    """values*/**/*.xml — мержим по записям, остальные файлы копируем целиком."""
+    parts = path.parts
+    return any(p == "values" or p.startswith("values-") for p in parts)
+
+
+def sync_to_mdgram():
+    """Догоняет MDGram/app/src/main/res до android/TMessagesProj/src/main/res.
+
+    MDGram — самостоятельный проект (свой R), поэтому res должен быть тем же,
+    что и в android/. Правило: недостающие файлы копируем, в values* добавляем
+    только записи с новыми name (существующий текст не трогаем).
+    """
+    files = values = 0
+    if not MDG_RES.exists():
+        return 0, 0
+    for src in DST_RES.rglob("*"):
+        if not src.is_file() or is_values(src.relative_to(DST_RES)):
+            continue
+        dst = MDG_RES / src.relative_to(DST_RES)
+        if not dst.exists():
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src, dst)
+            files += 1
+    for src in DST_RES.rglob("values*/**/*.xml"):
+        dst = MDG_RES / src.relative_to(DST_RES)
+        if not dst.exists():
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src, dst)
+            try:
+                values += len(ET.parse(src).getroot())
+            except ET.ParseError:
+                pass
+            continue
+        values += merge_values(src, dst)
+    return files, values
+
+
 def main():
     global copied_assets, synced_java
     print("== 1. Ресурсы МД (md_* + mipmap-иконки) ==")
@@ -291,6 +338,10 @@ def main():
                 shutil.copy2(src, dst)
                 synced_java += 1
     print(f"   синхронизировано java-файлов: {synced_java}")
+
+    print("== 5. Синхронизация android/res -> MDGram/res ==")
+    n_files, n_values = sync_to_mdgram()
+    print(f"   файлов: {n_files}, values-записей: {n_values}")
 
 
 if __name__ == "__main__":
