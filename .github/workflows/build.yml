@@ -143,7 +143,6 @@ jobs:
 
   emulator:
     name: Проверка APK в эмуляторе (${{ matrix.os }})
-    if: hashFiles('.run-emulator') != ''
     runs-on: ${{ matrix.os }}
     needs: build
     timeout-minutes: 45
