@@ -1,0 +1,200 @@
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/mozjpeg/simd/i386/jsimd.c:0: error: undefined reference to 'jconst_idct_float_sse'
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/mozjpeg/simd/i386/jsimd.c:1169: error: undefined reference to 'jsimd_idct_float_sse'
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/mozjpeg/simd/i386/jsimd.c:1172: error: undefined reference to 'jsimd_idct_float_3dnow'
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/mozjpeg/simd/i386/jsimd.c:1186: error: undefined reference to 'jconst_huff_encode_one_block'
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/mozjpeg/simd/i386/jsimd.c:1198: error: undefined reference to 'jsimd_huff_encode_one_block_sse2'
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/mozjpeg/simd/i386/jsimd.c:1224: error: undefined reference to 'jsimd_encode_mcu_AC_first_prepare_sse2'
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/mozjpeg/simd/i386/jsimd.c:1250: error: undefined reference to 'jsimd_encode_mcu_AC_refine_prepare_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_ycc_convert+0x0): error: undefined reference to 'jsimd_extrgb_ycc_convert_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_ycc_convert+0x4): error: undefined reference to 'jsimd_extrgbx_ycc_convert_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_ycc_convert+0x8): error: undefined reference to 'jsimd_extbgr_ycc_convert_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_ycc_convert+0xc): error: undefined reference to 'jsimd_extbgrx_ycc_convert_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_ycc_convert+0x10): error: undefined reference to 'jsimd_extxbgr_ycc_convert_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_ycc_convert+0x14): error: undefined reference to 'jsimd_extxrgb_ycc_convert_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_ycc_convert+0x18): error: undefined reference to 'jsimd_extrgbx_ycc_convert_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_ycc_convert+0x1c): error: undefined reference to 'jsimd_extbgrx_ycc_convert_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_ycc_convert+0x20): error: undefined reference to 'jsimd_extxbgr_ycc_convert_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_ycc_convert+0x24): error: undefined reference to 'jsimd_extxrgb_ycc_convert_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_ycc_convert.8+0x0): error: undefined reference to 'jsimd_extrgb_ycc_convert_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_ycc_convert.8+0x4): error: undefined reference to 'jsimd_extrgbx_ycc_convert_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_ycc_convert.8+0x8): error: undefined reference to 'jsimd_extbgr_ycc_convert_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_ycc_convert.8+0xc): error: undefined reference to 'jsimd_extbgrx_ycc_convert_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_ycc_convert.8+0x10): error: undefined reference to 'jsimd_extxbgr_ycc_convert_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_ycc_convert.8+0x14): error: undefined reference to 'jsimd_extxrgb_ycc_convert_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_ycc_convert.8+0x18): error: undefined reference to 'jsimd_extrgbx_ycc_convert_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_ycc_convert.8+0x1c): error: undefined reference to 'jsimd_extbgrx_ycc_convert_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_ycc_convert.8+0x20): error: undefined reference to 'jsimd_extxbgr_ycc_convert_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_ycc_convert.8+0x24): error: undefined reference to 'jsimd_extxrgb_ycc_convert_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_ycc_convert.9+0x0): error: undefined reference to 'jsimd_extrgb_ycc_convert_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_ycc_convert.9+0x4): error: undefined reference to 'jsimd_extrgbx_ycc_convert_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_ycc_convert.9+0x8): error: undefined reference to 'jsimd_extbgr_ycc_convert_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_ycc_convert.9+0xc): error: undefined reference to 'jsimd_extbgrx_ycc_convert_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_ycc_convert.9+0x10): error: undefined reference to 'jsimd_extxbgr_ycc_convert_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_ycc_convert.9+0x14): error: undefined reference to 'jsimd_extxrgb_ycc_convert_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_ycc_convert.9+0x18): error: undefined reference to 'jsimd_extrgbx_ycc_convert_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_ycc_convert.9+0x1c): error: undefined reference to 'jsimd_extbgrx_ycc_convert_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_ycc_convert.9+0x20): error: undefined reference to 'jsimd_extxbgr_ycc_convert_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_ycc_convert.9+0x24): error: undefined reference to 'jsimd_extxrgb_ycc_convert_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_gray_convert+0x0): error: undefined reference to 'jsimd_extrgb_gray_convert_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_gray_convert+0x4): error: undefined reference to 'jsimd_extrgbx_gray_convert_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_gray_convert+0x8): error: undefined reference to 'jsimd_extbgr_gray_convert_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_gray_convert+0xc): error: undefined reference to 'jsimd_extbgrx_gray_convert_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_gray_convert+0x10): error: undefined reference to 'jsimd_extxbgr_gray_convert_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_gray_convert+0x14): error: undefined reference to 'jsimd_extxrgb_gray_convert_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_gray_convert+0x18): error: undefined reference to 'jsimd_extrgbx_gray_convert_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_gray_convert+0x1c): error: undefined reference to 'jsimd_extbgrx_gray_convert_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_gray_convert+0x20): error: undefined reference to 'jsimd_extxbgr_gray_convert_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_gray_convert+0x24): error: undefined reference to 'jsimd_extxrgb_gray_convert_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_gray_convert.10+0x0): error: undefined reference to 'jsimd_extrgb_gray_convert_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_gray_convert.10+0x4): error: undefined reference to 'jsimd_extrgbx_gray_convert_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_gray_convert.10+0x8): error: undefined reference to 'jsimd_extbgr_gray_convert_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_gray_convert.10+0xc): error: undefined reference to 'jsimd_extbgrx_gray_convert_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_gray_convert.10+0x10): error: undefined reference to 'jsimd_extxbgr_gray_convert_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_gray_convert.10+0x14): error: undefined reference to 'jsimd_extxrgb_gray_convert_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_gray_convert.10+0x18): error: undefined reference to 'jsimd_extrgbx_gray_convert_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_gray_convert.10+0x1c): error: undefined reference to 'jsimd_extbgrx_gray_convert_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_gray_convert.10+0x20): error: undefined reference to 'jsimd_extxbgr_gray_convert_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_gray_convert.10+0x24): error: undefined reference to 'jsimd_extxrgb_gray_convert_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_gray_convert.11+0x0): error: undefined reference to 'jsimd_extrgb_gray_convert_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_gray_convert.11+0x4): error: undefined reference to 'jsimd_extrgbx_gray_convert_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_gray_convert.11+0x8): error: undefined reference to 'jsimd_extbgr_gray_convert_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_gray_convert.11+0xc): error: undefined reference to 'jsimd_extbgrx_gray_convert_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_gray_convert.11+0x10): error: undefined reference to 'jsimd_extxbgr_gray_convert_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_gray_convert.11+0x14): error: undefined reference to 'jsimd_extxrgb_gray_convert_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_gray_convert.11+0x18): error: undefined reference to 'jsimd_extrgbx_gray_convert_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_gray_convert.11+0x1c): error: undefined reference to 'jsimd_extbgrx_gray_convert_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_gray_convert.11+0x20): error: undefined reference to 'jsimd_extxbgr_gray_convert_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_rgb_gray_convert.11+0x24): error: undefined reference to 'jsimd_extxrgb_gray_convert_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_ycc_rgb_convert+0x0): error: undefined reference to 'jsimd_ycc_extrgb_convert_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_ycc_rgb_convert+0x4): error: undefined reference to 'jsimd_ycc_extrgbx_convert_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_ycc_rgb_convert+0x8): error: undefined reference to 'jsimd_ycc_extbgr_convert_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_ycc_rgb_convert+0xc): error: undefined reference to 'jsimd_ycc_extbgrx_convert_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_ycc_rgb_convert+0x10): error: undefined reference to 'jsimd_ycc_extxbgr_convert_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_ycc_rgb_convert+0x14): error: undefined reference to 'jsimd_ycc_extxrgb_convert_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_ycc_rgb_convert+0x18): error: undefined reference to 'jsimd_ycc_extrgbx_convert_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_ycc_rgb_convert+0x1c): error: undefined reference to 'jsimd_ycc_extbgrx_convert_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_ycc_rgb_convert+0x20): error: undefined reference to 'jsimd_ycc_extxbgr_convert_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_ycc_rgb_convert+0x24): error: undefined reference to 'jsimd_ycc_extxrgb_convert_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_ycc_rgb_convert.12+0x0): error: undefined reference to 'jsimd_ycc_extrgb_convert_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_ycc_rgb_convert.12+0x4): error: undefined reference to 'jsimd_ycc_extrgbx_convert_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_ycc_rgb_convert.12+0x8): error: undefined reference to 'jsimd_ycc_extbgr_convert_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_ycc_rgb_convert.12+0xc): error: undefined reference to 'jsimd_ycc_extbgrx_convert_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_ycc_rgb_convert.12+0x10): error: undefined reference to 'jsimd_ycc_extxbgr_convert_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_ycc_rgb_convert.12+0x14): error: undefined reference to 'jsimd_ycc_extxrgb_convert_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_ycc_rgb_convert.12+0x18): error: undefined reference to 'jsimd_ycc_extrgbx_convert_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_ycc_rgb_convert.12+0x1c): error: undefined reference to 'jsimd_ycc_extbgrx_convert_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_ycc_rgb_convert.12+0x20): error: undefined reference to 'jsimd_ycc_extxbgr_convert_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_ycc_rgb_convert.12+0x24): error: undefined reference to 'jsimd_ycc_extxrgb_convert_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_ycc_rgb_convert.13+0x0): error: undefined reference to 'jsimd_ycc_extrgb_convert_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_ycc_rgb_convert.13+0x4): error: undefined reference to 'jsimd_ycc_extrgbx_convert_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_ycc_rgb_convert.13+0x8): error: undefined reference to 'jsimd_ycc_extbgr_convert_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_ycc_rgb_convert.13+0xc): error: undefined reference to 'jsimd_ycc_extbgrx_convert_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_ycc_rgb_convert.13+0x10): error: undefined reference to 'jsimd_ycc_extxbgr_convert_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_ycc_rgb_convert.13+0x14): error: undefined reference to 'jsimd_ycc_extxrgb_convert_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_ycc_rgb_convert.13+0x18): error: undefined reference to 'jsimd_ycc_extrgbx_convert_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_ycc_rgb_convert.13+0x1c): error: undefined reference to 'jsimd_ycc_extbgrx_convert_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_ycc_rgb_convert.13+0x20): error: undefined reference to 'jsimd_ycc_extxbgr_convert_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_ycc_rgb_convert.13+0x24): error: undefined reference to 'jsimd_ycc_extxrgb_convert_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v2_merged_upsample+0x0): error: undefined reference to 'jsimd_h2v2_extrgb_merged_upsample_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v2_merged_upsample+0x4): error: undefined reference to 'jsimd_h2v2_extrgbx_merged_upsample_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v2_merged_upsample+0x8): error: undefined reference to 'jsimd_h2v2_extbgr_merged_upsample_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v2_merged_upsample+0xc): error: undefined reference to 'jsimd_h2v2_extbgrx_merged_upsample_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v2_merged_upsample+0x10): error: undefined reference to 'jsimd_h2v2_extxbgr_merged_upsample_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v2_merged_upsample+0x14): error: undefined reference to 'jsimd_h2v2_extxrgb_merged_upsample_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v2_merged_upsample+0x18): error: undefined reference to 'jsimd_h2v2_extrgbx_merged_upsample_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v2_merged_upsample+0x1c): error: undefined reference to 'jsimd_h2v2_extbgrx_merged_upsample_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v2_merged_upsample+0x20): error: undefined reference to 'jsimd_h2v2_extxbgr_merged_upsample_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v2_merged_upsample+0x24): error: undefined reference to 'jsimd_h2v2_extxrgb_merged_upsample_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v2_merged_upsample.14+0x0): error: undefined reference to 'jsimd_h2v2_extrgb_merged_upsample_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v2_merged_upsample.14+0x4): error: undefined reference to 'jsimd_h2v2_extrgbx_merged_upsample_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v2_merged_upsample.14+0x8): error: undefined reference to 'jsimd_h2v2_extbgr_merged_upsample_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v2_merged_upsample.14+0xc): error: undefined reference to 'jsimd_h2v2_extbgrx_merged_upsample_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v2_merged_upsample.14+0x10): error: undefined reference to 'jsimd_h2v2_extxbgr_merged_upsample_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v2_merged_upsample.14+0x14): error: undefined reference to 'jsimd_h2v2_extxrgb_merged_upsample_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v2_merged_upsample.14+0x18): error: undefined reference to 'jsimd_h2v2_extrgbx_merged_upsample_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v2_merged_upsample.14+0x1c): error: undefined reference to 'jsimd_h2v2_extbgrx_merged_upsample_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v2_merged_upsample.14+0x20): error: undefined reference to 'jsimd_h2v2_extxbgr_merged_upsample_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v2_merged_upsample.14+0x24): error: undefined reference to 'jsimd_h2v2_extxrgb_merged_upsample_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v2_merged_upsample.15+0x0): error: undefined reference to 'jsimd_h2v2_extrgb_merged_upsample_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v2_merged_upsample.15+0x4): error: undefined reference to 'jsimd_h2v2_extrgbx_merged_upsample_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v2_merged_upsample.15+0x8): error: undefined reference to 'jsimd_h2v2_extbgr_merged_upsample_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v2_merged_upsample.15+0xc): error: undefined reference to 'jsimd_h2v2_extbgrx_merged_upsample_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v2_merged_upsample.15+0x10): error: undefined reference to 'jsimd_h2v2_extxbgr_merged_upsample_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v2_merged_upsample.15+0x14): error: undefined reference to 'jsimd_h2v2_extxrgb_merged_upsample_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v2_merged_upsample.15+0x18): error: undefined reference to 'jsimd_h2v2_extrgbx_merged_upsample_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v2_merged_upsample.15+0x1c): error: undefined reference to 'jsimd_h2v2_extbgrx_merged_upsample_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v2_merged_upsample.15+0x20): error: undefined reference to 'jsimd_h2v2_extxbgr_merged_upsample_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v2_merged_upsample.15+0x24): error: undefined reference to 'jsimd_h2v2_extxrgb_merged_upsample_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v1_merged_upsample+0x0): error: undefined reference to 'jsimd_h2v1_extrgb_merged_upsample_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v1_merged_upsample+0x4): error: undefined reference to 'jsimd_h2v1_extrgbx_merged_upsample_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v1_merged_upsample+0x8): error: undefined reference to 'jsimd_h2v1_extbgr_merged_upsample_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v1_merged_upsample+0xc): error: undefined reference to 'jsimd_h2v1_extbgrx_merged_upsample_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v1_merged_upsample+0x10): error: undefined reference to 'jsimd_h2v1_extxbgr_merged_upsample_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v1_merged_upsample+0x14): error: undefined reference to 'jsimd_h2v1_extxrgb_merged_upsample_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v1_merged_upsample+0x18): error: undefined reference to 'jsimd_h2v1_extrgbx_merged_upsample_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v1_merged_upsample+0x1c): error: undefined reference to 'jsimd_h2v1_extbgrx_merged_upsample_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v1_merged_upsample+0x20): error: undefined reference to 'jsimd_h2v1_extxbgr_merged_upsample_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v1_merged_upsample+0x24): error: undefined reference to 'jsimd_h2v1_extxrgb_merged_upsample_avx2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v1_merged_upsample.16+0x0): error: undefined reference to 'jsimd_h2v1_extrgb_merged_upsample_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v1_merged_upsample.16+0x4): error: undefined reference to 'jsimd_h2v1_extrgbx_merged_upsample_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v1_merged_upsample.16+0x8): error: undefined reference to 'jsimd_h2v1_extbgr_merged_upsample_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v1_merged_upsample.16+0xc): error: undefined reference to 'jsimd_h2v1_extbgrx_merged_upsample_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v1_merged_upsample.16+0x10): error: undefined reference to 'jsimd_h2v1_extxbgr_merged_upsample_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v1_merged_upsample.16+0x14): error: undefined reference to 'jsimd_h2v1_extxrgb_merged_upsample_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v1_merged_upsample.16+0x18): error: undefined reference to 'jsimd_h2v1_extrgbx_merged_upsample_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v1_merged_upsample.16+0x1c): error: undefined reference to 'jsimd_h2v1_extbgrx_merged_upsample_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v1_merged_upsample.16+0x20): error: undefined reference to 'jsimd_h2v1_extxbgr_merged_upsample_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v1_merged_upsample.16+0x24): error: undefined reference to 'jsimd_h2v1_extxrgb_merged_upsample_sse2'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v1_merged_upsample.17+0x0): error: undefined reference to 'jsimd_h2v1_extrgb_merged_upsample_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v1_merged_upsample.17+0x4): error: undefined reference to 'jsimd_h2v1_extrgbx_merged_upsample_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v1_merged_upsample.17+0x8): error: undefined reference to 'jsimd_h2v1_extbgr_merged_upsample_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v1_merged_upsample.17+0xc): error: undefined reference to 'jsimd_h2v1_extbgrx_merged_upsample_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v1_merged_upsample.17+0x10): error: undefined reference to 'jsimd_h2v1_extxbgr_merged_upsample_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v1_merged_upsample.17+0x14): error: undefined reference to 'jsimd_h2v1_extxrgb_merged_upsample_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v1_merged_upsample.17+0x18): error: undefined reference to 'jsimd_h2v1_extrgbx_merged_upsample_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v1_merged_upsample.17+0x1c): error: undefined reference to 'jsimd_h2v1_extbgrx_merged_upsample_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v1_merged_upsample.17+0x20): error: undefined reference to 'jsimd_h2v1_extxbgr_merged_upsample_mmx'
+libmozjpeg.a(jsimd.c.o)(.data.rel.ro..Lswitch.table.jsimd_h2v1_merged_upsample.17+0x24): error: undefined reference to 'jsimd_h2v1_extxrgb_merged_upsample_mmx'
+clang++: error: linker command failed with exit code 1 (use -v to see invocation)
+ninja: build stopped: subcommand failed.
+
+C++ build system [build] failed while executing:
+    /usr/local/lib/android/sdk/cmake/3.22.1/bin/ninja \
+      -C \
+      /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/.cxx/RelWithDebInfo/3pb235i4/x86 \
+      tmessages.42
+  from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app
+	at com.android.build.gradle.internal.cxx.process.ExecuteProcessKt.execute(ExecuteProcess.kt:274)
+	at com.android.build.gradle.internal.cxx.process.ExecuteProcessKt$executeProcess$1.invoke(ExecuteProcess.kt:106)
+	at com.android.build.gradle.internal.cxx.process.ExecuteProcessKt$executeProcess$1.invoke(ExecuteProcess.kt:104)
+	at com.android.build.gradle.internal.cxx.timing.TimingEnvironmentKt.time(TimingEnvironment.kt:32)
+	at com.android.build.gradle.internal.cxx.process.ExecuteProcessKt.executeProcess(ExecuteProcess.kt:104)
+	at com.android.build.gradle.internal.cxx.process.ExecuteProcessKt.executeProcess$default(ExecuteProcess.kt:84)
+	at com.android.build.gradle.internal.cxx.build.CxxRegularBuilder.executeProcessBatch(CxxRegularBuilder.kt:331)
+	at com.android.build.gradle.internal.cxx.build.CxxRegularBuilder.build(CxxRegularBuilder.kt:128)
+	at com.android.build.gradle.tasks.ExternalNativeBuildTask$doTaskAction$$inlined$recordTaskAction$1.invoke(BaseTask.kt:70)
+	at com.android.build.gradle.internal.tasks.Blocks.recordSpan(Blocks.java:51)
+	at com.android.build.gradle.tasks.ExternalNativeBuildTask.doTaskAction(ExternalNativeBuildTask.kt:140)
+	at com.android.build.gradle.internal.tasks.UnsafeOutputsTask$taskAction$$inlined$recordTaskAction$1.invoke(BaseTask.kt:65)
+	at com.android.build.gradle.internal.tasks.Blocks.recordSpan(Blocks.java:51)
+	at com.android.build.gradle.internal.tasks.UnsafeOutputsTask.taskAction(UnsafeOutputsTask.kt:63)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at org.gradle.internal.reflect.JavaMethod.invoke(JavaMethod.java:125)
+	... 112 more
+Caused by: com.android.ide.common.process.ProcessException: Error while executing process /usr/local/lib/android/sdk/cmake/3.22.1/bin/ninja with arguments {-C /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/.cxx/RelWithDebInfo/3pb235i4/x86 tmessages.42}
+	at com.android.build.gradle.internal.process.GradleProcessResult.buildProcessException(GradleProcessResult.java:73)
+	at com.android.build.gradle.internal.process.GradleProcessResult.assertNormalExitValue(GradleProcessResult.java:48)
+	at com.android.build.gradle.internal.cxx.process.ExecuteProcessKt.execute(ExecuteProcess.kt:269)
+	... 129 more
+Caused by: org.gradle.process.internal.ExecException: Process 'command '/usr/local/lib/android/sdk/cmake/3.22.1/bin/ninja'' finished with non-zero exit value 1
+	at org.gradle.process.internal.DefaultExecHandle$ExecResultImpl.assertNormalExitValue(DefaultExecHandle.java:415)
+	at com.android.build.gradle.internal.process.GradleProcessResult.assertNormalExitValue(GradleProcessResult.java:46)
+	... 130 more
+
+
+* Get more help at https://help.gradle.org
+
+BUILD FAILED in 23m 33s
+6 actionable tasks: 6 executed
