@@ -48,6 +48,7 @@ jobs:
           SRC="${{ inputs.apk_source }}"
           [ -z "$SRC" ] && SRC="apkpure"
           echo "Источник: $SRC"
+          echo "APK_SRC=$SRC" >> "$GITHUB_ENV"
           if [ "$SRC" = "aptoide" ]; then
             curl -sL --retry 3 -A "Mozilla/5.0" -o MDGram-9.3.3.apk "$APTOIDE_URL"
             echo "$APTOIDE_MD5  MDGram-9.3.3.apk" | md5sum -c -
