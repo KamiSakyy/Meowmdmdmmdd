@@ -1,0 +1,669 @@
+Downloading https://services.gradle.org/distributions/gradle-7.6-bin.zip
+...........10%............20%...........30%............40%............50%...........60%............70%............80%...........90%............100%
+
+Welcome to Gradle 7.6!
+
+Here are the highlights of this release:
+ - Added support for Java 19.
+ - Introduced `--rerun` flag for individual task rerun.
+ - Improved dependency block for test suites to be strongly typed.
+ - Added a pluggable system for Java toolchains provisioning.
+
+For more details see https://docs.gradle.org/7.6/release-notes.html
+
+To honour the JVM settings for this build a single-use Daemon process will be forked. See https://docs.gradle.org/7.6/userguide/gradle_daemon.html#sec:disabling_the_daemon.
+Daemon will be stopped at the end of the build 
+Checking the license for package Android SDK Build-Tools 30.0.3 in /usr/local/lib/android/sdk/licenses
+License for package Android SDK Build-Tools 30.0.3 accepted.
+Preparing "Install Android SDK Build-Tools 30.0.3 (revision: 30.0.3)".
+"Install Android SDK Build-Tools 30.0.3 (revision: 30.0.3)" ready.
+Installing Android SDK Build-Tools 30.0.3 in /usr/local/lib/android/sdk/build-tools/30.0.3
+"Install Android SDK Build-Tools 30.0.3 (revision: 30.0.3)" complete.
+"Install Android SDK Build-Tools 30.0.3 (revision: 30.0.3)" finished.
+Checking the license for package Android SDK Platform 33 in /usr/local/lib/android/sdk/licenses
+License for package Android SDK Platform 33 accepted.
+Preparing "Install Android SDK Platform 33 (revision: 3)".
+"Install Android SDK Platform 33 (revision: 3)" ready.
+Installing Android SDK Platform 33 in /usr/local/lib/android/sdk/platforms/android-33
+"Install Android SDK Platform 33 (revision: 3)" complete.
+"Install Android SDK Platform 33 (revision: 3)" finished.
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :app:mergeReleaseJniLibFolders
+
+> Task :app:mergeReleaseNativeLibs
+WARNING:Your project has set `android.useAndroidX=true`, but configuration `:app:releaseRuntimeClasspath` still contains legacy support libraries, which may cause runtime issues.
+This behavior will not be allowed in Android Gradle plugin 8.0.
+Please use only AndroidX dependencies or set `android.enableJetifier=true` in the `gradle.properties` file to migrate your project to AndroidX (see https://developer.android.com/jetpack/androidx/migrate for more info).
+The following legacy support libraries are detected:
+:app:releaseRuntimeClasspath -> com.stripe:stripe-android:2.0.2 -> com.android.support:support-annotations:25.1.0
+
+> Task :app:stripReleaseDebugSymbols
+Unable to strip the following libraries, packaging them as they are: liblanguage_id_jni.so, liblanguage_id_l2c_jni.so, libtmessages.42.so.
+
+> Task :app:extractReleaseNativeSymbolTables
+> Task :app:mergeReleaseNativeDebugMetadata NO-SOURCE
+> Task :app:compileReleaseAidl NO-SOURCE
+> Task :app:compileReleaseRenderscript NO-SOURCE
+> Task :app:generateReleaseBuildConfig
+> Task :app:javaPreCompileRelease
+> Task :app:checkReleaseAarMetadata
+> Task :app:generateReleaseResValues
+> Task :app:desugarReleaseFileDependencies
+> Task :app:mapReleaseSourceSetPaths
+> Task :app:generateReleaseResources
+
+> Task :app:mergeReleaseResources
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/res/values/strings.xml:1340:2: Multiple substitutions specified in non-positional format of string resource string/ForwardingFromNameAndMessage. Did you mean to add the formatted="false" attribute?
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/res/values/strings.xml:5774:2: Multiple substitutions specified in non-positional format of string resource string/NotificationTopicExceptionsDesctription_few. Did you mean to add the formatted="false" attribute?
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/res/values/strings.xml:5771:2: Multiple substitutions specified in non-positional format of string resource string/NotificationTopicExceptionsDesctription_many. Did you mean to add the formatted="false" attribute?
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/res/values/strings.xml:5775:2: Multiple substitutions specified in non-positional format of string resource string/NotificationTopicExceptionsDesctription_one. Did you mean to add the formatted="false" attribute?
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/res/values/strings.xml:5772:2: Multiple substitutions specified in non-positional format of string resource string/NotificationTopicExceptionsDesctription_other. Did you mean to add the formatted="false" attribute?
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/res/values/strings.xml:1409:2: Multiple substitutions specified in non-positional format of string resource string/NotificationTopicExceptionsDesctription_two. Did you mean to add the formatted="false" attribute?
+
+> Task :app:createReleaseCompatibleScreenManifests
+> Task :app:extractDeepLinksRelease
+
+> Task :app:mergeReleaseResources
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/res/values-ko/strings.xml:3389:2: Multiple substitutions specified in non-positional format of string resource string/CallEmojiKeyTooltip. Did you mean to add the formatted="false" attribute?
+
+> Task :app:processReleaseMainManifest
+package="org.telegram.messenger" found in source AndroidManifest.xml: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/AndroidManifest.xml.
+Setting the namespace via a source AndroidManifest.xml's package attribute is deprecated.
+Please instead set the namespace (or testNamespace) in the module's build.gradle file, as described here: https://developer.android.com/studio/build/configure-app-module#set-namespace
+This migration can be done automatically using the AGP Upgrade Assistant, please refer to https://developer.android.com/studio/build/agp-upgrade-assistant for more information.
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/AndroidManifest.xml:423:5-428:16 Warning:
+	Element receiver#org.telegram.messenger.ChatsWidgetProvider at AndroidManifest.xml:423:5-428:16 duplicated with element declared at AndroidManifest.xml:313:5-318:16
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/AndroidManifest.xml:429:5-155 Warning:
+	Element service#org.telegram.messenger.ChatsWidgetService at AndroidManifest.xml:429:5-155 duplicated with element declared at AndroidManifest.xml:319:5-155
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/AndroidManifest.xml:430:5-435:16 Warning:
+	Element receiver#org.telegram.messenger.ContactsWidgetProvider at AndroidManifest.xml:430:5-435:16 duplicated with element declared at AndroidManifest.xml:320:5-325:16
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/AndroidManifest.xml:436:5-158 Warning:
+	Element service#org.telegram.messenger.ContactsWidgetService at AndroidManifest.xml:436:5-158 duplicated with element declared at AndroidManifest.xml:326:5-158
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/AndroidManifest.xml:437:5-101 Warning:
+	Element service#org.telegram.messenger.FilesMigrationService at AndroidManifest.xml:437:5-101 duplicated with element declared at AndroidManifest.xml:327:5-101
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/AndroidManifest.xml:61:3-98 Warning:
+	uses-permission#android.permission.WRITE_EXTERNAL_STORAGE was tagged at AndroidManifest.xml:61 to replace another declaration but no other declaration present
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/AndroidManifest.xml:70:3-455:17 Warning:
+	application@android:supportsRtl was tagged at AndroidManifest.xml:70 to replace other declarations but no other declaration present
+
+> Task :app:processReleaseManifest
+> Task :app:processReleaseManifestForPackage
+> Task :app:checkReleaseDuplicateClasses
+> Task :app:mergeExtDexRelease
+> Task :app:mergeReleaseArtProfile
+> Task :app:mergeReleaseShaders
+> Task :app:compileReleaseShaders NO-SOURCE
+> Task :app:generateReleaseAssets UP-TO-DATE
+warn: removing resource org.telegram.mdgram:string/ActionGroupCallEnded without required default value.
+warn: removing resource org.telegram.mdgram:string/ActionGroupCallJustStarted without required default value.
+warn: removing resource org.telegram.mdgram:string/ClearRecentEmoji without required default value.
+warn: removing resource org.telegram.mdgram:string/KeepMediaInfo without required default value.
+warn: removing resource org.telegram.mdgram:string/PermissionNoAudio without required default value.
+warn: removing resource org.telegram.mdgram:string/PermissionNoAudioVideo without required default value.
+warn: removing resource org.telegram.mdgram:string/PermissionNoCamera without required default value.
+warn: removing resource org.telegram.mdgram:string/PermissionStorage without required default value.
+warn: removing resource org.telegram.mdgram:string/PrivacyProfilePhotoInfo2 without required default value.
+warn: removing resource org.telegram.mdgram:string/QRCodePermissionNoCamera without required default value.
+warn: removing resource org.telegram.mdgram:string/TerminateSessionInfo without required default value.
+warn: removing resource org.telegram.mdgram:string/UserRestrictionsDisabled without required default value.
+warn: removing resource org.telegram.mdgram:string/VideoPreviewDesrciption without required default value.
+warn: removing resource org.telegram.mdgram:string/VoipGroupEndedStartNew without required default value.
+warn: removing resource org.telegram.mdgram:string/VoipGroupInvitedToVoiceChat without required default value.
+warn: removing resource org.telegram.mdgram:string/VoipGroupJoinCall without required default value.
+warn: removing resource org.telegram.mdgram:string/VoipGroupMuteMemberAlertText without required default value.
+warn: removing resource org.telegram.mdgram:string/VoipGroupStartAs without required default value.
+warn: removing resource org.telegram.mdgram:string/VoipNeedMicCameraPermission without required default value.
+warn: removing resource org.telegram.mdgram:string/VoipNeedMicPermission without required default value.
+
+> Task :app:mergeReleaseAssets
+> Task :app:processReleaseResources
+> Task :app:compressReleaseAssets
+
+> Task :app:compileReleaseJavaWithJavac
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:665: error: MoveInfo has private access in DefaultItemAnimator
+    protected void animateMoveImpl(RecyclerView.ViewHolder holder, MoveInfo moveInfo) {
+                                                                   ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:942: error: ChangeInfo has private access in DefaultItemAnimator
+    void animateChangeImpl(final ChangeInfo changeInfo) {
+                                 ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:1193: error: ChangeInfo has private access in DefaultItemAnimator
+    protected boolean endChangeAnimationIfNecessary(ChangeInfo changeInfo, RecyclerView.ViewHolder item) {
+                                                    ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:1495: error: MoveInfo has private access in DefaultItemAnimator
+    class MoveInfoExtended extends MoveInfo {
+                                   ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:64: error: cannot find symbol
+        translationInterpolator = DEFAULT_INTERPOLATOR;
+        ^
+  symbol:   variable translationInterpolator
+  location: class ChatListItemAnimator
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:65: error: cannot find symbol
+        alwaysCreateMoveAnimationIfPossible = true;
+        ^
+  symbol:   variable alwaysCreateMoveAnimationIfPossible
+  location: class ChatListItemAnimator
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:71: error: mPendingRemovals has private access in DefaultItemAnimator
+        boolean removalsPending = !mPendingRemovals.isEmpty();
+                                   ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:72: error: mPendingMoves has private access in DefaultItemAnimator
+        boolean movesPending = !mPendingMoves.isEmpty();
+                                ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:73: error: mPendingChanges has private access in DefaultItemAnimator
+        boolean changesPending = !mPendingChanges.isEmpty();
+                                  ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:74: error: mPendingAdditions has private access in DefaultItemAnimator
+        boolean additionsPending = !mPendingAdditions.isEmpty();
+                                    ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:81: error: mPendingAdditions has private access in DefaultItemAnimator
+            for (int i = 0; i < mPendingAdditions.size(); i++) {
+                                ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:84: error: mPendingAdditions has private access in DefaultItemAnimator
+                    if (mPendingAdditions.get(i).getLayoutPosition() == itemCount - 1) {
+                        ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:88: error: mPendingAdditions has private access in DefaultItemAnimator
+                    if (mPendingAdditions.get(i).getLayoutPosition() == 0) {
+                        ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:118: error: mPendingRemovals has private access in DefaultItemAnimator
+        boolean removalsPending = !mPendingRemovals.isEmpty();
+                                   ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:119: error: mPendingMoves has private access in DefaultItemAnimator
+        boolean movesPending = !mPendingMoves.isEmpty();
+                                ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:120: error: mPendingChanges has private access in DefaultItemAnimator
+        boolean changesPending = !mPendingChanges.isEmpty();
+                                  ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:121: error: mPendingAdditions has private access in DefaultItemAnimator
+        boolean additionsPending = !mPendingAdditions.isEmpty();
+                                    ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:127: error: mPendingRemovals has private access in DefaultItemAnimator
+        for (RecyclerView.ViewHolder holder : mPendingRemovals) {
+                                              ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:130: error: mPendingRemovals has private access in DefaultItemAnimator
+        mPendingRemovals.clear();
+        ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:133: error: MoveInfo has private access in DefaultItemAnimator
+            final ArrayList<MoveInfo> moves = new ArrayList<>();
+                            ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:134: error: mPendingMoves has private access in DefaultItemAnimator
+            moves.addAll(mPendingMoves);
+                         ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:136: error: mPendingMoves has private access in DefaultItemAnimator
+            mPendingMoves.clear();
+            ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:140: error: MoveInfo has private access in DefaultItemAnimator
+                    for (MoveInfo moveInfo : moves) {
+                         ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:147: error: cannot find symbol
+            if (delayAnimations && removalsPending) {
+                ^
+  symbol:   variable delayAnimations
+  location: class ChatListItemAnimator
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:156: error: ChangeInfo has private access in DefaultItemAnimator
+            final ArrayList<ChangeInfo> changes = new ArrayList<>();
+                            ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:157: error: mPendingChanges has private access in DefaultItemAnimator
+            changes.addAll(mPendingChanges);
+                           ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:159: error: mPendingChanges has private access in DefaultItemAnimator
+            mPendingChanges.clear();
+            ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:163: error: ChangeInfo has private access in DefaultItemAnimator
+                    for (ChangeInfo change : changes) {
+                         ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:170: error: cannot find symbol
+            if (delayAnimations && removalsPending) {
+                ^
+  symbol:   variable delayAnimations
+  location: class ChatListItemAnimator
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:180: error: mPendingAdditions has private access in DefaultItemAnimator
+            additions.addAll(mPendingAdditions);
+                             ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:181: error: mPendingAdditions has private access in DefaultItemAnimator
+            mPendingAdditions.clear();
+            ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:193: error: mPendingRemovals has private access in DefaultItemAnimator
+        boolean removalsPending = !mPendingRemovals.isEmpty();
+                                   ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:194: error: mPendingMoves has private access in DefaultItemAnimator
+        boolean movesPending = !mPendingMoves.isEmpty();
+                                ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:195: error: mPendingChanges has private access in DefaultItemAnimator
+        boolean changesPending = !mPendingChanges.isEmpty();
+                                  ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:196: error: mPendingAdditions has private access in DefaultItemAnimator
+        boolean additionsPending = !mPendingAdditions.isEmpty();
+                                    ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:203: error: mPendingAdditions has private access in DefaultItemAnimator
+        for (int i = 0; i < mPendingAdditions.size(); i++) {
+                            ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:204: error: mPendingAdditions has private access in DefaultItemAnimator
+            View view = mPendingAdditions.get(i).itemView;
+                        ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:211: error: mPendingAdditions has private access in DefaultItemAnimator
+            addedItemsHeight += mPendingAdditions.get(i).itemView.getHeight();
+                                ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:214: error: mPendingRemovals has private access in DefaultItemAnimator
+        for (RecyclerView.ViewHolder holder : mPendingRemovals) {
+                                              ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:217: error: mPendingRemovals has private access in DefaultItemAnimator
+        mPendingRemovals.clear();
+        ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:219: error: MoveInfo has private access in DefaultItemAnimator
+            final ArrayList<MoveInfo> moves = new ArrayList<>();
+                            ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:220: error: mPendingMoves has private access in DefaultItemAnimator
+            moves.addAll(mPendingMoves);
+                         ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:221: error: mPendingMoves has private access in DefaultItemAnimator
+            mPendingMoves.clear();
+            ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:222: error: MoveInfo has private access in DefaultItemAnimator
+            for (MoveInfo moveInfo : moves) {
+                 ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:230: error: mPendingAdditions has private access in DefaultItemAnimator
+            additions.addAll(mPendingAdditions);
+                             ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:231: error: mPendingAdditions has private access in DefaultItemAnimator
+            mPendingAdditions.clear();
+            ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:245: error: mPendingAdditions has private access in DefaultItemAnimator
+            for (int i = 0; i < mPendingAdditions.size(); i++) {
+                                ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:247: error: mPendingAdditions has private access in DefaultItemAnimator
+                if (mPendingAdditions.get(i).getLayoutPosition() == 0) {
+                    ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:253: error: mPendingAdditions has private access in DefaultItemAnimator
+                for (int i = 0; i < mPendingAdditions.size(); i++) {
+                                    ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:254: error: mPendingAdditions has private access in DefaultItemAnimator
+                    addedItemsHeight += mPendingAdditions.get(i).itemView.getHeight();
+                                        ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:258: error: mPendingAdditions has private access in DefaultItemAnimator
+            for (int i = 0; i < mPendingAdditions.size(); i++) {
+                                ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:259: error: mPendingAdditions has private access in DefaultItemAnimator
+                mPendingAdditions.get(i).itemView.setTranslationY(addedItemsHeight);
+                ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:277: error: mPendingAdditions has private access in DefaultItemAnimator
+        mPendingAdditions.add(holder);
+        ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:310: error: cannot find symbol
+                .setInterpolator(translationInterpolator)
+                                 ^
+  symbol:   variable translationInterpolator
+  location: class ChatListItemAnimator
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:339: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:344: error: method animateRemove in class DefaultItemAnimator cannot be applied to given types;
+        boolean rez = super.animateRemove(holder, info);
+                           ^
+  required: ViewHolder
+  found: ViewHolder,ItemHolderInfo
+  reason: actual and formal argument lists differ in length
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:379: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:430: error: mPendingMoves has private access in DefaultItemAnimator
+                mPendingMoves.add(moveInfo);
+                ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:430: error: incompatible types: ChatListItemAnimator.MoveInfoExtended cannot be converted to MoveInfo
+                mPendingMoves.add(moveInfo);
+                                  ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:431: error: cannot find symbol
+                checkIsRunning();
+                ^
+  symbol:   method checkIsRunning()
+  location: class ChatListItemAnimator
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:659: error: mPendingMoves has private access in DefaultItemAnimator
+        mPendingMoves.add(moveInfo);
+        ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:659: error: incompatible types: ChatListItemAnimator.MoveInfoExtended cannot be converted to MoveInfo
+        mPendingMoves.add(moveInfo);
+                          ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:660: error: cannot find symbol
+        checkIsRunning();
+        ^
+  symbol:   method checkIsRunning()
+  location: class ChatListItemAnimator
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:664: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:851: error: cannot find symbol
+        if (translationInterpolator != null) {
+            ^
+  symbol:   variable translationInterpolator
+  location: class ChatListItemAnimator
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:852: error: cannot find symbol
+            animatorSet.setInterpolator(translationInterpolator);
+                                        ^
+  symbol:   variable translationInterpolator
+  location: class ChatListItemAnimator
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:888: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:893: error: resetAnimation(ViewHolder) has private access in DefaultItemAnimator
+        super.resetAnimation(holder);
+             ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:896: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:937: error: ChangeInfo has private access in DefaultItemAnimator
+        mPendingChanges.add(new ChangeInfo(oldHolder, newHolder, fromX, fromY, toX, toY));
+                                ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:937: error: mPendingChanges has private access in DefaultItemAnimator
+        mPendingChanges.add(new ChangeInfo(oldHolder, newHolder, fromX, fromY, toX, toY));
+        ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:938: error: cannot find symbol
+        checkIsRunning();
+        ^
+  symbol:   method checkIsRunning()
+  location: class ChatListItemAnimator
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:1035: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:1037: error: cannot find symbol
+        super.onAllAnimationsDone();
+             ^
+  symbol: method onAllAnimationsDone()
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:1114: error: mPendingMoves has private access in DefaultItemAnimator
+        int count = mPendingMoves.size();
+                    ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:1116: error: MoveInfo has private access in DefaultItemAnimator
+            MoveInfo item = mPendingMoves.get(i);
+            ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:1116: error: mPendingMoves has private access in DefaultItemAnimator
+            MoveInfo item = mPendingMoves.get(i);
+                            ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:1120: error: mPendingMoves has private access in DefaultItemAnimator
+            mPendingMoves.remove(i);
+            ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:1122: error: mPendingRemovals has private access in DefaultItemAnimator
+        count = mPendingRemovals.size();
+                ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:1124: error: mPendingRemovals has private access in DefaultItemAnimator
+            RecyclerView.ViewHolder item = mPendingRemovals.get(i);
+                                           ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:1127: error: mPendingRemovals has private access in DefaultItemAnimator
+            mPendingRemovals.remove(i);
+            ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:1129: error: mPendingAdditions has private access in DefaultItemAnimator
+        count = mPendingAdditions.size();
+                ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:1131: error: mPendingAdditions has private access in DefaultItemAnimator
+            RecyclerView.ViewHolder item = mPendingAdditions.get(i);
+                                           ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:1134: error: mPendingAdditions has private access in DefaultItemAnimator
+            mPendingAdditions.remove(i);
+            ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:1136: error: mPendingChanges has private access in DefaultItemAnimator
+        count = mPendingChanges.size();
+                ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:1138: error: method endChangeAnimationIfNecessary in class ChatListItemAnimator cannot be applied to given types;
+            endChangeAnimationIfNecessary(mPendingChanges.get(i));
+            ^
+  required: ChangeInfo,ViewHolder
+  found: ChangeInfo
+  reason: actual and formal argument lists differ in length
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:1138: error: mPendingChanges has private access in DefaultItemAnimator
+            endChangeAnimationIfNecessary(mPendingChanges.get(i));
+                                          ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:1140: error: mPendingChanges has private access in DefaultItemAnimator
+        mPendingChanges.clear();
+        ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:1147: error: MoveInfo has private access in DefaultItemAnimator
+            ArrayList<MoveInfo> moves = mMovesList.get(i);
+                      ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:1150: error: MoveInfo has private access in DefaultItemAnimator
+                MoveInfo moveInfo = moves.get(j);
+                ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:1176: error: ChangeInfo has private access in DefaultItemAnimator
+            ArrayList<ChangeInfo> changes = mChangesList.get(i);
+                      ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:1469: error: mPendingRemovals has private access in DefaultItemAnimator
+            return mPendingRemovals.contains(holder) || mRemoveAnimations.contains(holder);
+                   ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/androidx/recyclerview/widget/ChatListItemAnimator.java:1480: error: mPendingAdditions has private access in DefaultItemAnimator
+            return mPendingAdditions.contains(holder) || mAddAnimations.contains(holder);
+                   ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/org/telegram/ui/Components/RecyclerListView.java:328: error: notifyDataSetChanged() in SectionsAdapter cannot override notifyDataSetChanged() in Adapter
+        public void notifyDataSetChanged() {
+                    ^
+  overridden method is final
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/org/telegram/ui/Components/RecyclerListView.java:1377: error: cannot find symbol
+        setGlowColor(getThemedColor(Theme.key_actionBarDefault));
+        ^
+  symbol:   method setGlowColor(int)
+  location: class RecyclerListView
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/org/telegram/ui/PhotoViewer.java:1427: error: method does not override or implement a method from a supertype
+                @Override
+                ^
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/org/telegram/ui/PhotoViewer.java:1432: error: cannot find symbol
+            defaultItemAnimator.setDelayAnimations(false);
+                               ^
+  symbol:   method setDelayAnimations(boolean)
+  location: variable defaultItemAnimator of type DefaultItemAnimator
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/org/telegram/ui/Components/StickersAlert.java:710: error: cannot find symbol
+        gridView.setGlowColor(getThemedColor(Theme.key_dialogScrollGlow));
+                ^
+  symbol:   method setGlowColor(int)
+  location: variable gridView of type RecyclerListView
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/org/telegram/ui/Components/ShareAlert.java:567: error: cannot find symbol
+                        gridView.setTopGlowOffset((int) (currentPanTranslationY + scrollOffsetY));
+                                ^
+  symbol:   method setTopGlowOffset(int)
+  location: variable gridView of type RecyclerListView
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/java/org/telegram/ui/Components/ShareAlert.java:578: error: cannot find symbol
+                        gridView.setTopGlowOffset(scrollOffsetY);
+                                ^
+  symbol:   method setTopGlowOffset(int)
+  location: variable gridView of type RecyclerListView
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: Some input files use unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+100 errors
+
+> Task :app:compileReleaseJavaWithJavac FAILED
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileReleaseJavaWithJavac'.
+> Compilation failed; see the compiler error output for details.
+
+* Try:
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+
+* Exception is:
+org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':app:compileReleaseJavaWithJavac'.
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.lambda$executeIfValid$1(ExecuteActionsTaskExecuter.java:142)
+	at org.gradle.internal.Try$Failure.ifSuccessfulOrElse(Try.java:282)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.executeIfValid(ExecuteActionsTaskExecuter.java:140)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.execute(ExecuteActionsTaskExecuter.java:128)
+	at org.gradle.api.internal.tasks.execution.CleanupStaleOutputsExecuter.execute(CleanupStaleOutputsExecuter.java:77)
+	at org.gradle.api.internal.tasks.execution.FinalizePropertiesTaskExecuter.execute(FinalizePropertiesTaskExecuter.java:46)
+	at org.gradle.api.internal.tasks.execution.ResolveTaskExecutionModeExecuter.execute(ResolveTaskExecutionModeExecuter.java:51)
+	at org.gradle.api.internal.tasks.execution.SkipTaskWithNoActionsExecuter.execute(SkipTaskWithNoActionsExecuter.java:57)
+	at org.gradle.api.internal.tasks.execution.SkipOnlyIfTaskExecuter.execute(SkipOnlyIfTaskExecuter.java:57)
+	at org.gradle.api.internal.tasks.execution.CatchExceptionTaskExecuter.execute(CatchExceptionTaskExecuter.java:36)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.executeTask(EventFiringTaskExecuter.java:77)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:55)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:52)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:204)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:199)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:157)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:53)
+	at org.gradle.internal.operations.DefaultBuildOperationExecutor.call(DefaultBuildOperationExecutor.java:73)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter.execute(EventFiringTaskExecuter.java:52)
+	at org.gradle.execution.plan.LocalTaskNodeExecutor.execute(LocalTaskNodeExecutor.java:69)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:322)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:309)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:302)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:288)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.execute(DefaultPlanExecutor.java:462)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.run(DefaultPlanExecutor.java:379)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+	at org.gradle.internal.concurrent.ManagedExecutorImpl$1.run(ManagedExecutorImpl.java:49)
+Caused by: org.gradle.api.internal.tasks.compile.CompilationFailedException: Compilation failed; see the compiler error output for details.
+	at org.gradle.api.internal.tasks.compile.JdkJavaCompiler.execute(JdkJavaCompiler.java:56)
+	at org.gradle.api.internal.tasks.compile.JdkJavaCompiler.execute(JdkJavaCompiler.java:39)
+	at org.gradle.api.internal.tasks.compile.NormalizingJavaCompiler.delegateAndHandleErrors(NormalizingJavaCompiler.java:98)
+	at org.gradle.api.internal.tasks.compile.NormalizingJavaCompiler.execute(NormalizingJavaCompiler.java:52)
+	at org.gradle.api.internal.tasks.compile.NormalizingJavaCompiler.execute(NormalizingJavaCompiler.java:38)
+	at org.gradle.api.internal.tasks.compile.AnnotationProcessorDiscoveringCompiler.execute(AnnotationProcessorDiscoveringCompiler.java:51)
+	at org.gradle.api.internal.tasks.compile.AnnotationProcessorDiscoveringCompiler.execute(AnnotationProcessorDiscoveringCompiler.java:37)
+	at org.gradle.api.internal.tasks.compile.ModuleApplicationNameWritingCompiler.execute(ModuleApplicationNameWritingCompiler.java:46)
+	at org.gradle.api.internal.tasks.compile.ModuleApplicationNameWritingCompiler.execute(ModuleApplicationNameWritingCompiler.java:36)
+	at org.gradle.jvm.toolchain.internal.DefaultToolchainJavaCompiler.execute(DefaultToolchainJavaCompiler.java:57)
+	at org.gradle.api.tasks.compile.JavaCompile.lambda$createToolchainCompiler$1(JavaCompile.java:237)
+	at org.gradle.api.internal.tasks.compile.CleaningJavaCompiler.execute(CleaningJavaCompiler.java:53)
+	at org.gradle.api.internal.tasks.compile.incremental.IncrementalCompilerFactory.lambda$createRebuildAllCompiler$0(IncrementalCompilerFactory.java:52)
+	at org.gradle.api.internal.tasks.compile.incremental.SelectiveCompiler.execute(SelectiveCompiler.java:70)
+	at org.gradle.api.internal.tasks.compile.incremental.SelectiveCompiler.execute(SelectiveCompiler.java:44)
+	at org.gradle.api.internal.tasks.compile.incremental.IncrementalResultStoringCompiler.execute(IncrementalResultStoringCompiler.java:66)
+	at org.gradle.api.internal.tasks.compile.incremental.IncrementalResultStoringCompiler.execute(IncrementalResultStoringCompiler.java:52)
+	at org.gradle.api.internal.tasks.compile.CompileJavaBuildOperationReportingCompiler$2.call(CompileJavaBuildOperationReportingCompiler.java:59)
+	at org.gradle.api.internal.tasks.compile.CompileJavaBuildOperationReportingCompiler$2.call(CompileJavaBuildOperationReportingCompiler.java:51)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:204)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:199)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:157)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:53)
+	at org.gradle.internal.operations.DefaultBuildOperationExecutor.call(DefaultBuildOperationExecutor.java:73)
+	at org.gradle.api.internal.tasks.compile.CompileJavaBuildOperationReportingCompiler.execute(CompileJavaBuildOperationReportingCompiler.java:51)
+	at org.gradle.api.tasks.compile.JavaCompile.performCompilation(JavaCompile.java:288)
+	at org.gradle.api.tasks.compile.JavaCompile.performIncrementalCompilation(JavaCompile.java:170)
+	at org.gradle.api.tasks.compile.JavaCompile.compile(JavaCompile.java:148)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at org.gradle.internal.reflect.JavaMethod.invoke(JavaMethod.java:125)
+	at org.gradle.api.internal.project.taskfactory.IncrementalInputsTaskAction.doExecute(IncrementalInputsTaskAction.java:32)
+	at org.gradle.api.internal.project.taskfactory.StandardTaskAction.execute(StandardTaskAction.java:51)
+	at org.gradle.api.internal.project.taskfactory.AbstractIncrementalTaskAction.execute(AbstractIncrementalTaskAction.java:25)
+	at org.gradle.api.internal.project.taskfactory.StandardTaskAction.execute(StandardTaskAction.java:29)
+	at org.gradle.api.internal.tasks.execution.TaskExecution$3.run(TaskExecution.java:236)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:29)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:26)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:157)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.run(DefaultBuildOperationRunner.java:47)
+	at org.gradle.internal.operations.DefaultBuildOperationExecutor.run(DefaultBuildOperationExecutor.java:68)
+	at org.gradle.api.internal.tasks.execution.TaskExecution.executeAction(TaskExecution.java:221)
+	at org.gradle.api.internal.tasks.execution.TaskExecution.executeActions(TaskExecution.java:204)
+	at org.gradle.api.internal.tasks.execution.TaskExecution.executeWithPreviousOutputFiles(TaskExecution.java:187)
+	at org.gradle.api.internal.tasks.execution.TaskExecution.execute(TaskExecution.java:165)
+	at org.gradle.internal.execution.steps.ExecuteStep.executeInternal(ExecuteStep.java:89)
+	at org.gradle.internal.execution.steps.ExecuteStep.access$000(ExecuteStep.java:40)
+	at org.gradle.internal.execution.steps.ExecuteStep$1.call(ExecuteStep.java:53)
+	at org.gradle.internal.execution.steps.ExecuteStep$1.call(ExecuteStep.java:50)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:204)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:199)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:157)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:53)
+	at org.gradle.internal.operations.DefaultBuildOperationExecutor.call(DefaultBuildOperationExecutor.java:73)
+	at org.gradle.internal.execution.steps.ExecuteStep.execute(ExecuteStep.java:50)
+	at org.gradle.internal.execution.steps.ExecuteStep.execute(ExecuteStep.java:40)
+	at org.gradle.internal.execution.steps.RemovePreviousOutputsStep.execute(RemovePreviousOutputsStep.java:68)
+	at org.gradle.internal.execution.steps.RemovePreviousOutputsStep.execute(RemovePreviousOutputsStep.java:38)
+	at org.gradle.internal.execution.steps.CancelExecutionStep.execute(CancelExecutionStep.java:41)
+	at org.gradle.internal.execution.steps.TimeoutStep.executeWithoutTimeout(TimeoutStep.java:74)
+	at org.gradle.internal.execution.steps.TimeoutStep.execute(TimeoutStep.java:55)
+	at org.gradle.internal.execution.steps.CreateOutputsStep.execute(CreateOutputsStep.java:51)
+	at org.gradle.internal.execution.steps.CreateOutputsStep.execute(CreateOutputsStep.java:29)
+	at org.gradle.internal.execution.steps.CaptureStateAfterExecutionStep.executeDelegateBroadcastingChanges(CaptureStateAfterExecutionStep.java:124)
+	at org.gradle.internal.execution.steps.CaptureStateAfterExecutionStep.execute(CaptureStateAfterExecutionStep.java:80)
+	at org.gradle.internal.execution.steps.CaptureStateAfterExecutionStep.execute(CaptureStateAfterExecutionStep.java:58)
+	at org.gradle.internal.execution.steps.ResolveInputChangesStep.execute(ResolveInputChangesStep.java:48)
+	at org.gradle.internal.execution.steps.ResolveInputChangesStep.execute(ResolveInputChangesStep.java:36)
+	at org.gradle.internal.execution.steps.BuildCacheStep.executeWithoutCache(BuildCacheStep.java:181)
+	at org.gradle.internal.execution.steps.BuildCacheStep.lambda$execute$1(BuildCacheStep.java:71)
+	at org.gradle.internal.Either$Right.fold(Either.java:175)
+	at org.gradle.internal.execution.caching.CachingState.fold(CachingState.java:59)
+	at org.gradle.internal.execution.steps.BuildCacheStep.execute(BuildCacheStep.java:69)
+	at org.gradle.internal.execution.steps.BuildCacheStep.execute(BuildCacheStep.java:47)
+	at org.gradle.internal.execution.steps.StoreExecutionStateStep.execute(StoreExecutionStateStep.java:36)
+	at org.gradle.internal.execution.steps.StoreExecutionStateStep.execute(StoreExecutionStateStep.java:25)
+	at org.gradle.internal.execution.steps.RecordOutputsStep.execute(RecordOutputsStep.java:36)
+	at org.gradle.internal.execution.steps.RecordOutputsStep.execute(RecordOutputsStep.java:22)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.executeBecause(SkipUpToDateStep.java:110)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.lambda$execute$2(SkipUpToDateStep.java:56)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.execute(SkipUpToDateStep.java:56)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.execute(SkipUpToDateStep.java:38)
+	at org.gradle.internal.execution.steps.ResolveChangesStep.execute(ResolveChangesStep.java:73)
+	at org.gradle.internal.execution.steps.ResolveChangesStep.execute(ResolveChangesStep.java:44)
+	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsFinishedStep.execute(MarkSnapshottingInputsFinishedStep.java:37)
+	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsFinishedStep.execute(MarkSnapshottingInputsFinishedStep.java:27)
+	at org.gradle.internal.execution.steps.ResolveCachingStateStep.execute(ResolveCachingStateStep.java:89)
+	at org.gradle.internal.execution.steps.ResolveCachingStateStep.execute(ResolveCachingStateStep.java:50)
+	at org.gradle.internal.execution.steps.ValidateStep.execute(ValidateStep.java:102)
+	at org.gradle.internal.execution.steps.ValidateStep.execute(ValidateStep.java:57)
+	at org.gradle.internal.execution.steps.CaptureStateBeforeExecutionStep.execute(CaptureStateBeforeExecutionStep.java:76)
+	at org.gradle.internal.execution.steps.CaptureStateBeforeExecutionStep.execute(CaptureStateBeforeExecutionStep.java:50)
+	at org.gradle.internal.execution.steps.SkipEmptyWorkStep.executeWithNoEmptySources(SkipEmptyWorkStep.java:254)
+	at org.gradle.internal.execution.steps.SkipEmptyWorkStep.executeWithNoEmptySources(SkipEmptyWorkStep.java:209)
+	at org.gradle.internal.execution.steps.SkipEmptyWorkStep.execute(SkipEmptyWorkStep.java:88)
+	at org.gradle.internal.execution.steps.SkipEmptyWorkStep.execute(SkipEmptyWorkStep.java:56)
+	at org.gradle.internal.execution.steps.RemoveUntrackedExecutionStateStep.execute(RemoveUntrackedExecutionStateStep.java:32)
+	at org.gradle.internal.execution.steps.RemoveUntrackedExecutionStateStep.execute(RemoveUntrackedExecutionStateStep.java:21)
+	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsStartedStep.execute(MarkSnapshottingInputsStartedStep.java:38)
+	at org.gradle.internal.execution.steps.LoadPreviousExecutionStateStep.execute(LoadPreviousExecutionStateStep.java:43)
+	at org.gradle.internal.execution.steps.LoadPreviousExecutionStateStep.execute(LoadPreviousExecutionStateStep.java:31)
+	at org.gradle.internal.execution.steps.AssignWorkspaceStep.lambda$execute$0(AssignWorkspaceStep.java:40)
+	at org.gradle.api.internal.tasks.execution.TaskExecution$4.withWorkspace(TaskExecution.java:281)
+	at org.gradle.internal.execution.steps.AssignWorkspaceStep.execute(AssignWorkspaceStep.java:40)
+	at org.gradle.internal.execution.steps.AssignWorkspaceStep.execute(AssignWorkspaceStep.java:30)
+	at org.gradle.internal.execution.steps.IdentityCacheStep.execute(IdentityCacheStep.java:37)
+	at org.gradle.internal.execution.steps.IdentityCacheStep.execute(IdentityCacheStep.java:27)
+	at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:44)
+	at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:33)
+	at org.gradle.internal.execution.impl.DefaultExecutionEngine$1.execute(DefaultExecutionEngine.java:76)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.executeIfValid(ExecuteActionsTaskExecuter.java:139)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.execute(ExecuteActionsTaskExecuter.java:128)
+	at org.gradle.api.internal.tasks.execution.CleanupStaleOutputsExecuter.execute(CleanupStaleOutputsExecuter.java:77)
+	at org.gradle.api.internal.tasks.execution.FinalizePropertiesTaskExecuter.execute(FinalizePropertiesTaskExecuter.java:46)
+	at org.gradle.api.internal.tasks.execution.ResolveTaskExecutionModeExecuter.execute(ResolveTaskExecutionModeExecuter.java:51)
+	at org.gradle.api.internal.tasks.execution.SkipTaskWithNoActionsExecuter.execute(SkipTaskWithNoActionsExecuter.java:57)
+	at org.gradle.api.internal.tasks.execution.SkipOnlyIfTaskExecuter.execute(SkipOnlyIfTaskExecuter.java:57)
+	at org.gradle.api.internal.tasks.execution.CatchExceptionTaskExecuter.execute(CatchExceptionTaskExecuter.java:36)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.executeTask(EventFiringTaskExecuter.java:77)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:55)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:52)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:204)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:199)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:157)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:53)
+	at org.gradle.internal.operations.DefaultBuildOperationExecutor.call(DefaultBuildOperationExecutor.java:73)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter.execute(EventFiringTaskExecuter.java:52)
+	at org.gradle.execution.plan.LocalTaskNodeExecutor.execute(LocalTaskNodeExecutor.java:69)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:322)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:309)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:302)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:288)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.execute(DefaultPlanExecutor.java:462)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.run(DefaultPlanExecutor.java:379)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+	at org.gradle.internal.concurrent.ManagedExecutorImpl$1.run(ManagedExecutorImpl.java:49)
+
+
+* Get more help at https://help.gradle.org
+
+BUILD FAILED in 2m 57s
+24 actionable tasks: 24 executed
