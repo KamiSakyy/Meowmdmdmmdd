@@ -1,0 +1,50 @@
+package defpackage;
+/* renamed from: k68  reason: default package */
+/* loaded from: classes.dex */
+public abstract class k68 {
+    public static int A = 2131361873;
+    public static int B = 2131361874;
+    public static int C = 2131361875;
+    public static int D = 2131361876;
+    public static int E = 2131361877;
+    public static int F = 2131361878;
+    public static int G = 2131361879;
+    public static int H = 2131362433;
+    public static int I = 2131362434;
+    public static int J = 2131362435;
+    public static int K = 2131362436;
+    public static int L = 2131362437;
+    public static int M = 2131362438;
+    public static int N = 2131362439;
+    public static int O = 2131362440;
+    public static int P = 2131362441;
+    public static int Q = 2131362443;
+    public static int R = 2131362444;
+    public static int S = 2131362445;
+    public static int a = 2131361847;
+    public static int b = 2131361848;
+    public static int c = 2131361849;
+    public static int d = 2131361850;
+    public static int e = 2131361851;
+    public static int f = 2131361852;
+    public static int g = 2131361853;
+    public static int h = 2131361854;
+    public static int i = 2131361855;
+    public static int j = 2131361856;
+    public static int k = 2131361857;
+    public static int l = 2131361858;
+    public static int m = 2131361859;
+    public static int n = 2131361860;
+    public static int o = 2131361861;
+    public static int p = 2131361862;
+    public static int q = 2131361863;
+    public static int r = 2131361864;
+    public static int s = 2131361865;
+    public static int t = 2131361866;
+    public static int u = 2131361867;
+    public static int v = 2131361868;
+    public static int w = 2131361869;
+    public static int x = 2131361870;
+    public static int y = 2131361871;
+    public static int z = 2131361872;
+}

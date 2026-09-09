@@ -1,0 +1,22 @@
+package org.telegram.tgnet;
+/* loaded from: classes2.dex */
+public class TLRPC$TL_photoCachedSize extends lp9 {
+    public static int d = 35527382;
+
+    @Override // org.telegram.tgnet.a
+    public void d(b1 b1Var, boolean z) {
+        ((lp9) this).f9809a = b1Var.readString(z);
+        ((lp9) this).a = b1Var.readInt32(z);
+        this.b = b1Var.readInt32(z);
+        ((lp9) this).f9810a = b1Var.readByteArray(z);
+    }
+
+    @Override // org.telegram.tgnet.a
+    public void e(b1 b1Var) {
+        b1Var.writeInt32(d);
+        b1Var.writeString(((lp9) this).f9809a);
+        b1Var.writeInt32(((lp9) this).a);
+        b1Var.writeInt32(this.b);
+        b1Var.writeByteArray(((lp9) this).f9810a);
+    }
+}

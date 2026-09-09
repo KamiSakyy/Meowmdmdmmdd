@@ -1,0 +1,30 @@
+package j$.util.stream;
+/* renamed from: j$.util.stream.e  reason: case insensitive filesystem */
+/* loaded from: classes4.dex */
+abstract class AbstractC0274e {
+    protected final int a;
+    protected int b;
+    protected int c;
+    protected long[] d;
+
+    /* JADX INFO: Access modifiers changed from: protected */
+    public AbstractC0274e() {
+        this.a = 4;
+    }
+
+    /* JADX INFO: Access modifiers changed from: protected */
+    public AbstractC0274e(int i) {
+        if (i >= 0) {
+            this.a = Math.max(4, 32 - Integer.numberOfLeadingZeros(i - 1));
+            return;
+        }
+        throw new IllegalArgumentException("Illegal Capacity: " + i);
+    }
+
+    public abstract void clear();
+
+    public final long count() {
+        int i = this.c;
+        return i == 0 ? this.b : this.d[i] + this.b;
+    }
+}

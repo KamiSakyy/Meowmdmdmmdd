@@ -1,0 +1,75 @@
+package j$.util;
+
+import j$.util.function.C0218j;
+import j$.util.function.InterfaceC0224m;
+import java.util.Objects;
+/* renamed from: j$.util.i  reason: case insensitive filesystem */
+/* loaded from: classes4.dex */
+public final class C0244i implements InterfaceC0224m {
+    private double a;
+    private double b;
+    private long count;
+    private double sum;
+    private double min = Double.POSITIVE_INFINITY;
+    private double max = Double.NEGATIVE_INFINITY;
+
+    public final void a(C0244i c0244i) {
+        this.count += c0244i.count;
+        this.b += c0244i.b;
+        double d = c0244i.sum - this.a;
+        double d2 = this.sum;
+        double d3 = d2 + d;
+        double d4 = (d3 - d2) - d;
+        this.a = d4;
+        double d5 = c0244i.a - d4;
+        double d6 = d3 + d5;
+        this.a = (d6 - d3) - d5;
+        this.sum = d6;
+        this.min = Math.min(this.min, c0244i.min);
+        this.max = Math.max(this.max, c0244i.max);
+    }
+
+    @Override // j$.util.function.InterfaceC0224m
+    public final void accept(double d) {
+        this.count++;
+        this.b += d;
+        double d2 = d - this.a;
+        double d3 = this.sum;
+        double d4 = d3 + d2;
+        this.a = (d4 - d3) - d2;
+        this.sum = d4;
+        this.min = Math.min(this.min, d);
+        this.max = Math.max(this.max, d);
+    }
+
+    @Override // j$.util.function.InterfaceC0224m
+    public final InterfaceC0224m m(InterfaceC0224m interfaceC0224m) {
+        Objects.requireNonNull(interfaceC0224m);
+        return new C0218j(this, interfaceC0224m);
+    }
+
+    public final String toString() {
+        double d;
+        Object[] objArr = new Object[6];
+        objArr[0] = C0244i.class.getSimpleName();
+        objArr[1] = Long.valueOf(this.count);
+        double d2 = this.sum + this.a;
+        if (Double.isNaN(d2) && Double.isInfinite(this.b)) {
+            d2 = this.b;
+        }
+        objArr[2] = Double.valueOf(d2);
+        objArr[3] = Double.valueOf(this.min);
+        if (this.count > 0) {
+            double d3 = this.sum + this.a;
+            if (Double.isNaN(d3) && Double.isInfinite(this.b)) {
+                d3 = this.b;
+            }
+            d = d3 / this.count;
+        } else {
+            d = 0.0d;
+        }
+        objArr[4] = Double.valueOf(d);
+        objArr[5] = Double.valueOf(this.max);
+        return String.format("%s{count=%d, sum=%f, min=%f, average=%f, max=%f}", objArr);
+    }
+}
