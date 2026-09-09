@@ -8,3 +8,9 @@ drwxr-xr-x 6 runner runner     4096 Sep  9 23:13 ..
 === качаем официальный Telegram 9.3.3 (30275) ===
 скачано: 5501 байт
 официальный APK скачать не удалось
+=== наша .so ===
+md5sum: MDGram/app/src/main/jniLibs/x86_64/libtmessages.42.so: No such file or directory
+ls: cannot access 'MDGram/app/src/main/jniLibs/x86_64/': No such file or directory
+=== качаем официальный Telegram 9.3.3 (30275) ===
+скачано: 5501 байт
+официальный APK скачать не удалось
