@@ -1,0 +1,70 @@
+.class public final synthetic Lze6;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+# interfaces
+.implements Ljava/lang/Runnable;
+
+
+# instance fields
+.field public final synthetic a:I
+
+.field public final synthetic a:J
+
+.field public final synthetic a:Ljava/util/ArrayList;
+
+.field public final synthetic a:Ljava/util/HashMap;
+
+.field public final synthetic a:Lorg/telegram/messenger/z;
+
+.field public final synthetic a:Z
+
+.field public final synthetic b:I
+
+
+# direct methods
+.method public synthetic constructor <init>(Lorg/telegram/messenger/z;JLjava/util/ArrayList;Ljava/util/HashMap;IIZ)V
+    .locals 0
+
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    iput-object p1, p0, Lze6;->a:Lorg/telegram/messenger/z;
+
+    iput-wide p2, p0, Lze6;->a:J
+
+    iput-object p4, p0, Lze6;->a:Ljava/util/ArrayList;
+
+    iput-object p5, p0, Lze6;->a:Ljava/util/HashMap;
+
+    iput p6, p0, Lze6;->a:I
+
+    iput p7, p0, Lze6;->b:I
+
+    iput-boolean p8, p0, Lze6;->a:Z
+
+    return-void
+.end method
+
+
+# virtual methods
+.method public final run()V
+    .locals 8
+
+    iget-object v0, p0, Lze6;->a:Lorg/telegram/messenger/z;
+
+    iget-wide v1, p0, Lze6;->a:J
+
+    iget-object v3, p0, Lze6;->a:Ljava/util/ArrayList;
+
+    iget-object v4, p0, Lze6;->a:Ljava/util/HashMap;
+
+    iget v5, p0, Lze6;->a:I
+
+    iget v6, p0, Lze6;->b:I
+
+    iget-boolean v7, p0, Lze6;->a:Z
+
+    invoke-static/range {v0 .. v7}, Lorg/telegram/messenger/z;->o2(Lorg/telegram/messenger/z;JLjava/util/ArrayList;Ljava/util/HashMap;IIZ)V
+
+    return-void
+.end method

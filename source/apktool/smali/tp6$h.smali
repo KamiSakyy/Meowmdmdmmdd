@@ -1,0 +1,526 @@
+.class public Ltp6$h;
+.super Ltp6$l;
+.source "SourceFile"
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingClass;
+    value = Ltp6;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x9
+    name = "h"
+.end annotation
+
+
+# static fields
+.field public static final a:Ltp6$h;
+
+.field public static final b:Ltp6$h;
+
+
+# direct methods
+.method public static constructor <clinit>()V
+    .locals 3
+
+    .line 1
+    new-instance v0, Ltp6$h;
+
+    .line 2
+    .line 3
+    sget-object v1, Ljava/lang/Float;->TYPE:Ljava/lang/Class;
+
+    .line 4
+    .line 5
+    const/4 v2, 0x0
+
+    .line 6
+    invoke-static {v2}, Ljava/lang/Float;->valueOf(F)Ljava/lang/Float;
+
+    .line 7
+    .line 8
+    .line 9
+    move-result-object v2
+
+    .line 10
+    invoke-direct {v0, v1, v2}, Ltp6$h;-><init>(Ljava/lang/Class;Ljava/lang/Float;)V
+
+    .line 11
+    .line 12
+    .line 13
+    sput-object v0, Ltp6$h;->a:Ltp6$h;
+
+    .line 14
+    .line 15
+    new-instance v0, Ltp6$h;
+
+    .line 16
+    .line 17
+    const-class v1, Ljava/lang/Float;
+
+    .line 18
+    .line 19
+    const/4 v2, 0x0
+
+    .line 20
+    invoke-direct {v0, v1, v2}, Ltp6$h;-><init>(Ljava/lang/Class;Ljava/lang/Float;)V
+
+    .line 21
+    .line 22
+    .line 23
+    sput-object v0, Ltp6$h;->b:Ltp6$h;
+
+    .line 24
+    .line 25
+    return-void
+.end method
+
+.method public constructor <init>(Ljava/lang/Class;Ljava/lang/Float;)V
+    .locals 1
+
+    const/4 v0, 0x0
+
+    invoke-static {v0}, Ljava/lang/Float;->valueOf(F)Ljava/lang/Float;
+
+    move-result-object v0
+
+    invoke-direct {p0, p1, p2, v0}, Ltp6$l;-><init>(Ljava/lang/Class;Ljava/lang/Object;Ljava/lang/Object;)V
+
+    return-void
+.end method
+
+
+# virtual methods
+.method public final c(Lzb4;Lkb2;)Ljava/lang/Float;
+    .locals 3
+
+    .line 1
+    invoke-virtual {p1}, Lzb4;->w()Lyc4;
+
+    .line 2
+    .line 3
+    .line 4
+    move-result-object v0
+
+    .line 5
+    sget-object v1, Lyc4;->j:Lyc4;
+
+    .line 6
+    .line 7
+    if-eq v0, v1, :cond_a
+
+    .line 8
+    .line 9
+    sget-object v1, Lyc4;->i:Lyc4;
+
+    .line 10
+    .line 11
+    if-ne v0, v1, :cond_0
+
+    .line 12
+    .line 13
+    goto/16 :goto_1
+
+    .line 14
+    .line 15
+    :cond_0
+    sget-object v1, Lyc4;->h:Lyc4;
+
+    .line 16
+    .line 17
+    if-ne v0, v1, :cond_7
+
+    .line 18
+    .line 19
+    invoke-virtual {p1}, Lzb4;->b0()Ljava/lang/String;
+
+    .line 20
+    .line 21
+    .line 22
+    move-result-object p1
+
+    .line 23
+    invoke-virtual {p1}, Ljava/lang/String;->trim()Ljava/lang/String;
+
+    .line 24
+    .line 25
+    .line 26
+    move-result-object p1
+
+    .line 27
+    invoke-virtual {p1}, Ljava/lang/String;->length()I
+
+    .line 28
+    .line 29
+    .line 30
+    move-result v0
+
+    .line 31
+    if-nez v0, :cond_1
+
+    .line 32
+    .line 33
+    iget-boolean p1, p0, Ltp6$l;->a:Z
+
+    .line 34
+    .line 35
+    invoke-virtual {p0, p2, p1}, Lxc9;->_coerceEmptyString(Lkb2;Z)Ljava/lang/Object;
+
+    .line 36
+    .line 37
+    .line 38
+    move-result-object p1
+
+    .line 39
+    check-cast p1, Ljava/lang/Float;
+
+    .line 40
+    .line 41
+    return-object p1
+
+    .line 42
+    :cond_1
+    invoke-virtual {p0, p1}, Lxc9;->_hasTextualNull(Ljava/lang/String;)Z
+
+    .line 43
+    .line 44
+    .line 45
+    move-result v0
+
+    .line 46
+    if-eqz v0, :cond_2
+
+    .line 47
+    .line 48
+    iget-boolean p1, p0, Ltp6$l;->a:Z
+
+    .line 49
+    .line 50
+    invoke-virtual {p0, p2, p1}, Lxc9;->_coerceTextualNull(Lkb2;Z)Ljava/lang/Object;
+
+    .line 51
+    .line 52
+    .line 53
+    move-result-object p1
+
+    .line 54
+    check-cast p1, Ljava/lang/Float;
+
+    .line 55
+    .line 56
+    return-object p1
+
+    .line 57
+    :cond_2
+    const/4 v0, 0x0
+
+    .line 58
+    invoke-virtual {p1, v0}, Ljava/lang/String;->charAt(I)C
+
+    .line 59
+    .line 60
+    .line 61
+    move-result v1
+
+    .line 62
+    const/16 v2, 0x2d
+
+    .line 63
+    .line 64
+    if-eq v1, v2, :cond_5
+
+    .line 65
+    .line 66
+    const/16 v2, 0x49
+
+    .line 67
+    .line 68
+    if-eq v1, v2, :cond_4
+
+    .line 69
+    .line 70
+    const/16 v2, 0x4e
+
+    .line 71
+    .line 72
+    if-eq v1, v2, :cond_3
+
+    .line 73
+    .line 74
+    goto :goto_0
+
+    .line 75
+    :cond_3
+    invoke-virtual {p0, p1}, Lxc9;->_isNaN(Ljava/lang/String;)Z
+
+    .line 76
+    .line 77
+    .line 78
+    move-result v1
+
+    .line 79
+    if-eqz v1, :cond_6
+
+    .line 80
+    .line 81
+    const/high16 p1, 0x7fc00000    # Float.NaN
+
+    .line 82
+    .line 83
+    invoke-static {p1}, Ljava/lang/Float;->valueOf(F)Ljava/lang/Float;
+
+    .line 84
+    .line 85
+    .line 86
+    move-result-object p1
+
+    .line 87
+    return-object p1
+
+    .line 88
+    :cond_4
+    invoke-virtual {p0, p1}, Lxc9;->_isPosInf(Ljava/lang/String;)Z
+
+    .line 89
+    .line 90
+    .line 91
+    move-result v1
+
+    .line 92
+    if-eqz v1, :cond_6
+
+    .line 93
+    .line 94
+    const/high16 p1, 0x7f800000    # Float.POSITIVE_INFINITY
+
+    .line 95
+    .line 96
+    invoke-static {p1}, Ljava/lang/Float;->valueOf(F)Ljava/lang/Float;
+
+    .line 97
+    .line 98
+    .line 99
+    move-result-object p1
+
+    .line 100
+    return-object p1
+
+    .line 101
+    :cond_5
+    invoke-virtual {p0, p1}, Lxc9;->_isNegInf(Ljava/lang/String;)Z
+
+    .line 102
+    .line 103
+    .line 104
+    move-result v1
+
+    .line 105
+    if-eqz v1, :cond_6
+
+    .line 106
+    .line 107
+    const/high16 p1, -0x800000    # Float.NEGATIVE_INFINITY
+
+    .line 108
+    .line 109
+    invoke-static {p1}, Ljava/lang/Float;->valueOf(F)Ljava/lang/Float;
+
+    .line 110
+    .line 111
+    .line 112
+    move-result-object p1
+
+    .line 113
+    return-object p1
+
+    .line 114
+    :cond_6
+    :goto_0
+    invoke-virtual {p0, p2, p1}, Lxc9;->_verifyStringForScalarCoercion(Lkb2;Ljava/lang/String;)V
+
+    .line 115
+    .line 116
+    .line 117
+    :try_start_0
+    invoke-static {p1}, Ljava/lang/Float;->parseFloat(Ljava/lang/String;)F
+
+    .line 118
+    .line 119
+    .line 120
+    move-result v1
+
+    .line 121
+    invoke-static {v1}, Ljava/lang/Float;->valueOf(F)Ljava/lang/Float;
+
+    .line 122
+    .line 123
+    .line 124
+    move-result-object p1
+    :try_end_0
+    .catch Ljava/lang/IllegalArgumentException; {:try_start_0 .. :try_end_0} :catch_0
+
+    .line 125
+    return-object p1
+
+    .line 126
+    :catch_0
+    iget-object v1, p0, Lxc9;->_valueClass:Ljava/lang/Class;
+
+    .line 127
+    .line 128
+    new-array v0, v0, [Ljava/lang/Object;
+
+    .line 129
+    .line 130
+    const-string v2, "not a valid Float value"
+
+    .line 131
+    .line 132
+    invoke-virtual {p2, v1, p1, v2, v0}, Lkb2;->k0(Ljava/lang/Class;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;
+
+    .line 133
+    .line 134
+    .line 135
+    move-result-object p1
+
+    .line 136
+    check-cast p1, Ljava/lang/Float;
+
+    .line 137
+    .line 138
+    return-object p1
+
+    .line 139
+    :cond_7
+    sget-object v1, Lyc4;->m:Lyc4;
+
+    .line 140
+    .line 141
+    if-ne v0, v1, :cond_8
+
+    .line 142
+    .line 143
+    iget-boolean p1, p0, Ltp6$l;->a:Z
+
+    .line 144
+    .line 145
+    invoke-virtual {p0, p2, p1}, Lxc9;->_coerceNullToken(Lkb2;Z)Ljava/lang/Object;
+
+    .line 146
+    .line 147
+    .line 148
+    move-result-object p1
+
+    .line 149
+    check-cast p1, Ljava/lang/Float;
+
+    .line 150
+    .line 151
+    return-object p1
+
+    .line 152
+    :cond_8
+    sget-object v1, Lyc4;->d:Lyc4;
+
+    .line 153
+    .line 154
+    if-ne v0, v1, :cond_9
+
+    .line 155
+    .line 156
+    invoke-virtual {p0, p1, p2}, Lxc9;->_deserializeFromArray(Lzb4;Lkb2;)Ljava/lang/Object;
+
+    .line 157
+    .line 158
+    .line 159
+    move-result-object p1
+
+    .line 160
+    check-cast p1, Ljava/lang/Float;
+
+    .line 161
+    .line 162
+    return-object p1
+
+    .line 163
+    :cond_9
+    iget-object v0, p0, Lxc9;->_valueClass:Ljava/lang/Class;
+
+    .line 164
+    .line 165
+    invoke-virtual {p2, v0, p1}, Lkb2;->d0(Ljava/lang/Class;Lzb4;)Ljava/lang/Object;
+
+    .line 166
+    .line 167
+    .line 168
+    move-result-object p1
+
+    .line 169
+    check-cast p1, Ljava/lang/Float;
+
+    .line 170
+    .line 171
+    return-object p1
+
+    .line 172
+    :cond_a
+    :goto_1
+    invoke-virtual {p1}, Lzb4;->H()F
+
+    .line 173
+    .line 174
+    .line 175
+    move-result p1
+
+    .line 176
+    invoke-static {p1}, Ljava/lang/Float;->valueOf(F)Ljava/lang/Float;
+
+    .line 177
+    .line 178
+    .line 179
+    move-result-object p1
+
+    .line 180
+    return-object p1
+.end method
+
+.method public d(Lzb4;Lkb2;)Ljava/lang/Float;
+    .locals 0
+
+    invoke-virtual {p0, p1, p2}, Ltp6$h;->c(Lzb4;Lkb2;)Ljava/lang/Float;
+
+    move-result-object p1
+
+    return-object p1
+.end method
+
+.method public bridge synthetic deserialize(Lzb4;Lkb2;)Ljava/lang/Object;
+    .locals 0
+
+    invoke-virtual {p0, p1, p2}, Ltp6$h;->d(Lzb4;Lkb2;)Ljava/lang/Float;
+
+    move-result-object p1
+
+    return-object p1
+.end method
+
+.method public bridge synthetic getEmptyValue(Lkb2;)Ljava/lang/Object;
+    .locals 0
+
+    invoke-super {p0, p1}, Ltp6$l;->getEmptyValue(Lkb2;)Ljava/lang/Object;
+
+    move-result-object p1
+
+    return-object p1
+.end method
+
+.method public bridge synthetic getNullAccessPattern()Ly1;
+    .locals 1
+
+    invoke-super {p0}, Ltp6$l;->getNullAccessPattern()Ly1;
+
+    move-result-object v0
+
+    return-object v0
+.end method
