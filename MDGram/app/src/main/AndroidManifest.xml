@@ -67,7 +67,7 @@
       <data android:scheme="ton" />
     </intent>
   </queries>
-  <application android:name="org.telegram.messenger.ApplicationLoaderImpl" android:allowBackup="false" android:hardwareAccelerated="@bool/useHardwareAcceleration" android:largeHeap="true" android:theme="@style/Theme.TMessages.Start" android:manageSpaceActivity="org.telegram.ui.ExternalActionActivity" android:supportsRtl="false" android:requestLegacyExternalStorage="true" android:preserveLegacyExternalStorage="true" android:allowAudioPlaybackCapture="true" ns1:replace="android:supportsRtl">
+  <application android:name="org.telegram.messenger.ApplicationLoaderImpl" android:allowBackup="false" android:hardwareAccelerated="@bool/useHardwareAcceleration" android:largeHeap="true" android:label="@string/AppName" android:icon="@mipmap/ic_blue" android:roundIcon="@mipmap/ic_blue_round" android:theme="@style/Theme.TMessages.Start" android:manageSpaceActivity="org.telegram.ui.ExternalActionActivity" android:supportsRtl="false" android:requestLegacyExternalStorage="true" android:preserveLegacyExternalStorage="true" android:allowAudioPlaybackCapture="true" ns1:replace="android:supportsRtl">
     <activity-alias android:enabled="true" android:name="org.telegram.messenger.DefaultIcon" android:targetActivity="org.telegram.ui.LaunchActivity" android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
