@@ -243,9 +243,9 @@ jobs:
                 echo "- Потом ставь MDGram-9.3.3-mod.apk из релиза mod-9.3.3."
               } >> ../mod/BUILD_REPORT.md
             fi
-          } > ../mod/sign.log 2>&1
-          tail -20 ../mod/sign.log || true
-          if grep -q "apksigner exit: 0" ../mod/sign.log && [ -f "$GITHUB_WORKSPACE/work/MDGram-9.3.3-mod.apk" ]; then
+          } > $GITHUB_WORKSPACE/mod/sign.log 2>&1
+          tail -20 $GITHUB_WORKSPACE/mod/sign.log || true
+          if grep -q "apksigner exit: 0" $GITHUB_WORKSPACE/mod/sign.log && [ -f "$GITHUB_WORKSPACE/work/MDGram-9.3.3-mod.apk" ]; then
             echo "SIGN_OK=true" >> "$GITHUB_ENV"
             echo "SIGN_OK=true"
           else
