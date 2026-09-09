@@ -225,7 +225,7 @@ jobs:
             ls -la MDGram-9.3.3-mod.apk
             echo "=== apksigner ==="
             "$BT/apksigner" sign --verbose --ks ../mod-keystore/mdgram.keystore \
-              --ks-pass:pass:"$KEYSTORE_PASS" --key-pass:pass:"$KEYSTORE_PASS" MDGram-9.3.3-mod.apk
+              --ks-pass pass:"$KEYSTORE_PASS" --key-pass pass:"$KEYSTORE_PASS" MDGram-9.3.3-mod.apk
             echo "apksigner exit: $?"
             if [ -f MDGram-9.3.3-mod.apk ]; then
               {
