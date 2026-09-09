@@ -1,195 +1,47 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2021 Google LLC
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     https://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
 <resources>
-  <style name="Theme.TMessages.Start" parent="@android:style/Theme.Material">
-    <item name="android:actionBarStyle">@style/ActionBar.Transparent.TMessages.Start</item>
-    <item name="android:colorBackground">@android:color/white</item>
-    <item name="android:windowBackground">@android:color/white</item>
-    <item name="android:windowContentOverlay">@null</item>
-    <item name="android:colorPrimaryDark">#426482</item>
-    <item name="android:colorPrimary">#527da3</item>
-    <item name="android:navigationBarColor">#000000</item>
-    <item name="android:textViewStyle">@style/MyTextViewStyle</item>
-    <item name="android:forceDarkAllowed">false</item>
-    <item name="android:windowSplashScreenAnimatedIcon">@drawable/tg_splash_320</item>
-    <item name="android:windowSplashScreenAnimationDuration">@integer/splash_screen_duration</item>
-    <item name="android:windowSplashScreenBackground">?android:windowBackground</item>
-  </style>
-  <style name="Base.Theme.TMessages.AppWidget" parent="android:Theme.DeviceDefault.DayNight" />
-  <style name="TMessages.AppWidget.Background" parent="Base.TMessages.AppWidget.Background">
-    <item name="android:clipToOutline">true</item>
-    <item name="android:background">@drawable/widget_background</item>
-  </style>
-  <style name="TMessages.AppWidget.Badge" parent="Base.TMessages.AppWidget.Badge">
-    <item name="android:textColor">?android:attr/textColorPrimaryInverse</item>
-  </style>
-  <style name="Theme.Material3.DynamicColors.Dark" parent="@style/Theme.Material3.Dark">
-    <item name="android:colorBackground">@color/m3_sys_color_dynamic_dark_background</item>
-    <item name="android:textColorPrimary">@color/m3_dynamic_dark_default_color_primary_text</item>
-    <item name="android:textColorPrimaryDisableOnly">@color/m3_dynamic_dark_primary_text_disable_only</item>
-    <item name="android:textColorSecondary">@color/m3_dynamic_dark_default_color_secondary_text</item>
-    <item name="android:textColorPrimaryInverse">@color/m3_dynamic_default_color_primary_text</item>
-    <item name="android:textColorSecondaryInverse">@color/m3_dynamic_default_color_secondary_text</item>
-    <item name="android:textColorHintInverse">@color/m3_dynamic_hint_foreground</item>
-    <item name="android:textColorHighlight">@color/m3_dynamic_dark_highlighted_text</item>
-    <item name="android:textColorHint">@color/m3_dynamic_dark_hint_foreground</item>
-    <item name="android:textColorTertiary">@color/m3_dynamic_dark_default_color_secondary_text</item>
-    <item name="android:textColorTertiaryInverse">@color/m3_dynamic_default_color_secondary_text</item>
-    <item name="android:textColorPrimaryInverseDisableOnly">@color/m3_dynamic_primary_text_disable_only</item>
-    <item name="android:textColorAlertDialogListItem">@color/m3_dynamic_dark_default_color_primary_text</item>
-    <item name="android:textColorHighlightInverse">@color/m3_dynamic_highlighted_text</item>
-    <item name="colorError">@color/m3_sys_color_dark_error</item>
-    <item name="colorErrorContainer">@color/m3_sys_color_dark_error_container</item>
-    <item name="colorOnBackground">@color/m3_sys_color_dynamic_dark_on_background</item>
-    <item name="colorOnError">@color/m3_sys_color_dark_on_error</item>
-    <item name="colorOnErrorContainer">@color/m3_sys_color_dark_on_error_container</item>
-    <item name="colorOnPrimary">@color/m3_sys_color_dynamic_dark_on_primary</item>
-    <item name="colorOnPrimaryContainer">@color/m3_sys_color_dynamic_dark_on_primary_container</item>
-    <item name="colorOnSecondary">@color/m3_sys_color_dynamic_dark_on_secondary</item>
-    <item name="colorOnSecondaryContainer">@color/m3_sys_color_dynamic_dark_on_secondary_container</item>
-    <item name="colorOnSurface">@color/m3_sys_color_dynamic_dark_on_surface</item>
-    <item name="colorOnSurfaceInverse">@color/m3_sys_color_dynamic_dark_inverse_on_surface</item>
-    <item name="colorOnSurfaceVariant">@color/m3_sys_color_dynamic_dark_on_surface_variant</item>
-    <item name="colorOnTertiary">@color/m3_sys_color_dynamic_dark_on_tertiary</item>
-    <item name="colorOnTertiaryContainer">@color/m3_sys_color_dynamic_dark_on_tertiary_container</item>
-    <item name="colorOutline">@color/m3_sys_color_dynamic_dark_outline</item>
-    <item name="colorPrimary">@color/m3_sys_color_dynamic_dark_primary</item>
-    <item name="colorPrimaryContainer">@color/m3_sys_color_dynamic_dark_primary_container</item>
-    <item name="colorPrimaryInverse">@color/m3_sys_color_dynamic_dark_inverse_primary</item>
-    <item name="colorSecondary">@color/m3_sys_color_dynamic_dark_secondary</item>
-    <item name="colorSecondaryContainer">@color/m3_sys_color_dynamic_dark_secondary_container</item>
-    <item name="colorSurface">@color/m3_sys_color_dynamic_dark_surface</item>
-    <item name="colorSurfaceInverse">@color/m3_sys_color_dynamic_dark_inverse_surface</item>
-    <item name="colorSurfaceVariant">@color/m3_sys_color_dynamic_dark_surface_variant</item>
-    <item name="colorTertiary">@color/m3_sys_color_dynamic_dark_tertiary</item>
-    <item name="colorTertiaryContainer">@color/m3_sys_color_dynamic_dark_tertiary_container</item>
-    <item name="isMaterial3DynamicColorApplied">true</item>
-  </style>
-  <style name="Theme.Material3.DynamicColors.Light" parent="@style/Theme.Material3.Light">
-    <item name="android:colorBackground">@color/m3_sys_color_dynamic_light_background</item>
-    <item name="android:textColorPrimary">@color/m3_dynamic_default_color_primary_text</item>
-    <item name="android:textColorPrimaryDisableOnly">@color/m3_dynamic_primary_text_disable_only</item>
-    <item name="android:textColorSecondary">@color/m3_dynamic_default_color_secondary_text</item>
-    <item name="android:textColorPrimaryInverse">@color/m3_dynamic_dark_default_color_primary_text</item>
-    <item name="android:textColorSecondaryInverse">@color/m3_dynamic_dark_default_color_secondary_text</item>
-    <item name="android:textColorHintInverse">@color/m3_dynamic_dark_hint_foreground</item>
-    <item name="android:textColorHighlight">@color/m3_dynamic_highlighted_text</item>
-    <item name="android:textColorHint">@color/m3_dynamic_hint_foreground</item>
-    <item name="android:textColorTertiary">@color/m3_dynamic_default_color_secondary_text</item>
-    <item name="android:textColorTertiaryInverse">@color/m3_dynamic_dark_default_color_secondary_text</item>
-    <item name="android:textColorPrimaryInverseDisableOnly">@color/m3_dynamic_dark_primary_text_disable_only</item>
-    <item name="android:textColorAlertDialogListItem">@color/m3_dynamic_default_color_primary_text</item>
-    <item name="android:textColorHighlightInverse">@color/m3_dynamic_dark_highlighted_text</item>
-    <item name="colorError">@color/m3_sys_color_light_error</item>
-    <item name="colorErrorContainer">@color/m3_sys_color_light_error_container</item>
-    <item name="colorOnBackground">@color/m3_sys_color_dynamic_light_on_background</item>
-    <item name="colorOnError">@color/m3_sys_color_light_on_error</item>
-    <item name="colorOnErrorContainer">@color/m3_sys_color_light_on_error_container</item>
-    <item name="colorOnPrimary">@color/m3_sys_color_dynamic_light_on_primary</item>
-    <item name="colorOnPrimaryContainer">@color/m3_sys_color_dynamic_light_on_primary_container</item>
-    <item name="colorOnSecondary">@color/m3_sys_color_dynamic_light_on_secondary</item>
-    <item name="colorOnSecondaryContainer">@color/m3_sys_color_dynamic_light_on_secondary_container</item>
-    <item name="colorOnSurface">@color/m3_sys_color_dynamic_light_on_surface</item>
-    <item name="colorOnSurfaceInverse">@color/m3_sys_color_dynamic_light_inverse_on_surface</item>
-    <item name="colorOnSurfaceVariant">@color/m3_sys_color_dynamic_light_on_surface_variant</item>
-    <item name="colorOnTertiary">@color/m3_sys_color_dynamic_light_on_tertiary</item>
-    <item name="colorOnTertiaryContainer">@color/m3_sys_color_dynamic_light_on_tertiary_container</item>
-    <item name="colorOutline">@color/m3_sys_color_dynamic_light_outline</item>
-    <item name="colorPrimary">@color/m3_sys_color_dynamic_light_primary</item>
-    <item name="colorPrimaryContainer">@color/m3_sys_color_dynamic_light_primary_container</item>
-    <item name="colorPrimaryInverse">@color/m3_sys_color_dynamic_light_inverse_primary</item>
-    <item name="colorSecondary">@color/m3_sys_color_dynamic_light_secondary</item>
-    <item name="colorSecondaryContainer">@color/m3_sys_color_dynamic_light_secondary_container</item>
-    <item name="colorSurface">@color/m3_sys_color_dynamic_light_surface</item>
-    <item name="colorSurfaceInverse">@color/m3_sys_color_dynamic_light_inverse_surface</item>
-    <item name="colorSurfaceVariant">@color/m3_sys_color_dynamic_light_surface_variant</item>
-    <item name="colorTertiary">@color/m3_sys_color_dynamic_light_tertiary</item>
-    <item name="colorTertiaryContainer">@color/m3_sys_color_dynamic_light_tertiary_container</item>
-    <item name="isMaterial3DynamicColorApplied">true</item>
-  </style>
-  <style name="ThemeOverlay.Material3.DynamicColors.Dark" parent="">
-    <item name="android:colorBackground">@color/m3_sys_color_dynamic_dark_background</item>
-    <item name="android:textColorPrimary">@color/m3_dynamic_dark_default_color_primary_text</item>
-    <item name="android:textColorPrimaryDisableOnly">@color/m3_dynamic_dark_primary_text_disable_only</item>
-    <item name="android:textColorSecondary">@color/m3_dynamic_dark_default_color_secondary_text</item>
-    <item name="android:textColorPrimaryInverse">@color/m3_dynamic_default_color_primary_text</item>
-    <item name="android:textColorSecondaryInverse">@color/m3_dynamic_default_color_secondary_text</item>
-    <item name="android:textColorHintInverse">@color/m3_dynamic_hint_foreground</item>
-    <item name="android:textColorHighlight">@color/m3_dynamic_dark_highlighted_text</item>
-    <item name="android:textColorHint">@color/m3_dynamic_dark_hint_foreground</item>
-    <item name="android:textColorTertiary">@color/m3_dynamic_dark_default_color_secondary_text</item>
-    <item name="android:textColorTertiaryInverse">@color/m3_dynamic_default_color_secondary_text</item>
-    <item name="android:textColorPrimaryInverseDisableOnly">@color/m3_dynamic_primary_text_disable_only</item>
-    <item name="android:textColorAlertDialogListItem">@color/m3_dynamic_dark_default_color_primary_text</item>
-    <item name="android:textColorHighlightInverse">@color/m3_dynamic_highlighted_text</item>
-    <item name="colorError">@color/m3_sys_color_dark_error</item>
-    <item name="colorErrorContainer">@color/m3_sys_color_dark_error_container</item>
-    <item name="colorOnBackground">@color/m3_sys_color_dynamic_dark_on_background</item>
-    <item name="colorOnError">@color/m3_sys_color_dark_on_error</item>
-    <item name="colorOnErrorContainer">@color/m3_sys_color_dark_on_error_container</item>
-    <item name="colorOnPrimary">@color/m3_sys_color_dynamic_dark_on_primary</item>
-    <item name="colorOnPrimaryContainer">@color/m3_sys_color_dynamic_dark_on_primary_container</item>
-    <item name="colorOnSecondary">@color/m3_sys_color_dynamic_dark_on_secondary</item>
-    <item name="colorOnSecondaryContainer">@color/m3_sys_color_dynamic_dark_on_secondary_container</item>
-    <item name="colorOnSurface">@color/m3_sys_color_dynamic_dark_on_surface</item>
-    <item name="colorOnSurfaceInverse">@color/m3_sys_color_dynamic_dark_inverse_on_surface</item>
-    <item name="colorOnSurfaceVariant">@color/m3_sys_color_dynamic_dark_on_surface_variant</item>
-    <item name="colorOnTertiary">@color/m3_sys_color_dynamic_dark_on_tertiary</item>
-    <item name="colorOnTertiaryContainer">@color/m3_sys_color_dynamic_dark_on_tertiary_container</item>
-    <item name="colorOutline">@color/m3_sys_color_dynamic_dark_outline</item>
-    <item name="colorOutlineVariant">@color/m3_sys_color_dynamic_dark_outline_variant</item>
-    <item name="colorPrimary">@color/m3_sys_color_dynamic_dark_primary</item>
-    <item name="colorPrimaryContainer">@color/m3_sys_color_dynamic_dark_primary_container</item>
-    <item name="colorPrimaryInverse">@color/m3_sys_color_dynamic_dark_inverse_primary</item>
-    <item name="colorSecondary">@color/m3_sys_color_dynamic_dark_secondary</item>
-    <item name="colorSecondaryContainer">@color/m3_sys_color_dynamic_dark_secondary_container</item>
-    <item name="colorSurface">@color/m3_sys_color_dynamic_dark_surface</item>
-    <item name="colorSurfaceInverse">@color/m3_sys_color_dynamic_dark_inverse_surface</item>
-    <item name="colorSurfaceVariant">@color/m3_sys_color_dynamic_dark_surface_variant</item>
-    <item name="colorTertiary">@color/m3_sys_color_dynamic_dark_tertiary</item>
-    <item name="colorTertiaryContainer">@color/m3_sys_color_dynamic_dark_tertiary_container</item>
-    <item name="isMaterial3DynamicColorApplied">true</item>
-  </style>
-  <style name="ThemeOverlay.Material3.DynamicColors.Light" parent="">
-    <item name="android:colorBackground">@color/m3_sys_color_dynamic_light_background</item>
-    <item name="android:textColorPrimary">@color/m3_dynamic_default_color_primary_text</item>
-    <item name="android:textColorPrimaryDisableOnly">@color/m3_dynamic_primary_text_disable_only</item>
-    <item name="android:textColorSecondary">@color/m3_dynamic_default_color_secondary_text</item>
-    <item name="android:textColorPrimaryInverse">@color/m3_dynamic_dark_default_color_primary_text</item>
-    <item name="android:textColorSecondaryInverse">@color/m3_dynamic_dark_default_color_secondary_text</item>
-    <item name="android:textColorHintInverse">@color/m3_dynamic_dark_hint_foreground</item>
-    <item name="android:textColorHighlight">@color/m3_dynamic_highlighted_text</item>
-    <item name="android:textColorHint">@color/m3_dynamic_hint_foreground</item>
-    <item name="android:textColorTertiary">@color/m3_dynamic_default_color_secondary_text</item>
-    <item name="android:textColorTertiaryInverse">@color/m3_dynamic_dark_default_color_secondary_text</item>
-    <item name="android:textColorPrimaryInverseDisableOnly">@color/m3_dynamic_dark_primary_text_disable_only</item>
-    <item name="android:textColorAlertDialogListItem">@color/m3_dynamic_default_color_primary_text</item>
-    <item name="android:textColorHighlightInverse">@color/m3_dynamic_dark_highlighted_text</item>
-    <item name="colorError">@color/m3_sys_color_light_error</item>
-    <item name="colorErrorContainer">@color/m3_sys_color_light_error_container</item>
-    <item name="colorOnBackground">@color/m3_sys_color_dynamic_light_on_background</item>
-    <item name="colorOnError">@color/m3_sys_color_light_on_error</item>
-    <item name="colorOnErrorContainer">@color/m3_sys_color_light_on_error_container</item>
-    <item name="colorOnPrimary">@color/m3_sys_color_dynamic_light_on_primary</item>
-    <item name="colorOnPrimaryContainer">@color/m3_sys_color_dynamic_light_on_primary_container</item>
-    <item name="colorOnSecondary">@color/m3_sys_color_dynamic_light_on_secondary</item>
-    <item name="colorOnSecondaryContainer">@color/m3_sys_color_dynamic_light_on_secondary_container</item>
-    <item name="colorOnSurface">@color/m3_sys_color_dynamic_light_on_surface</item>
-    <item name="colorOnSurfaceInverse">@color/m3_sys_color_dynamic_light_inverse_on_surface</item>
-    <item name="colorOnSurfaceVariant">@color/m3_sys_color_dynamic_light_on_surface_variant</item>
-    <item name="colorOnTertiary">@color/m3_sys_color_dynamic_light_on_tertiary</item>
-    <item name="colorOnTertiaryContainer">@color/m3_sys_color_dynamic_light_on_tertiary_container</item>
-    <item name="colorOutline">@color/m3_sys_color_dynamic_light_outline</item>
-    <item name="colorOutlineVariant">@color/m3_sys_color_dynamic_light_outline_variant</item>
-    <item name="colorPrimary">@color/m3_sys_color_dynamic_light_primary</item>
-    <item name="colorPrimaryContainer">@color/m3_sys_color_dynamic_light_primary_container</item>
-    <item name="colorPrimaryInverse">@color/m3_sys_color_dynamic_light_inverse_primary</item>
-    <item name="colorSecondary">@color/m3_sys_color_dynamic_light_secondary</item>
-    <item name="colorSecondaryContainer">@color/m3_sys_color_dynamic_light_secondary_container</item>
-    <item name="colorSurface">@color/m3_sys_color_dynamic_light_surface</item>
-    <item name="colorSurfaceInverse">@color/m3_sys_color_dynamic_light_inverse_surface</item>
-    <item name="colorSurfaceVariant">@color/m3_sys_color_dynamic_light_surface_variant</item>
-    <item name="colorTertiary">@color/m3_sys_color_dynamic_light_tertiary</item>
-    <item name="colorTertiaryContainer">@color/m3_sys_color_dynamic_light_tertiary_container</item>
-    <item name="isMaterial3DynamicColorApplied">true</item>
-  </style>
+
+    <style name="Theme.TMessages.Start" parent="@android:style/Theme.Material">
+        <item name="android:actionBarStyle">@style/ActionBar.Transparent.TMessages.Start</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:colorPrimaryDark">#426482</item>
+        <item name="android:colorPrimary">#527da3</item>
+        <item name="android:navigationBarColor">#000000</item>
+        <item name="android:textViewStyle">@style/MyTextViewStyle</item>
+        <item name="android:forceDarkAllowed">false</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/tg_splash_320</item>
+        <item name="android:windowSplashScreenAnimationDuration">@integer/splash_screen_duration</item>
+        <item name="android:windowSplashScreenBackground">?android:windowBackground</item>
+    </style>
+
+    <!-- APP WIDGET -->
+
+    <style name="Base.Theme.TMessages.AppWidget" parent="android:Theme.DeviceDefault.DayNight" />
+
+    <style name="TMessages.AppWidget.Background" parent="Base.TMessages.AppWidget.Background">
+        <item name="android:clipToOutline">true</item>
+        <item name="android:background">@drawable/widget_background</item>
+    </style>
+
+    <style name="TMessages.AppWidget.Badge" parent="Base.TMessages.AppWidget.Badge">
+        <item name="android:textColor">?android:attr/textColorPrimaryInverse</item>
+    </style>
+
 </resources>
