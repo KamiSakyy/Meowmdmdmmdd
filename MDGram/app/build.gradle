@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId 'org.telegram.mdgram'
-        minSdk 21
+        minSdk 20
         targetSdk 33
         versionCode 30275
         versionName '9.3.3'
