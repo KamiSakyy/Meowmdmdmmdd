@@ -112,7 +112,9 @@ def merge_values(src, dst):
     # все attr зависимостей), а библиотеки теперь подключены по-настоящему —
     # перенесённый attr гарантированно даст "Duplicate value for resource".
     want = [e for e in list(st)
-            if e.get("name") and e.tag != "attr" and e.get("name") not in STRIPPED]
+            if e.get("name") and e.tag != "attr" and e.get("name") not in STRIPPED
+            and "APKTOOL_DUMMY" not in e.get("name")
+            and "APKTOOL_DUMMY" not in (e.text or "")]
     if not want:
         return 0
     if dst.exists():

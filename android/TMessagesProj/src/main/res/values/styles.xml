@@ -5184,7 +5184,6 @@
     <item name="elevation">8.0dp</item>
     <item name="enforceMaterialTheme">true</item>
     <item name="fabAlignmentMode">center</item>
-    <item name="fabAnchorMode">APKTOOL_DUMMY_0x7f0a00c6</item>
     <item name="fabCradleMargin">@dimen/mtrl_bottomappbar_fab_cradle_margin</item>
     <item name="fabCradleRoundedCornerRadius">@dimen/mtrl_bottomappbar_fab_cradle_rounded_corner_radius</item>
     <item name="fabCradleVerticalOffset">@dimen/mtrl_bottomappbar_fab_cradle_vertical_offset</item>
@@ -5317,7 +5316,6 @@
     <item name="singleSelection">false</item>
   </style>
   <style name="Widget.MaterialComponents.CircularProgressIndicator" parent="@style/Widget.MaterialComponents.ProgressIndicator">
-    <item name="indicatorDirectionCircular">APKTOOL_DUMMY_0x7f0a00aa</item>
     <item name="indicatorInset">@dimen/mtrl_progress_circular_inset_medium</item>
     <item name="indicatorSize">@dimen/mtrl_progress_circular_size_medium</item>
     <item name="trackColor">@android:color/transparent</item>
@@ -5359,7 +5357,6 @@
     <item name="backgroundTint">@color/mtrl_fab_bg_color_selector</item>
     <item name="collapsedSize">@dimen/design_fab_size_normal</item>
     <item name="elevation">@dimen/mtrl_extended_fab_elevation</item>
-    <item name="extendStrategy">APKTOOL_DUMMY_0x7f0a02fc</item>
     <item name="iconPadding">@dimen/mtrl_extended_fab_icon_text_spacing</item>
     <item name="iconSize">@dimen/mtrl_extended_fab_icon_size</item>
     <item name="iconTint">@color/mtrl_fab_icon_text_color_selector</item>

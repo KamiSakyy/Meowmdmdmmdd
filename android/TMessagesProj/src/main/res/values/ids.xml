@@ -109,8 +109,6 @@
   <id name="BaseQuickAdapter_dragging_support" />
   <id name="BaseQuickAdapter_swiping_support" />
   <id name="BaseQuickAdapter_viewholder_support" />
-  <id name="APKTOOL_DUMMY_0x7f0a000d" />
-  <id name="APKTOOL_DUMMY_0x7f0a000e" />
   <id name="LEFT" />
   <id name="LEFT_RIGHT" />
   <id name="META" />
@@ -249,9 +247,6 @@
   <id name="circle_center" />
   <id name="classic" />
   <id name="clear_text" />
-  <id name="APKTOOL_DUMMY_0x7f0a00a8" />
-  <id name="APKTOOL_DUMMY_0x7f0a00a9" />
-  <id name="APKTOOL_DUMMY_0x7f0a00aa" />
   <id name="close" />
   <id name="collapseActionView" />
   <id name="compress" />
@@ -278,7 +273,6 @@
   <id name="cos" />
   <id name="counter" />
   <id name="counterclockwise" />
-  <id name="APKTOOL_DUMMY_0x7f0a00c6" />
   <id name="custom" />
   <id name="customPanel" />
   <id name="customactivityoncrash_error_activity_image" />
@@ -533,7 +527,6 @@
   <id name="peekHeight" />
   <id name="percent" />
   <id name="photo" />
-  <id name="APKTOOL_DUMMY_0x7f0a0205" />
   <id name="plain" />
   <id name="player_album_art" />
   <id name="player_album_title" />
@@ -557,7 +550,6 @@
   <id name="rectangles" />
   <id name="recycler_view" />
   <id name="reverseSawtooth" />
-  <id name="APKTOOL_DUMMY_0x7f0a021e" />
   <id name="right" />
   <id name="rightToLeft" />
   <id name="right_icon" />
@@ -573,11 +565,9 @@
   <id name="sawtooth" />
   <id name="scale" />
   <id name="screen" />
-  <id name="APKTOOL_DUMMY_0x7f0a022e" />
   <id name="scrollIndicatorDown" />
   <id name="scrollIndicatorUp" />
   <id name="scrollView" />
-  <id name="APKTOOL_DUMMY_0x7f0a0232" />
   <id name="search_badge" />
   <id name="search_bar" />
   <id name="search_bar_text_view" />
@@ -626,7 +616,6 @@
   <id name="snapMargins" />
   <id name="spacer" />
   <id name="special_effects_controller_view_tag" />
-  <id name="APKTOOL_DUMMY_0x7f0a0264" />
   <id name="split_action_bar" />
   <id name="spread" />
   <id name="spread_inside" />
@@ -747,13 +736,10 @@
   <id name="view_tree_view_model_store_owner" />
   <id name="visible" />
   <id name="visible_removing_fragment_view_tag" />
-  <id name="APKTOOL_DUMMY_0x7f0a02f3" />
   <id name="widget_deleted_text" />
   <id name="widget_edititem" />
   <id name="widget_edititem_text" />
   <id name="withText" />
   <id name="with_icon" />
   <id name="withinBounds" />
-  <id name="APKTOOL_DUMMY_0x7f0a02fb" />
-  <id name="APKTOOL_DUMMY_0x7f0a02fc" />
 </resources>
