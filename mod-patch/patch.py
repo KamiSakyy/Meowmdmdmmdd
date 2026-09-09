@@ -290,5 +290,146 @@ else:
     p8 = f"НАЙДЕНО КАНДИДАТОВ: {len(cands)} — неоднозначно, ПРОПУЩЕН: " + ", ".join(c[0] for c in cands[:5])
 rep.append(f"P8 фильтр призрака: {p8}")
 
+# ---------- P9: кнопки «Призрак» и «Без стикеров» на экране u55 ----------
+rep.append("=== P9: кнопки на экране обновления (u55) ===")
+def p9_method(lines, sig):
+    for i, ln in enumerate(lines):
+        if ln.startswith(".method") and sig in ln:
+            for j in range(i + 1, len(lines)):
+                if lines[j].startswith(".end method"):
+                    return (i, j)
+    return None
+def p9_locals(lines, r):
+    for k in range(r[0], r[1]):
+        if lines[k].strip().startswith(".locals"):
+            return k
+    return None
+try:
+    b = next(root.rglob("u55$b.smali"))
+    lines = b.read_text(encoding="utf-8").split("\n")
+    orig = list(lines)
+    # P9.1 getItemCount: +2 ряда
+    r = p9_method(lines, "getItemCount(")
+    if r and not any("add-int/lit8 v0, v0, 0x2" in x for x in lines[r[0]:r[1]]):
+        for k in range(r[0], r[1]):
+            if lines[k].strip() == "return v0":
+                lines[k:k + 1] = ["    add-int/lit8 v0, v0, 0x2", "", lines[k]]
+                break
+        rep.append("P9.1 getItemCount +2: OK")
+    else:
+        rep.append("P9.1 getItemCount: ПРОПУСК (не найден/уже)")
+    # P9.2 getItemViewType: позиции 3,4 -> типы 8,9
+    r = p9_method(lines, "getItemViewType(")
+    done = r and any(":md_gtype8" in x for x in lines[r[0]:r[1]])
+    li = p9_locals(lines, r) if r else None
+    if r and li is not None and not done:
+        branch = ["", "    const/4 v0, 0x3", "", "    if-eq p1, v0, :md_gtype8", "",
+                  "    const/4 v0, 0x4", "", "    if-eq p1, v0, :md_gtype9", "",
+                  "    goto :md_gtype_cont", "", "    :md_gtype8", "",
+                  "    const/16 p1, 0x8", "", "    return p1", "", "    :md_gtype9", "",
+                  "    const/16 p1, 0x9", "", "    return p1", "", "    :md_gtype_cont"]
+        lines[li + 1:li + 1] = branch
+        rep.append("P9.2 getItemViewType 3->8, 4->9: OK")
+    else:
+        rep.append("P9.2 getItemViewType: ПРОПУСК (не найден/уже)")
+    # P9.3 onCreateViewHolder: типы 8,9 -> TextCheckCell (+ общий эпилог :goto_0)
+    r = p9_method(lines, "onCreateViewHolder(")
+    done = r and any(":md_mkcheck" in x for x in lines[r[0]:r[1]])
+    li = p9_locals(lines, r) if r else None
+    if r and li is not None and not done:
+        branch = ["", "    const/16 v0, 0x8", "", "    if-eq p2, v0, :md_mkcheck", "",
+                  "    const/16 v0, 0x9", "", "    if-ne p2, v0, :md_mkcont", "",
+                  "    :md_mkcheck",
+                  "    new-instance p2, Lorg/telegram/ui/Cells/TextCheckCell;", "",
+                  "    iget-object v0, p0, Lu55$b;->a:Landroid/content/Context;", "",
+                  "    invoke-direct {p2, v0}, Lorg/telegram/ui/Cells/TextCheckCell;-><init>(Landroid/content/Context;)V", "",
+                  '    const-string v0, "windowBackgroundWhite"', "",
+                  "    invoke-static {v0}, Lorg/telegram/ui/ActionBar/l;->B1(Ljava/lang/String;)I", "",
+                  "    move-result v0", "",
+                  "    invoke-virtual {p2, v0}, Landroid/view/View;->setBackgroundColor(I)V", "",
+                  "    goto :goto_0", "", "    :md_mkcont"]
+        lines[li + 1:li + 1] = branch
+        rep.append("P9.3 onCreateViewHolder TextCheckCell: OK")
+    else:
+        rep.append("P9.3 onCreateViewHolder: ПРОПУСК (не найден/уже)")
+    # P9.4 onBindViewHolder: привязка текста/состояния/клика (.locals 2 -> 4)
+    r = p9_method(lines, "onBindViewHolder(")
+    done = r and any(":md_bind8" in x for x in lines[r[0]:r[1]])
+    li = p9_locals(lines, r) if r else None
+    if r and li is not None and not done:
+        def bindrow(text, flag, which, div):
+            return ["    iget-object v0, p1, Landroidx/recyclerview/widget/RecyclerView$d0;->itemView:Landroid/view/View;", "",
+                    "    check-cast v0, Lorg/telegram/ui/Cells/TextCheckCell;", "",
+                    f'    const-string v1, "{text}"', "",
+                    f"    sget-boolean v2, {MDCONFIG}->{flag}:Z", "",
+                    f"    const/4 v3, 0x{div}", "",
+                    "    invoke-virtual {v0, v1, v2, v3}, Lorg/telegram/ui/Cells/TextCheckCell;->setTextAndCheck(Ljava/lang/String;ZZ)V", "",
+                    "    new-instance v1, Lu55$md1;", "",
+                    f"    const/4 v2, 0x{which}", "",
+                    "    invoke-direct {v1, v0, v2}, Lu55$md1;-><init>(Lorg/telegram/ui/Cells/TextCheckCell;I)V", "",
+                    "    invoke-virtual {v0, v1}, Landroid/view/View;->setOnClickListener(Landroid/view/View$OnClickListener;)V", "",
+                    "    return-void"]
+        lines[li] = "    .locals 4"
+        branch = ["", "    invoke-virtual {p1}, Landroidx/recyclerview/widget/RecyclerView$d0;->getItemViewType()I", "",
+                  "    move-result v0", "", "    const/16 v1, 0x8", "",
+                  "    if-eq v0, v1, :md_bind8", "", "    const/16 v1, 0x9", "",
+                  "    if-ne v0, v1, :md_bindcont", ""]
+        branch += bindrow("🚫 Без стикеров и эмодзи", "noStickers", 1, 0)
+        branch += ["", "    :md_bind8", ""]
+        branch += bindrow("👻 Режим призрака", "ghostMode", 0, 1)
+        branch += ["", "    :md_bindcont"]
+        lines[li + 1:li + 1] = branch
+        rep.append("P9.4 onBindViewHolder привязка: OK")
+    else:
+        rep.append("P9.4 onBindViewHolder: ПРОПУСК (не найден/уже)")
+    if lines != orig:
+        b.write_text("\n".join(lines), encoding="utf-8")
+    # P9.5 слушатель клика u55$md1
+    md1 = b.parent / "u55$md1.smali"
+    if not md1.exists():
+        md1.write_text(f""".class public Lu55$md1;
+.super Ljava/lang/Object;
+.implements Landroid/view/View$OnClickListener;
+.source "SourceFile"
+
+# instance fields
+.field private a:Lorg/telegram/ui/Cells/TextCheckCell;
+.field private b:I
+
+# direct methods
+.method public constructor <init>(Lorg/telegram/ui/Cells/TextCheckCell;I)V
+    .locals 0
+    iput-object p1, p0, Lu55$md1;->a:Lorg/telegram/ui/Cells/TextCheckCell;
+    iput p2, p0, Lu55$md1;->b:I
+    invoke-direct {{p0}}, Ljava/lang/Object;-><init>()V
+    return-void
+.end method
+
+# virtual methods
+.method public onClick(Landroid/view/View;)V
+    .locals 2
+    iget v0, p0, Lu55$md1;->b:I
+    if-nez v0, :md_ghost
+    sget-boolean v0, {MDCONFIG}->noStickers:Z
+    xor-int/lit8 v0, v0, 0x1
+    invoke-static {{v0}}, {MDCONFIG}->setNoStickers(Z)V
+    iget-object v1, p0, Lu55$md1;->a:Lorg/telegram/ui/Cells/TextCheckCell;
+    invoke-virtual {{v1, v0}}, Lorg/telegram/ui/Cells/TextCheckCell;->setChecked(Z)V
+    return-void
+    :md_ghost
+    sget-boolean v0, {MDCONFIG}->ghostMode:Z
+    xor-int/lit8 v0, v0, 0x1
+    invoke-static {{v0}}, {MDCONFIG}->setGhostMode(Z)V
+    iget-object v1, p0, Lu55$md1;->a:Lorg/telegram/ui/Cells/TextCheckCell;
+    invoke-virtual {{v1, v0}}, Lorg/telegram/ui/Cells/TextCheckCell;->setChecked(Z)V
+    return-void
+.end method
+""", encoding="utf-8")
+        rep.append("P9.5 u55$md1 слушатель: СОЗДАН")
+    else:
+        rep.append("P9.5 u55$md1: уже существует")
+except StopIteration:
+    rep.append("P9: u55$b.smali НЕ НАЙДЕН — кнопки пропущены")
+
 print("\n".join(rep))
 pathlib.Path("PATCH_REPORT.txt").write_text("\n".join(rep), encoding="utf-8")
