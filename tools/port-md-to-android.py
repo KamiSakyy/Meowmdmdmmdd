@@ -343,8 +343,13 @@ def main():
             continue
         if src.name == "public.xml":
             continue
-        if src.stem.startswith("md_") or top.startswith("mipmap") or src.stem.startswith("icon_"):
+        # Качаем ВСЁ, чего у нас нет: res из APK — это официальный res 9.3.3
+        # плюс добавки MDGram. Не хватает любого файла — стили из APK
+        # (уже смерженные в values) ссылаются на несуществующий ресурс.
+        if not (DST_RES / rel).exists():
             copy_file(src, DST_RES / rel)
+            md_files.append(DST_RES / rel)
+        elif src.stem.startswith("md_") or top.startswith("mipmap"):
             md_files.append(DST_RES / rel)
     print(f"   файлов скопировано: {copied_files}, values-записей добавлено: {merged_values}")
 
