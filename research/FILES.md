@@ -1,13 +1,3 @@
 ## Дампы классов
-- MDsettings/u55 -> НЕ НАЙДЕН
-- /u55.smali -> apktool_out-smali_classes2-u55.smali
-- /u55$ -> apktool_out-smali_classes2-u55_b.smali
-- /u55$ -> apktool_out-smali_classes2-u55_a.smali
-- MDsettings/m55 -> НЕ НАЙДЕН
-- /m55.smali -> apktool_out-smali_classes2-m55.smali
-- /m55$ -> apktool_out-smali_classes2-m55_b.smali
-- /m55$ -> apktool_out-smali_classes2-m55_a.smali
-- tw3 -> apktool_out-smali_classes2-tw3.smali
-- tw3 -> sources-defpackage-tw3.java
-- tgnet/a.smali -> telegram-tgnet-a.smali
-- ui/ChatActivity.smali -> НЕ НАЙДЕН
+- ui/Cells/TextCheckCell.smali -> НЕ НАЙДЕН
+- ui/Components/StickersAlert.smali -> НЕ НАЙДЕН
