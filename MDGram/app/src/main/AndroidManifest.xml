@@ -331,10 +331,6 @@
     <meta-data android:name="com.sec.android.multiwindow.DEFAULT_SIZE_H" android:value="598dp" />
     <meta-data android:name="com.sec.android.multiwindow.MINIMUM_SIZE_W" android:value="632dp" />
     <meta-data android:name="com.sec.android.multiwindow.MINIMUM_SIZE_H" android:value="598dp" />
-    <meta-data android:name="com.google.android.gms.wallet.api.enabled" android:value="true" />
-    <meta-data android:name="com.google.android.gms.car.notification.SmallIcon" android:resource="@drawable/ic_player" />
-    <meta-data android:name="com.google.android.gms.car.application" android:resource="@xml/automotive_app_desc" />
-    <meta-data android:name="com.google.android.gms.vision.DEPENDENCIES" android:value="face,barcode" />
     <meta-data android:name="android.max_aspect" android:value="2.5" />
     <meta-data android:name="com.google.android.actions" android:resource="@xml/actions" />
     <service android:name="org.telegram.messenger.GoogleVoiceClientService" android:exported="true" />
@@ -444,12 +440,6 @@
         <action android:name="com.google.firebase.MESSAGING_EVENT" />
       </intent-filter>
     </service>
-    <receiver android:enabled="false" android:exported="false" android:name="com.google.android.gms.measurement.AppMeasurementReceiver">
-      <intent-filter>
-        <action android:name="com.google.android.gms.measurement.UPLOAD" />
-      </intent-filter>
-    </receiver>
-    <service android:enabled="false" android:exported="false" android:name="com.google.android.gms.measurement.AppMeasurementService" />
     <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
     <meta-data android:name="google_analytics_adid_collection_enabled" android:value="false" />
     <meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="AIzaSyBeOexQ_kI-jb3-KQyMubX38JXbDHphTtA" />
@@ -462,25 +452,5 @@
     <meta-data android:name="com.google.firebase.messaging.default_notification_color" android:resource="@color/divider" />
     <meta-data android:name="com.google.firebase.messaging.default_notification_channel_id" android:value="@string/AppName" />
     <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/notification" />
-    <activity android:name="cat.ereza.customactivityoncrash.activity.DefaultErrorActivity" android:process=":error_activity" />
-    <provider android:authorities="org.telegram.mdgram.customactivityoncrashinitprovider" android:exported="false" android:initOrder="101" android:name="cat.ereza.customactivityoncrash.provider.CaocInitProvider" />
-    <activity android:configChanges="keyboardHidden|orientation|screenSize" android:name="com.blankj.utilcode.util.UtilsTransActivity4MainProcess" android:theme="@style/ActivityTranslucent" android:windowSoftInputMode="stateAlwaysHidden" />
-    <activity android:configChanges="keyboardHidden|orientation|screenSize" android:multiprocess="true" android:name="com.blankj.utilcode.util.UtilsTransActivity" android:theme="@style/ActivityTranslucent" android:windowSoftInputMode="stateAlwaysHidden" />
-    <provider android:authorities="org.telegram.mdgram.utilcode.fileprovider" android:exported="false" android:grantUriPermissions="true" android:name="com.blankj.utilcode.util.UtilsFileProvider">
-      <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/util_code_provider_paths" />
-    </provider>
-    <provider android:authorities="org.telegram.mdgram.firebaseinitprovider" android:directBootAware="true" android:exported="false" android:initOrder="100" android:name="com.google.firebase.provider.FirebaseInitProvider" />
-    <provider android:authorities="org.telegram.mdgram.mlkitinitprovider" android:exported="false" android:initOrder="99" android:name="com.google.mlkit.common.internal.MlKitInitProvider" />
-    <activity android:exported="false" android:name="com.google.android.gms.common.api.GoogleApiActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-    <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
-    <service android:exported="true" android:name="androidx.sharetarget.ChooserTargetServiceCompat" android:permission="android.permission.BIND_CHOOSER_TARGET_SERVICE">
-      <intent-filter>
-        <action android:name="android.service.chooser.ChooserTargetService" />
-      </intent-filter>
-    </service>
-    <provider android:authorities="org.telegram.mdgram.androidx-startup" android:exported="false" android:name="androidx.startup.InitializationProvider">
-      <meta-data android:name="androidx.emoji2.text.EmojiCompatInitializer" android:value="androidx.startup" />
-      <meta-data android:name="androidx.lifecycle.ProcessLifecycleInitializer" android:value="androidx.startup" />
-    </provider>
   </application>
 </manifest>
