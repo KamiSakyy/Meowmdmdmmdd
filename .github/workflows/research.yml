@@ -1,0 +1,164 @@
+name: "Исследование кода (поиск по декомпилу)"
+
+# Батарея поиска по декомпилированному MDGram 9.3.3.
+# Результаты коммитятся в research/ — читаем и проектируем точные патчи.
+# Свои паттерны: добавь строки в .research-request (по одному grep-паттерну).
+
+on:
+  push:
+    branches: [arena/01a08582-meowmdmdmmdd]
+    paths:
+      - .github/workflows/research.yml
+      - .research-request
+
+permissions:
+  contents: write
+
+env:
+  APKPURE_URL: "https://d.apkpure.net/b/APK/org.telegram.mdgram?versionCode=30275&nc=arm64-v8a%2Carmeabi-v7a%2Cx86%2Cx86_64&sv=21"
+  APKPURE_SHA1: "4fa5ae96754b910045d1d84dac7a8261c59793e9"
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout ветки
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Java 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: APK + decode (apktool + jadx)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          mkdir -p work research && cd work
+          curl -sL --retry 3 -A "Mozilla/5.0" -o MDGram-9.3.3.apk "$APKPURE_URL"
+          echo "$APKPURE_SHA1  MDGram-9.3.3.apk" | sha1sum -c -
+          APKTOOL_TAG=$(gh release view --repo iBotPeaches/Apktool --json tagName --jq .tagName 2>/dev/null || echo v2.9.3)
+          curl -sL --retry 3 -o apktool.jar "https://github.com/iBotPeaches/Apktool/releases/download/${APKTOOL_TAG}/apktool_${APKTOOL_TAG#v}.jar" || true
+          java -jar apktool.jar --version > apktool.ver 2>&1 || \
+            curl -sL --retry 3 -o apktool.jar "https://github.com/iBotPeaches/Apktool/releases/download/v2.9.3/apktool_2.9.3.jar"
+          java -jar apktool.jar d -f -o apktool_out MDGram-9.3.3.apk
+          curl -sL --retry 3 -o jadx.zip "https://github.com/skylot/jadx/releases/download/v1.4.7/jadx-1.4.7.zip"
+          unzip -q jadx.zip -d jadx
+          ./jadx/bin/jadx -d jadx_out --no-res --threads-count 4 MDGram-9.3.3.apk 2>&1 | tail -3 || true
+          echo "Java: $(find jadx_out -name '*.java' | wc -l), smali: $(find apktool_out -name '*.smali' | wc -l)"
+
+      - name: Батарея поиска
+        run: |
+          set -e
+          cd work
+          cat > research.py <<'PYEOF'
+          import re, pathlib, zipfile
+          OUT = pathlib.Path("../research")
+          def w(name, text):
+              (OUT / name).write_text(text[:120000], encoding="utf-8")
+          rep = [f"# Исследование MDGram 9.3.3"]
+          # 1. SYSINFO: .so в оригинале + application из манифеста
+          apk = zipfile.ZipFile("MDGram-9.3.3.apk")
+          so = [(i.filename, "STORED" if i.compress_type == 0 else "DEFLATED") for i in apk.infolist() if i.filename.endswith(".so")]
+          mani = open("apktool_out/AndroidManifest.xml", encoding="utf-8").read()
+          app_tag = re.search(r"<application.*?>", mani, re.S).group(0)
+          w("SYSINFO.md", "## .so в ОРИГИНАЛЬНОМ APK (метод хранения)\n" +
+              "\n".join(f"- {m} {f}" for f, m in so) +
+              f"\n\n## application\n```\n{app_tag}\n```\n")
+          rep.append(f"- SYSINFO: .so файлов {len(so)}")
+          # 2. UPDATER: полные smali+java апдейтера (ska/pka/ip6)
+          UD = OUT / "updater"; UD.mkdir(exist_ok=True)
+          idx = []
+          for base, ext, sub in [("apktool_out", ".smali", "smali"), ("jadx_out", ".java", "java")]:
+              for name in ["ska", "pka", "ip6"]:
+                  for f in pathlib.Path(base).rglob(f"{name}{ext}"):
+                      dst = UD / f"{sub}-{f.parent.name}-{f.name}"
+                      dst.write_bytes(f.read_bytes()[:120000]); idx.append(f"{dst.name} ({dst.stat().st_size}b)")
+                  for f in pathlib.Path(base).rglob(f"{name}$*{ext}"):
+                      dst = UD / f"{sub}-{f.parent.name}-{f.name.replace('$', '_')}"
+                      dst.write_bytes(f.read_bytes()[:120000]); idx.append(f"{dst.name} ({dst.stat().st_size}b)")
+          w("UPDATER.md", "## Файлы апдейтера\n" + "\n".join(f"- {x}" for x in idx) + "\n")
+          rep.append(f"- UPDATER: файлов {len(idx)}")
+          # 3. P2: метод проверки подписи + все вызывающие
+          p2m, callers = [], []
+          for f in pathlib.Path("apktool_out").rglob("LaunchActivity.smali"):
+              lines = f.read_text(encoding="utf-8", errors="ignore").split("\n")
+              for i, ln in enumerate(lines):
+                  if ln.startswith(".method") and "p2(" in ln and ln.rstrip().endswith(")Z"):
+                      j = next((k for k in range(i+1, len(lines)) if lines[k].startswith(".end method")), i+1)
+                      p2m.append(f"### {f}\n```\n" + "\n".join(lines[i:j+1]) + "\n```")
+          for f in pathlib.Path("apktool_out").rglob("*.smali"):
+              lines = f.read_text(encoding="utf-8", errors="ignore").split("\n")
+              for i, ln in enumerate(lines):
+                  if "->p2(" in ln:
+                      ctx = "\n".join(f"    {x.strip()[:160]}" for x in lines[max(0,i-2):i+3])
+                      callers.append(f"- {f}:{i+1}\n{ctx}")
+                      if len(callers) >= 40: break
+              if len(callers) >= 40: break
+          w("P2CALLERS.md", "## LaunchActivity.p2()\n" + "\n".join(p2m) + "\n\n## Вызывающие\n" + "\n".join(callers) + "\n")
+          rep.append(f"- P2: метод найден ({len(p2m)}), вызывающих {len(callers)}")
+          # 4. APPLOADER: attachBaseContext/onCreate
+          al = []
+          for f in pathlib.Path("apktool_out").rglob("ApplicationLoader*.smali"):
+              lines = f.read_text(encoding="utf-8", errors="ignore").split("\n")
+              for i, ln in enumerate(lines):
+                  if ln.startswith(".method") and ("attachBaseContext" in ln or " onCreate(" in ln):
+                      j = next((k for k in range(i+1, len(lines)) if lines[k].startswith(".end method")), i+1)
+                      al.append(f"### {f.name} :: {ln.strip()}\n```\n" + "\n".join(lines[i:j+1])[:6000] + "\n```")
+          w("APPLOADER.md", "## ApplicationLoader\n" + "\n".join(al) + "\n")
+          rep.append(f"- APPLOADER: методов {len(al)}")
+          # 5. REQUEST: паттерны из .research-request, один проход по всем файлам
+          pats = []
+          try:
+              for l in open("../.research-request", encoding="utf-8", errors="ignore"):
+                  l = l.strip()
+                  if l and not l.startswith("#"):
+                      pats.append(l)
+          except FileNotFoundError:
+              pass
+          pats = pats[:15]
+          found = {p: [] for p in pats}
+          rx = [(p, re.compile(p)) for p in pats]
+          files = list(pathlib.Path("apktool_out").rglob("*.smali")) + list(pathlib.Path("jadx_out").rglob("*.java"))
+          for f in files:
+              try:
+                  lines = f.read_text(encoding="utf-8", errors="ignore").split("\n")
+              except Exception:
+                  continue
+              for i, ln in enumerate(lines):
+                  for p, r in rx:
+                      if len(found[p]) >= 20:
+                          continue
+                      if r.search(ln):
+                          ctx = "\n".join(f"      {x.strip()[:150]}" for x in lines[max(0,i-2):i+3])
+                          found[p].append(f"- {f}:{i+1}\n{ctx}")
+          out = []
+          for p in pats:
+              out.append(f"### PATTERN: {p} (совпадений: {len(found[p])})")
+              out.extend(found[p][:20])
+          w("REQUEST_RESULTS.md", "# Результаты по .research-request\n\n" + "\n".join(out) + "\n")
+          rep.append(f"- REQUEST: паттернов {len(pats)}, файлов просканировано {len(files)}")
+          print("\n".join(rep))
+          PYEOF
+          python3 research.py | tee ../research/INDEX.md
+          du -sh ../research
+
+      - name: Коммит research/ в ветку
+        if: always()
+        run: |
+          set -e
+          git config user.name "arena-decompile-bot"
+          git config user.email "arena-decompile-bot@users.noreply.github.com"
+          git add research || true
+          if git diff --cached --quiet; then
+            echo "Изменений нет"
+          else
+            git commit -m "Исследование кода MDGram 9.3.3 ($(date -u +%F\ %T))"
+            git pull --rebase origin "${{ github.ref_name }}" || true
+            git push origin "HEAD:${{ github.ref_name }}" || (sleep 15; git pull --rebase origin "${{ github.ref_name }}" || true; git push origin "HEAD:${{ github.ref_name }}")
+          fi

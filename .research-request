@@ -1,0 +1,14 @@
+# Доп. паттерны для research.yml (по одному grep-паттерну на строку, # — комментарий)
+# Краш и апдейтер:
+Premium
+Stickers
+setTyping
+readHistory
+updateStatus
+markRead
+checkUpdate
+notify\.json
+stories
+# Кнопка MDGram-настроек (для будущей кнопки стикеров):
+MDsetting
+MDConfig

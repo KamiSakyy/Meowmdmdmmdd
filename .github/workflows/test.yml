@@ -1,0 +1,286 @@
+name: "Тест мода на эмуляторе (без релиза)"
+
+# Внутренний прогон: собирает ТЕСТОВЫЙ мод (P2 выключен — подозреваемый в краше),
+# ставит на эмулятор, запускает, кладёт скриншоты+логкат в test/.
+# НИКАКОГО релиза и артефактов с APK — пользователю ничего не отдаём до зелени.
+
+on:
+  push:
+    branches: [arena/01a08582-meowmdmdmmdd]
+    paths:
+      - .github/workflows/test.yml
+      - .test-trigger
+
+permissions:
+  contents: write
+
+env:
+  APKPURE_URL: "https://d.apkpure.net/b/APK/org.telegram.mdgram?versionCode=30275&nc=arm64-v8a%2Carmeabi-v7a%2Cx86%2Cx86_64&sv=21"
+  APKPURE_SHA1: "4fa5ae96754b910045d1d84dac7a8261c59793e9"
+  NEW_NAME: "MDGram Revival"
+  KEYSTORE_PASS: "mdgram-mod-2026"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout ветки
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Java 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: APK + decode + проверки эмулятора
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          mkdir -p work test && cd work
+          curl -sL --retry 3 -A "Mozilla/5.0" -o MDGram-9.3.3.apk "$APKPURE_URL"
+          echo "$APKPURE_SHA1  MDGram-9.3.3.apk" | sha1sum -c -
+          X86=$(unzip -l MDGram-9.3.3.apk | grep -c "lib/x86_64/" || true)
+          echo "x86_64 .so в APK: $X86"
+          [ "$X86" -gt 0 ] || { echo "НЕТ x86_64 библиотек — эмулятор не запустит!"; exit 1; }
+          APKTOOL_TAG=$(gh release view --repo iBotPeaches/Apktool --json tagName --jq .tagName 2>/dev/null || echo v2.9.3)
+          curl -sL --retry 3 -o apktool.jar "https://github.com/iBotPeaches/Apktool/releases/download/${APKTOOL_TAG}/apktool_${APKTOOL_TAG#v}.jar" || true
+          java -jar apktool.jar --version > /dev/null 2>&1 || \
+            curl -sL --retry 3 -o apktool.jar "https://github.com/iBotPeaches/Apktool/releases/download/v2.9.3/apktool_2.9.3.jar"
+          java -jar apktool.jar d -f -o apktool_out MDGram-9.3.3.apk
+          {
+            echo "# Тест мода на эмуляторе ($(date -u +%F\ %T) UTC)"
+            echo ""
+            echo "- test.yml: P1 название, P2 ОТКЛЮЧЁН (подозреваемый), P3 About, P6 p2()=true, .so нормализация"
+            echo "- x86_64 .so в оригинале: $X86"
+            echo ""
+            echo "## .so в ОРИГИНАЛЕ (метод хранения)"
+            unzip -lv MDGram-9.3.3.apk | grep "\.so" | head -30
+          } > ../test/TEST_REPORT.md
+
+      - name: Патчи тестовой сборки
+        run: |
+          set -e
+          cd work
+          cat > patch.py <<'PYEOF'
+          import re, pathlib
+          root = pathlib.Path("apktool_out")
+          rep = []
+          # P1: название
+          NEW_NAME = "MDGram Revival"
+          p1 = 0; p1files = []
+          for f in root.rglob("strings.xml"):
+              if "/res/values" not in str(f).replace("\\", "/"):
+                  continue
+              t = f.read_text(encoding="utf-8")
+              nt, n = re.subn(r'(<string name="AppName">)[^<]*(</string>)',
+                              r'\g<1>' + NEW_NAME + r'\g<2>', t)
+              if n:
+                  f.write_text(nt, encoding="utf-8")
+                  p1 += n; p1files.append(str(f))
+          rep.append(f"P1 название: замен={p1}, файлов={len(p1files)}")
+          # P2 ОТКЛЮЧЁН — главный подозреваемый в краше (обрыв сети в апдейтере)
+          rep.append("P2 OTA: ОТКЛЮЧЁН (исходные URL на месте)")
+          # P3: Ab.d0() всегда OFICIAL
+          p3 = "НЕ НАЙДЕН (не фатально)"
+          for f in root.rglob("Ab.smali"):
+              if "mdgram/Activies" not in str(f).replace("\\", "/"):
+                  continue
+              lines = f.read_text(encoding="utf-8", errors="ignore").split("\n")
+              start = next((i for i, ln in enumerate(lines)
+                            if ln.startswith(".method") and " d0()V" in ln), None)
+              if start is None:
+                  continue
+              end = next((i for i in range(start, len(lines))
+                          if lines[i].startswith(".end method")), len(lines))
+              p2idx = next((i for i in range(start, end) if "->p2(" in lines[i]), None)
+              if p2idx is None:
+                  continue
+              mv = next((i for i in range(p2idx, end) if "move-result " in lines[i]), None)
+              if mv is None:
+                  continue
+              reg = lines[mv].split()[-1]
+              lines.insert(mv + 1, f"    const/4 {reg}, 0x1")
+              f.write_text("\n".join(lines), encoding="utf-8")
+              p3 = f"OK ({f}, {reg}=1)"
+              break
+          rep.append(f"P3 Ab.d0 OFICIAL: {p3}")
+          # P6: LaunchActivity.p2() всегда true (подпись «официальная», как в оригинале)
+          p6 = "НЕ НАЙДЕН (не фатально)"
+          for f in root.rglob("LaunchActivity.smali"):
+              lines = f.read_text(encoding="utf-8", errors="ignore").split("\n")
+              for i, ln in enumerate(lines):
+                  if ln.startswith(".method") and "p2(" in ln and ln.rstrip().endswith(")Z"):
+                      j = next((k for k in range(i+1, len(lines)) if lines[k].startswith(".end method")), None)
+                      if j is None:
+                          continue
+                      lines[i+1:j] = ["    .locals 1", "", "    const/4 v0, 0x1", "", "    return v0"]
+                      f.write_text("\n".join(lines), encoding="utf-8")
+                      p6 = f"OK ({f})"
+                      break
+              if p6.startswith("OK"):
+                  break
+          rep.append(f"P6 p2()=true: {p6}")
+          print("\n".join(rep))
+          pathlib.Path("../test/PATCH_REPORT.txt").write_text("\n".join(rep), encoding="utf-8")
+          PYEOF
+          python3 patch.py | tee ../test/PATCH_REPORT.txt
+          { echo ""; echo "## Патчи"; cat ../test/PATCH_REPORT.txt; } >> ../test/TEST_REPORT.md
+
+      - name: Пересборка
+        run: |
+          set +e
+          cd work
+          java -jar apktool.jar b -o MDGram-test-unsigned.apk apktool_out > build.log 2>&1
+          echo "exit code: $?" >> build.log
+          if [ -f MDGram-test-unsigned.apk ]; then
+            echo "BUILD_OK=true" >> "$GITHUB_ENV"
+            echo "Пересборка: OK"
+          else
+            echo "BUILD_OK=false" >> "$GITHUB_ENV"
+            echo "Пересборка: ПРОВАЛ"
+          fi
+          cp build.log ../test/build.log
+          { echo ""; echo "## Пересборка"; tail -12 build.log; } >> ../test/TEST_REPORT.md
+          exit 0
+
+      - name: Нормализация .so (uncompressed)
+        if: env.BUILD_OK == 'true'
+        run: |
+          set -e
+          cd work
+          python3 - <<'PYEOF'
+          import zipfile
+          src = "MDGram-test-unsigned.apk"
+          dst = "MDGram-test-unsigned-fixed.apk"
+          zin = zipfile.ZipFile(src)
+          infos = [(i.filename, zin.read(i.filename), i.compress_type) for i in zin.infolist()]
+          zin.close()
+          def table(rows):
+              so = [(f, c) for f, _, c in rows if f.endswith(".so")]
+              return f".so всего: {len(so)}, STORED: {sum(1 for _, c in so if c == 0)}, DEFLATED: {sum(1 for _, c in so if c != 0)}"
+          before = table(infos)
+          zout = zipfile.ZipFile(dst, "w")
+          for fn, data, ct in infos:
+              zout.writestr(fn, data, compress_type=(zipfile.ZIP_STORED if fn.endswith(".so") else ct))
+          zout.close()
+          zin2 = zipfile.ZipFile(dst)
+          after = table([(i.filename, None, i.compress_type) for i in zin2.infolist()])
+          zin2.close()
+          open("../test/SONORM.txt", "w").write(f"BEFORE {before}\nAFTER {after}\n")
+          print("BEFORE:", before); print("AFTER:", after)
+          PYEOF
+          { echo ""; echo "## .so нормализация (пересобранный APK)"; cat ../test/SONORM.txt; } >> ../test/TEST_REPORT.md
+
+      - name: Подпись тестовым ключом из ветки
+        if: env.BUILD_OK == 'true'
+        run: |
+          set +e
+          {
+            echo "=== build-tools ==="
+            export ANDROID_HOME="$HOME/android-sdk"
+            mkdir -p "$ANDROID_HOME/cmdline-tools"
+            curl -sSL --retry 3 -o cmdtools.zip "https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip"
+            unzip -q cmdtools.zip -d "$ANDROID_HOME/cmdline-tools"
+            mv "$ANDROID_HOME/cmdline-tools/cmdline-tools" "$ANDROID_HOME/cmdline-tools/latest"
+            yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null 2>&1
+            "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-34" "build-tools;34.0.0" > /dev/null 2>&1
+            echo "sdkmanager install exit: $?"
+            BT="$ANDROID_HOME/build-tools/34.0.0"
+            cd work
+            if [ ! -f ../mod-keystore/mdgram.keystore ]; then
+              echo "KEYSTORE MISSING — нет mod-keystore/ в ветке"
+            else
+              echo "keystore из ветки найден"
+              "$BT/zipalign" -f 4 MDGram-test-unsigned-fixed.apk MDGram-test.apk
+              echo "zipalign exit: $?"
+              "$BT/apksigner" sign --verbose --ks ../mod-keystore/mdgram.keystore \
+                --ks-pass pass:"$KEYSTORE_PASS" --key-pass pass:"$KEYSTORE_PASS" MDGram-test.apk
+              echo "apksigner exit: $?"
+              "$BT/apksigner" verify --print-certs MDGram-test.apk 2>&1 | head -5
+              "$BT/aapt" dump badging MDGram-test.apk 2>/dev/null | grep -E "^package|application-label:" | head -3
+            fi
+          } > $GITHUB_WORKSPACE/test/sign.log 2>&1
+          tail -12 $GITHUB_WORKSPACE/test/sign.log || true
+          if grep -q "apksigner exit: 0" $GITHUB_WORKSPACE/test/sign.log && [ -f "$GITHUB_WORKSPACE/work/MDGram-test.apk" ]; then
+            echo "SIGN_OK=true" >> "$GITHUB_ENV"
+          else
+            echo "SIGN_OK=false" >> "$GITHUB_ENV"
+          fi
+          { echo ""; echo "## Подпись"; grep -E "apksigner exit|package:|application-label" $GITHUB_WORKSPACE/test/sign.log | head -6; } >> $GITHUB_WORKSPACE/test/TEST_REPORT.md
+          exit 0
+
+      - name: Эмулятор + запуск + логкат
+        if: env.BUILD_OK == 'true' && env.SIGN_OK == 'true'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          target: google_apis
+          arch: x86_64
+          profile: pixel_4
+          emulator-options: -no-snapshot-save -no-window -no-audio -no-boot-anim
+          disable-animations: true
+          script: |
+            adb install -r work/MDGram-test.apk
+            adb shell monkey -p org.telegram.mdgram -c android.intent.category.LAUNCHER 1
+            sleep 30
+            adb shell pidof org.telegram.mdgram > test-alive.txt 2>&1 && echo ALIVE >> test-alive.txt || echo DEAD >> test-alive.txt
+            cat test-alive.txt
+            adb exec-out screencap -p > test/screenshot-1.png
+            sleep 20
+            adb exec-out screencap -p > test/screenshot-2.png
+            adb logcat -d > test/logcat-full.txt
+            ls -la test/
+
+      - name: Вердикт по логам
+        if: always()
+        run: |
+          set +e
+          ALIVE="UNKNOWN"
+          [ -f test-alive.txt ] && { grep -q "DEAD" test-alive.txt && ALIVE="DEAD" || ALIVE="ALIVE"; }
+          FATAL_N=0
+          [ -f test/logcat-full.txt ] && FATAL_N=$(grep -c "FATAL EXCEPTION" test/logcat-full.txt || true)
+          [ -z "$FATAL_N" ] && FATAL_N=0
+          [ -f test/logcat-full.txt ] && { grep -A60 "FATAL EXCEPTION" test/logcat-full.txt | head -150 > test/crash-stack.txt; tail -c 300000 test/logcat-full.txt > test/logcat-tail.txt; rm -f test/logcat-full.txt; }
+          ls -la test/ || true
+          {
+            echo ""; echo "## Вердикт эмулятора"
+            echo "- Процесс после 30с: $ALIVE"
+            echo "- FATAL EXCEPTION: $FATAL_N"
+            echo "- Скриншоты:"; ls test/*.png 2>/dev/null || echo "(нет)"
+          } >> test/TEST_REPORT.md
+          if [ "$ALIVE" = "ALIVE" ] && [ "$FATAL_N" = "0" ]; then
+            echo "TEST_CRASH=false" >> "$GITHUB_ENV"
+          else
+            echo "TEST_CRASH=true" >> "$GITHUB_ENV"
+          fi
+          exit 0
+
+      - name: Коммит test/ в ветку
+        if: always()
+        run: |
+          set -e
+          git config user.name "arena-decompile-bot"
+          git config user.email "arena-decompile-bot@users.noreply.github.com"
+          git add test || true
+          if git diff --cached --quiet; then
+            echo "Изменений нет"
+          else
+            git commit -m "Тест на эмуляторе (BUILD_OK=${BUILD_OK:-unset} SIGN_OK=${SIGN_OK:-unset} TEST_CRASH=${TEST_CRASH:-unset})"
+            git pull --rebase origin "${{ github.ref_name }}" || true
+            git push origin "HEAD:${{ github.ref_name }}" || (sleep 15; git pull --rebase origin "${{ github.ref_name }}" || true; git push origin "HEAD:${{ github.ref_name }}")
+          fi
+
+      - name: Статус теста
+        if: always()
+        run: |
+          if [ "${BUILD_OK:-false}" = "true" ] && [ "${SIGN_OK:-false}" = "true" ] && [ "${TEST_CRASH:-true}" = "false" ]; then
+            echo "ТЕСТ ПРОШЁЛ: запускается, не падает"
+          else
+            echo "ТЕСТ ПРОВАЛЕН (BUILD_OK=${BUILD_OK:-unset} SIGN_OK=${SIGN_OK:-unset} TEST_CRASH=${TEST_CRASH:-unset})"
+            exit 1
+          fi
