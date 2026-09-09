@@ -1,0 +1,65 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'org.telegram.mdgram'
+    compileSdk 33
+
+    defaultConfig {
+        applicationId 'org.telegram.mdgram'
+        minSdk 21
+        targetSdk 33
+        versionCode 30275
+        versionName '9.3.3'
+        multiDexEnabled true
+        vectorDrawables {
+            useSupportLibrary true
+        }
+    }
+
+    signingConfigs {
+        release {
+            storeFile file('../../mod-keystore/mdgram.keystore')
+            storePassword System.getenv('KEYSTORE_PASS') ?: 'mdgram-mod-2026'
+            keyAlias 'mdgram-mod'
+            keyPassword System.getenv('KEYSTORE_PASS') ?: 'mdgram-mod-2026'
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            shrinkResources false
+            debuggable false
+        }
+        debug {
+            applicationIdSuffix '.debug'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+        coreLibraryDesugaringEnabled true
+    }
+
+    sourceSets {
+        main {
+            java.srcDirs = ['src/main/java']
+            jniLibs.srcDirs = ['src/main/jniLibs']
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+        checkReleaseBuilds false
+    }
+}
+
+dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.2.2'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.7.20'
+    implementation 'androidx.multidex:multidex:2.0.1'
+}

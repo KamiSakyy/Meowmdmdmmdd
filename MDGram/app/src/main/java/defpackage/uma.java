@@ -1,0 +1,22 @@
+package defpackage;
+
+import android.graphics.RectF;
+import android.opengl.GLES20;
+import android.opengl.GLUtils;
+/* renamed from: uma  reason: default package */
+/* loaded from: classes3.dex */
+public abstract class uma {
+    public static void a() {
+        int glGetError = GLES20.glGetError();
+        if (glGetError != 0) {
+            GLUtils.getEGLErrorString(glGetError);
+        }
+    }
+
+    public static void b(RectF rectF) {
+        rectF.left = (int) Math.floor(rectF.left);
+        rectF.top = (int) Math.floor(rectF.top);
+        rectF.right = (int) Math.ceil(rectF.right);
+        rectF.bottom = (int) Math.ceil(rectF.bottom);
+    }
+}

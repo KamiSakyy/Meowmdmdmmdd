@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:gravity="center" android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="match_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:layout_gravity="center" android:layout_width="match_parent" android:layout_height="80.0dp">
+        <LinearLayout android:gravity="center_horizontal" android:layout_gravity="top" android:orientation="vertical" android:layout_width="0.0dp" android:layout_height="wrap_content" android:layout_weight="1.0">
+            <ImageView android:layout_gravity="left|center" android:id="@id/bubble_left" android:layout_width="match_parent" android:layout_height="40.0dp" android:src="@drawable/ios_bubble_left" />
+        </LinearLayout>
+        <LinearLayout android:gravity="center_horizontal" android:layout_gravity="bottom" android:orientation="vertical" android:layout_width="0.0dp" android:layout_height="wrap_content" android:layout_weight="1.0">
+            <ImageView android:layout_gravity="right|bottom" android:id="@id/bubble_right" android:layout_width="match_parent" android:layout_height="40.0dp" android:src="@drawable/ios_bubble_right" android:scaleType="centerInside" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
