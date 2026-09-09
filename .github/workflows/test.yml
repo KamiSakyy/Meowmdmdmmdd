@@ -66,68 +66,7 @@ jobs:
         run: |
           set -e
           cd work
-          cat > patch.py <<'PYEOF'
-          import re, pathlib
-          root = pathlib.Path("apktool_out")
-          rep = []
-          # P1: название
-          NEW_NAME = "MDGram Revival"
-          p1 = 0; p1files = []
-          for f in root.rglob("strings.xml"):
-              if "/res/values" not in str(f).replace("\\", "/"):
-                  continue
-              t = f.read_text(encoding="utf-8")
-              nt, n = re.subn(r'(<string name="AppName">)[^<]*(</string>)',
-                              r'\g<1>' + NEW_NAME + r'\g<2>', t)
-              if n:
-                  f.write_text(nt, encoding="utf-8")
-                  p1 += n; p1files.append(str(f))
-          rep.append(f"P1 название: замен={p1}, файлов={len(p1files)}")
-          # P2 ОТКЛЮЧЁН — главный подозреваемый в краше (обрыв сети в апдейтере)
-          rep.append("P2 OTA: ОТКЛЮЧЁН (исходные URL на месте)")
-          # P3: Ab.d0() всегда OFICIAL
-          p3 = "НЕ НАЙДЕН (не фатально)"
-          for f in root.rglob("Ab.smali"):
-              if "mdgram/Activies" not in str(f).replace("\\", "/"):
-                  continue
-              lines = f.read_text(encoding="utf-8", errors="ignore").split("\n")
-              start = next((i for i, ln in enumerate(lines)
-                            if ln.startswith(".method") and " d0()V" in ln), None)
-              if start is None:
-                  continue
-              end = next((i for i in range(start, len(lines))
-                          if lines[i].startswith(".end method")), len(lines))
-              p2idx = next((i for i in range(start, end) if "->p2(" in lines[i]), None)
-              if p2idx is None:
-                  continue
-              mv = next((i for i in range(p2idx, end) if "move-result " in lines[i]), None)
-              if mv is None:
-                  continue
-              reg = lines[mv].split()[-1]
-              lines.insert(mv + 1, f"    const/4 {reg}, 0x1")
-              f.write_text("\n".join(lines), encoding="utf-8")
-              p3 = f"OK ({f}, {reg}=1)"
-              break
-          rep.append(f"P3 Ab.d0 OFICIAL: {p3}")
-          # P6: LaunchActivity.p2() всегда true (подпись «официальная», как в оригинале)
-          p6 = "НЕ НАЙДЕН (не фатально)"
-          for f in root.rglob("LaunchActivity.smali"):
-              lines = f.read_text(encoding="utf-8", errors="ignore").split("\n")
-              for i, ln in enumerate(lines):
-                  if ln.startswith(".method") and "p2(" in ln and ln.rstrip().endswith(")Z"):
-                      j = next((k for k in range(i+1, len(lines)) if lines[k].startswith(".end method")), None)
-                      if j is None:
-                          continue
-                      lines[i+1:j] = ["    .locals 1", "", "    const/4 v0, 0x1", "", "    return v0"]
-                      f.write_text("\n".join(lines), encoding="utf-8")
-                      p6 = f"OK ({f})"
-                      break
-              if p6.startswith("OK"):
-                  break
-          rep.append(f"P6 p2()=true: {p6}")
-          print("\n".join(rep))
-          pathlib.Path("../test/PATCH_REPORT.txt").write_text("\n".join(rep), encoding="utf-8")
-          PYEOF
+          cp ../mod-patch/patch.py ./patch.py
           python3 patch.py | tee ../test/PATCH_REPORT.txt
           { echo ""; echo "## Патчи"; cat ../test/PATCH_REPORT.txt; } >> ../test/TEST_REPORT.md
 
