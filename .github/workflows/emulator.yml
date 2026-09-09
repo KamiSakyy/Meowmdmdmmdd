@@ -1,0 +1,101 @@
+name: Проверка APK в эмуляторе
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  emulator:
+    name: Проверка APK в эмуляторе (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - name: Код
+        uses: actions/checkout@v4
+
+      - name: Включаем KVM
+        if: runner.os == 'Linux'
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Прогон в эмуляторе (свой запуск, без KVM)
+        id: emu
+        continue-on-error: true
+        run: |
+          set +e
+          mkdir -p out
+          LOG=out/emu.log
+          exec > >(tee -a "$LOG") 2>&1
+          echo "== SDK =="
+          echo "ANDROID_HOME=$ANDROID_HOME ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+          ls "$ANDROID_HOME" 2>/dev/null | head
+          SDKMAN="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -x "$SDKMAN" ]; then SDKMAN="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"; fi
+          echo "sdkmanager=$SDKMAN"
+          yes | "$SDKMAN" --licenses > /dev/null 2>&1
+          "$SDKMAN" --install "platform-tools" "platforms;android-30" \
+                              "emulator" "system-images;android-30;google_apis;x86_64" 2>&1 | tail -20
+          echo "== AVD =="
+          echo no | "$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager" create avd \
+              -n mdtest -k "system-images;android-30;google_apis;x86_64" \
+              --device "pixel_2" --force 2>&1 | tail -10
+          echo "== старт эмулятора =="
+          EXTRA=""
+          if [ "$(uname)" != "Darwin" ]; then EXTRA="-no-accel"; fi
+          "$ANDROID_HOME/emulator/emulator" -avd mdtest -no-window $EXTRA \
+              -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none \
+              -partition-size 2048 > out/emulator.log 2>&1 &
+          export PATH="$ANDROID_HOME/platform-tools:$PATH"
+          timeout 240 adb wait-for-device || echo "устройство не появилось за 240 c" 
+          echo "устройство подключено: $(adb devices | tail -2)"
+          i=0
+          while [ "$i" -lt 120 ]; do
+            boot=$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')
+            [ "$boot" = "1" ] && break
+            i=$((i+1)); sleep 5
+          done
+          echo "boot_completed=$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r') (попыток: $i)"
+          echo "== установка APK =="
+          APK=apk/MDGram-9.3.3.apk
+          timeout 900 adb install -r "$APK"
+          echo "== запуск приложения =="
+          adb logcat -c
+          adb shell monkey -p org.telegram.mdgram -c android.intent.category.LAUNCHER 1
+          sleep 120
+          echo "== состояние =="
+          adb shell pidof org.telegram.mdgram || echo "ПРОЦЕСС НЕ НАЙДЕН"
+          adb shell dumpsys window | grep -E "mCurrentFocus|mFocusedApp" | head -4
+          adb shell pm list packages | grep mdgram
+          echo "== краши =="
+          adb logcat -d | grep -iE "FATAL EXCEPTION|AndroidRuntime|force finishing" | head -30 || echo "крашей нет"
+          echo "== хвост logcat =="
+          adb logcat -d -t 120
+          adb exec-out screencap -p > out/screen.png 2>/dev/null || echo "скриншот не снят"
+          ls -la out
+          # сохраняем результат в ветку сразу отсюда
+          mkdir -p emulator-logs
+          cp out/* emulator-logs/ 2>/dev/null || true
+          git config user.name  "arena-agent"
+          git config user.email "agent@arena.ai"
+          git add -f emulator-logs || true
+          git commit -m "проверка APK в эмуляторе: логи и скриншот (ран ${GITHUB_RUN_NUMBER})" || echo "нечего коммитить"
+          git pull --rebase || true
+          git push || true
+
+
+      - name: Скриншот и логи
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: emulator-check-${{ matrix.os }}-${{ github.run_number }}
+          path: out/
+          if-no-files-found: warn
