@@ -108,8 +108,11 @@ def merge_values(src, dst):
         st = ET.parse(src).getroot()
     except ET.ParseError:
         return 0
+    # attr в наш res не переносим вообще: в APK они библиотечные (aapt слил туда
+    # все attr зависимостей), а библиотеки теперь подключены по-настоящему —
+    # перенесённый attr гарантированно даст "Duplicate value for resource".
     want = [e for e in list(st)
-            if e.get("name") and (e.tag != "attr" or e.get("name") not in STRIPPED)]
+            if e.get("name") and e.tag != "attr" and e.get("name") not in STRIPPED]
     if not want:
         return 0
     if dst.exists():
