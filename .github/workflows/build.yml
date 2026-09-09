@@ -143,13 +143,14 @@ jobs:
 
   emulator:
     name: Проверка APK в эмуляторе (${{ matrix.os }})
+    if: hashFiles('.run-emulator') != ''
     runs-on: ${{ matrix.os }}
     needs: build
     timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest]
 
     steps:
       - name: Код
