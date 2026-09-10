@@ -1,0 +1,200 @@
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/MessageThread.h:8:
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/threading.h:110:8: warning: private field 'maxPriority' is not used [-Wunused-private-field]
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/video/VideoSource.cpp:5:
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/video/../os/android/../../video/VideoSource.h:12:
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/video/../os/android/../../Buffers.h:19:
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/threading.h:110:8: warning: private field 'maxPriority' is not used [-Wunused-private-field]
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/video/VideoRenderer.cpp:5:
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/video/../os/android/../../video/VideoRenderer.h:9:
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/video/../Buffers.h:19:
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/threading.h:110:8: warning: private field 'maxPriority' is not used [-Wunused-private-field]
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/video/ScreamCongestionController.cpp:23:29: warning: unused variable 'BETA_ECN' [-Wunused-const-variable]
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/video/ScreamCongestionController.cpp:7:
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/video/ScreamCongestionController.h:8:
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/Buffers.h:19:
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/threading.h:110:8: warning: private field 'maxPriority' is not used [-Wunused-private-field]
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/tg_voip_jni.cpp:17:
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/os/android/AudioOutputAndroid.h:20:15: warning: 'Start' overrides a member function but is not marked 'override' [-Winconsistent-missing-override]
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/MediaStreamItf.h:24:15: note: overridden virtual function is here
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/tg_voip_jni.cpp:17:
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/os/android/AudioOutputAndroid.h:21:15: warning: 'Stop' overrides a member function but is not marked 'override' [-Winconsistent-missing-override]
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/MediaStreamItf.h:25:15: note: overridden virtual function is here
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/tg_voip_jni.cpp:22:
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/../c_utils.h:9:9: warning: 'LOGI' macro redefined [-Wmacro-redefined]
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/logging.h:30:9: note: previous definition is here
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/tg_voip_jni.cpp:22:
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/../c_utils.h:10:9: warning: 'LOGD' macro redefined [-Wmacro-redefined]
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/logging.h:29:9: note: previous definition is here
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/tg_voip_jni.cpp:22:
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/../c_utils.h:11:9: warning: 'LOGE' macro redefined [-Wmacro-redefined]
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/logging.h:32:9: note: previous definition is here
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/tg_voip_jni.cpp:22:
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/../c_utils.h:12:9: warning: 'LOGV' macro redefined [-Wmacro-redefined]
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/logging.h:28:9: note: previous definition is here
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/tg_voip_jni.cpp:12:
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/VoIPServerConfig.h:13:
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/os/android/../../threading.h:110:8: warning: private field 'maxPriority' is not used [-Wunused-private-field]
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/os/android/VideoSourceAndroid.cpp:5:
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/os/android/VideoSourceAndroid.h:8:
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/os/android/../../video/VideoSource.h:12:
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/os/android/../../Buffers.h:19:
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/threading.h:110:8: warning: private field 'maxPriority' is not used [-Wunused-private-field]
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/os/android/VideoRendererAndroid.cpp:87:19: warning: moving a temporary object prevents copy elision [-Wpessimizing-move]
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/os/android/VideoRendererAndroid.cpp:87:19: note: remove std::move call here
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/os/android/VideoRendererAndroid.cpp:5:
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/os/android/VideoRendererAndroid.h:8:
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/os/android/../../video/VideoRenderer.h:9:
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/os/android/../../Buffers.h:19:
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/threading.h:110:8: warning: private field 'maxPriority' is not used [-Wunused-private-field]
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/VoIPController.cpp:2120:81: warning: format specifies type 'unsigned int' but the argument has type 'std::__ndk1::vector<unsigned int, std::__ndk1::allocator<unsigned int> >::size_type' (aka 'unsigned long') [-Wformat]
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/logging.h:32:74: note: expanded from macro 'LOGE'
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/logging.h:26:24: note: expanded from macro '_LOG_WRAP'
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/VoIPController.cpp:2129:80: warning: format specifies type 'unsigned int' but the argument has type 'std::__ndk1::vector<unsigned int, std::__ndk1::allocator<unsigned int> >::size_type' (aka 'unsigned long') [-Wformat]
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/logging.h:32:74: note: expanded from macro 'LOGE'
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/logging.h:26:24: note: expanded from macro '_LOG_WRAP'
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/VoIPController.cpp:14:
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/VoIPController.h:24:
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/video/VideoSource.h:12:
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/os/android/../../Buffers.h:19:
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/os/android/../../threading.h:110:8: warning: private field 'maxPriority' is not used [-Wunused-private-field]
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/tgcalls/NetworkManager.cpp:173:33: warning: 'P2PTransportChannel' is deprecated: bugs.webrtc.org/12598 [-Wdeprecated-declarations]
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/webrtc/p2p/base/p2p_transport_channel.h:117:3: note: 'P2PTransportChannel' has been explicitly marked deprecated here
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/webrtc/absl/base/attributes.h:671:49: note: expanded from macro 'ABSL_DEPRECATED'
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/tgcalls/VideoCaptureInterfaceImpl.cpp:171:1: warning: field '_platformContext' will be initialized after field '_impl' [-Wreorder]
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/tgcalls/legacy/InstanceImplLegacy.cpp:1:
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/tgcalls/legacy/InstanceImplLegacy.h:6:
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/VoIPController.h:24:
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/video/VideoSource.h:12:
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/Buffers.h:19:
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/threading.h:110:8: warning: private field 'maxPriority' is not used [-Wunused-private-field]
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/tgcalls/group/AudioStreamingPart.cpp:17:10: warning: unused function 'stringToUInt32' [-Wunused-function]
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/tgcalls/group/AudioStreamingPart.cpp:33:26: warning: unused function 'splitString' [-Wunused-function]
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/tgcalls/group/AudioStreamingPart.cpp:57:35: warning: unused function 'parseChannelUpdates' [-Wunused-function]
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/tgcalls/group/GroupNetworkManager.cpp:362:33: warning: 'P2PTransportChannel' is deprecated: bugs.webrtc.org/12598 [-Wdeprecated-declarations]
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/webrtc/p2p/base/p2p_transport_channel.h:117:3: note: 'P2PTransportChannel' has been explicitly marked deprecated here
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/webrtc/absl/base/attributes.h:671:49: note: expanded from macro 'ABSL_DEPRECATED'
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/tgcalls/group/GroupInstanceCustomImpl.cpp:476:10: warning: private field '_countFrames' is not used [-Wunused-private-field]
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/webrtc/common_video/h265/legacy_bit_buffer.cc:36:9: warning: unused function 'HighestByte' [-Wunused-function]
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/webrtc/common_video/h265/legacy_bit_buffer.cc:43:9: warning: unused function 'WritePartialByte' [-Wunused-function]
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/webrtc/sdk/android/src/jni/pc/peer_connection.cc:44:
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/webrtc/sdk/android/generated_peerconnection_jni/PeerConnection_jni.h:883:13: warning: unused function 'Java_Observer_onIceCandidateError' [-Wunused-function]
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/org_telegram_messenger_voip_Instance.cpp:312:88: warning: adding 'jint' (aka 'int') to a string does not append to the string [-Wstring-plus-int]
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/org_telegram_messenger_voip_Instance.cpp:312:88: note: use array indexing to silence this warning
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/org_telegram_messenger_voip_Instance.cpp:20:
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/tgcalls/legacy/InstanceImplLegacy.h:6:
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/VoIPController.h:24:
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/video/VideoSource.h:12:
+C/C++: In file included from /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/os/android/../../Buffers.h:19:
+C/C++: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/jni/voip/libtgvoip/threading.h:110:8: warning: private field 'maxPriority' is not used [-Wunused-private-field]
+
+> Task :app:externalNativeBuildRelease
+> Task :app:mergeReleaseJniLibFolders
+
+> Task :app:mergeReleaseNativeLibs
+WARNING:Your project has set `android.useAndroidX=true`, but configuration `:app:releaseRuntimeClasspath` still contains legacy support libraries, which may cause runtime issues.
+This behavior will not be allowed in Android Gradle plugin 8.0.
+Please use only AndroidX dependencies or set `android.enableJetifier=true` in the `gradle.properties` file to migrate your project to AndroidX (see https://developer.android.com/jetpack/androidx/migrate for more info).
+The following legacy support libraries are detected:
+:app:releaseRuntimeClasspath -> com.stripe:stripe-android:2.0.2 -> com.android.support:support-annotations:25.1.0
+
+> Task :app:compileReleaseAidl NO-SOURCE
+> Task :app:compileReleaseRenderscript NO-SOURCE
+> Task :app:generateReleaseBuildConfig
+> Task :app:javaPreCompileRelease
+> Task :app:generateReleaseResValues
+> Task :app:checkReleaseAarMetadata
+> Task :app:stripReleaseDebugSymbols
+> Task :app:mapReleaseSourceSetPaths
+> Task :app:generateReleaseResources
+> Task :app:desugarReleaseFileDependencies
+> Task :app:extractReleaseNativeSymbolTables
+
+> Task :app:mergeReleaseResources
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/res/values/strings.xml:1340:2: Multiple substitutions specified in non-positional format of string resource string/ForwardingFromNameAndMessage. Did you mean to add the formatted="false" attribute?
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/res/values/strings.xml:5774:2: Multiple substitutions specified in non-positional format of string resource string/NotificationTopicExceptionsDesctription_few. Did you mean to add the formatted="false" attribute?
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/res/values/strings.xml:5771:2: Multiple substitutions specified in non-positional format of string resource string/NotificationTopicExceptionsDesctription_many. Did you mean to add the formatted="false" attribute?
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/res/values/strings.xml:5775:2: Multiple substitutions specified in non-positional format of string resource string/NotificationTopicExceptionsDesctription_one. Did you mean to add the formatted="false" attribute?
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/res/values/strings.xml:5772:2: Multiple substitutions specified in non-positional format of string resource string/NotificationTopicExceptionsDesctription_other. Did you mean to add the formatted="false" attribute?
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/res/values/strings.xml:1409:2: Multiple substitutions specified in non-positional format of string resource string/NotificationTopicExceptionsDesctription_two. Did you mean to add the formatted="false" attribute?
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/res/values-ko/strings.xml:3389:2: Multiple substitutions specified in non-positional format of string resource string/CallEmojiKeyTooltip. Did you mean to add the formatted="false" attribute?
+
+> Task :app:createReleaseCompatibleScreenManifests
+> Task :app:extractDeepLinksRelease
+> Task :app:mergeReleaseNativeDebugMetadata
+
+> Task :app:processReleaseMainManifest
+package="org.telegram.messenger" found in source AndroidManifest.xml: /home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/AndroidManifest.xml.
+Setting the namespace via a source AndroidManifest.xml's package attribute is deprecated.
+Please instead set the namespace (or testNamespace) in the module's build.gradle file, as described here: https://developer.android.com/studio/build/configure-app-module#set-namespace
+This migration can be done automatically using the AGP Upgrade Assistant, please refer to https://developer.android.com/studio/build/agp-upgrade-assistant for more information.
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/AndroidManifest.xml:415:5-420:16 Warning:
+	Element receiver#org.telegram.messenger.ChatsWidgetProvider at AndroidManifest.xml:415:5-420:16 duplicated with element declared at AndroidManifest.xml:313:5-318:16
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/AndroidManifest.xml:421:5-155 Warning:
+	Element service#org.telegram.messenger.ChatsWidgetService at AndroidManifest.xml:421:5-155 duplicated with element declared at AndroidManifest.xml:319:5-155
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/AndroidManifest.xml:422:5-427:16 Warning:
+	Element receiver#org.telegram.messenger.ContactsWidgetProvider at AndroidManifest.xml:422:5-427:16 duplicated with element declared at AndroidManifest.xml:320:5-325:16
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/AndroidManifest.xml:428:5-158 Warning:
+	Element service#org.telegram.messenger.ContactsWidgetService at AndroidManifest.xml:428:5-158 duplicated with element declared at AndroidManifest.xml:326:5-158
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/AndroidManifest.xml:429:5-101 Warning:
+	Element service#org.telegram.messenger.FilesMigrationService at AndroidManifest.xml:429:5-101 duplicated with element declared at AndroidManifest.xml:327:5-101
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/AndroidManifest.xml:61:3-98 Warning:
+	uses-permission#android.permission.WRITE_EXTERNAL_STORAGE was tagged at AndroidManifest.xml:61 to replace another declaration but no other declaration present
+/home/runner/work/Meowmdmdmmdd/Meowmdmdmmdd/MDGram/app/src/main/AndroidManifest.xml:70:3-443:17 Warning:
+	application@android:supportsRtl was tagged at AndroidManifest.xml:70 to replace other declarations but no other declaration present
+
+> Task :app:processReleaseManifest
+> Task :app:checkReleaseDuplicateClasses
+> Task :app:mergeReleaseArtProfile
+> Task :app:mergeReleaseShaders
+> Task :app:compileReleaseShaders NO-SOURCE
+> Task :app:generateReleaseAssets UP-TO-DATE
+> Task :app:mergeReleaseAssets
+> Task :app:processReleaseManifestForPackage
+> Task :app:processReleaseJavaRes NO-SOURCE
+> Task :app:compressReleaseAssets
+> Task :app:mergeReleaseJavaResource
+> Task :app:collectReleaseDependencies
+> Task :app:sdkReleaseDependencyData
+> Task :app:validateSigningRelease
+> Task :app:writeReleaseAppMetadata
+> Task :app:writeReleaseSigningConfigVersions
+warn: removing resource org.telegram.mdgram:string/ActionGroupCallEnded without required default value.
+warn: removing resource org.telegram.mdgram:string/ActionGroupCallJustStarted without required default value.
+warn: removing resource org.telegram.mdgram:string/ClearRecentEmoji without required default value.
+warn: removing resource org.telegram.mdgram:string/KeepMediaInfo without required default value.
+warn: removing resource org.telegram.mdgram:string/PermissionNoAudio without required default value.
+warn: removing resource org.telegram.mdgram:string/PermissionNoAudioVideo without required default value.
+warn: removing resource org.telegram.mdgram:string/PermissionNoCamera without required default value.
+warn: removing resource org.telegram.mdgram:string/PermissionStorage without required default value.
+warn: removing resource org.telegram.mdgram:string/PrivacyProfilePhotoInfo2 without required default value.
+warn: removing resource org.telegram.mdgram:string/QRCodePermissionNoCamera without required default value.
+warn: removing resource org.telegram.mdgram:string/TerminateSessionInfo without required default value.
+warn: removing resource org.telegram.mdgram:string/UserRestrictionsDisabled without required default value.
+warn: removing resource org.telegram.mdgram:string/VideoPreviewDesrciption without required default value.
+warn: removing resource org.telegram.mdgram:string/VoipGroupEndedStartNew without required default value.
+warn: removing resource org.telegram.mdgram:string/VoipGroupInvitedToVoiceChat without required default value.
+warn: removing resource org.telegram.mdgram:string/VoipGroupJoinCall without required default value.
+warn: removing resource org.telegram.mdgram:string/VoipGroupMuteMemberAlertText without required default value.
+warn: removing resource org.telegram.mdgram:string/VoipGroupStartAs without required default value.
+warn: removing resource org.telegram.mdgram:string/VoipNeedMicCameraPermission without required default value.
+warn: removing resource org.telegram.mdgram:string/VoipNeedMicPermission without required default value.
+
+> Task :app:processReleaseResources
+
+> Task :app:compileReleaseJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: Some input files use unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+
+> Task :app:dexBuilderRelease
+> Task :app:optimizeReleaseResources
+> Task :app:mergeDexRelease
+> Task :app:l8DexDesugarLibRelease
+> Task :app:compileReleaseArtProfile
+> Task :app:packageRelease
+> Task :app:createReleaseApkListingFileRedirect
+> Task :app:assembleRelease
+
+BUILD SUCCESSFUL in 18m 26s
+44 actionable tasks: 44 executed
