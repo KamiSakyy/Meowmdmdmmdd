@@ -7,186 +7,221 @@ Auto-selecting single ABI x86_64
 == список AVD ==
 mdtest
 total 16
-drwxr-xr-x 3 runner runner 4096 Sep  9 23:19 .
-drwxr-xr-x 3 runner runner 4096 Sep  9 23:19 ..
-drwxr-xr-x 2 runner runner 4096 Sep  9 23:19 mdtest.avd
--rw-r--r-- 1 runner runner   83 Sep  9 23:19 mdtest.ini
+drwxr-xr-x 3 runner runner 4096 Sep  9 22:44 .
+drwxr-xr-x 3 runner runner 4096 Sep  9 22:44 ..
+drwxr-xr-x 2 runner runner 4096 Sep  9 22:44 mdtest.avd
+-rw-r--r-- 1 runner runner   83 Sep  9 22:44 mdtest.ini
 AVDNAME=mdtest
 adb devices: emulator-5554	device
-boot_completed=1 (попыток 30)
+boot_completed=1 (попыток 24)
 == ждём сервис package ==
 сервис package готов (попыток 0), последний ответ: package:com.android.smoketest
 package:com.android.cts.priv.ctsshim
 == окно после загрузки ==
-  mCurrentFocus=Window{bb3f998 u0 com.android.launcher3/com.android.launcher3.Launcher}
+  mCurrentFocus=Window{b1b9968 u0 com.android.launcher3/com.android.launcher3.Launcher}
 == ставим apk/MDGram-9.3.3.apk ==
-apk/MDGram-9.3.3.apk: 1 file pushed, 0 skipped. 7.5 MB/s (81486837 bytes in 10.355s)
+apk/MDGram-9.3.3.apk: 1 file pushed, 0 skipped. 8.2 MB/s (81274839 bytes in 9.423s)
 == попытка установки 1 ==
 Success
 УСТАНОВЛЕНО (попытка 1)
 package:org.telegram.mdgram
 == запуск приложения ==
 Events injected: 1
-## Network stats: elapsed time=583ms (0ms mobile, 0ms wifi, 583ms not connected)
+## Network stats: elapsed time=542ms (0ms mobile, 0ms wifi, 542ms not connected)
 == процесс ==
-4939
+4934
 == окно ==
-  mCurrentFocus=Window{8b7139 u0 Application Error: org.telegram.mdgram}
-  mFocusedApp=AppWindowToken{4db6fc9 token=Token{e242482 ActivityRecord{c2f63cd u0 com.android.launcher3/.Launcher t3}}}
+  mCurrentFocus=Window{bd59ecf u0 Application Error: org.telegram.mdgram}
+  mFocusedApp=AppWindowToken{1e52b56 token=Token{9f46318 ActivityRecord{d31c6fb u0 com.android.launcher3/.Launcher t4}}}
 == пакеты mdgram ==
 package:org.telegram.mdgram
 == краши ==
-09-09 23:32:55.354  4914  4914 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
-09-09 23:32:55.394  4914  4914 D AndroidRuntime: CheckJNI is OFF
-09-09 23:32:56.643  4914  4914 D AndroidRuntime: Calling main entry com.android.commands.monkey.Monkey
-09-09 23:32:58.277  4914  4914 I AndroidRuntime: VM exiting with result code 0.
-09-09 23:33:05.977  4939  4939 D AndroidRuntime: Shutting down VM
-09-09 23:33:06.206  4939  4939 E AndroidRuntime: FATAL EXCEPTION: main
-09-09 23:33:06.206  4939  4939 E AndroidRuntime: Process: org.telegram.mdgram, PID: 4939
-09-09 23:33:06.206  4939  4939 E AndroidRuntime: java.lang.UnsatisfiedLinkError: No implementation found for void org.telegram.tgnet.ConnectionsManager.native_setJava(boolean) (tried Java_org_telegram_tgnet_ConnectionsManager_native_1setJava and Java_org_telegram_tgnet_ConnectionsManager_native_1setJava__Z)
-09-09 23:33:06.206  4939  4939 E AndroidRuntime: 	at org.telegram.tgnet.ConnectionsManager.native_setJava(Native Method)
-09-09 23:33:06.206  4939  4939 E AndroidRuntime: 	at org.telegram.messenger.ApplicationLoader.onCreate(ApplicationLoader.java:261)
-09-09 23:33:06.206  4939  4939 E AndroidRuntime: 	at android.app.Instrumentation.callApplicationOnCreate(Instrumentation.java:1024)
-09-09 23:33:06.206  4939  4939 E AndroidRuntime: 	at android.app.ActivityThread.handleBindApplication(ActivityThread.java:5361)
-09-09 23:33:06.206  4939  4939 E AndroidRuntime: 	at android.app.ActivityThread.-wrap2(ActivityThread.java)
-09-09 23:33:06.206  4939  4939 E AndroidRuntime: 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1528)
-09-09 23:33:06.206  4939  4939 E AndroidRuntime: 	at android.os.Handler.dispatchMessage(Handler.java:102)
-09-09 23:33:06.206  4939  4939 E AndroidRuntime: 	at android.os.Looper.loop(Looper.java:154)
-09-09 23:33:06.206  4939  4939 E AndroidRuntime: 	at android.app.ActivityThread.main(ActivityThread.java:6077)
-09-09 23:33:06.206  4939  4939 E AndroidRuntime: 	at java.lang.reflect.Method.invoke(Native Method)
-09-09 23:33:06.206  4939  4939 E AndroidRuntime: 	at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:866)
-09-09 23:33:06.206  4939  4939 E AndroidRuntime: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:756)
-09-09 23:33:06.327  1656  1937 W ActivityManager:   Force finishing activity org.telegram.mdgram/org.telegram.messenger.DefaultIcon
-09-09 23:35:00.443  5057  5057 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
-09-09 23:35:00.460  5057  5057 D AndroidRuntime: CheckJNI is OFF
-09-09 23:35:00.911  5057  5057 D AndroidRuntime: Calling main entry com.android.commands.pm.Pm
-09-09 23:35:00.970  5057  5057 I AndroidRuntime: VM exiting with result code 0.
+09-09 22:55:10.683  4921  4921 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-09 22:55:10.778  4921  4921 D AndroidRuntime: CheckJNI is OFF
+09-09 22:55:11.692  4921  4921 D AndroidRuntime: Calling main entry com.android.commands.monkey.Monkey
+09-09 22:55:13.248  4921  4921 I AndroidRuntime: VM exiting with result code 0.
+09-09 22:55:19.045  4934  4934 D AndroidRuntime: Shutting down VM
+09-09 22:55:19.116  4934  4934 E AndroidRuntime: FATAL EXCEPTION: main
+09-09 22:55:19.116  4934  4934 E AndroidRuntime: Process: org.telegram.mdgram, PID: 4934
+09-09 22:55:19.116  4934  4934 E AndroidRuntime: java.lang.UnsatisfiedLinkError: No implementation found for void org.telegram.tgnet.ConnectionsManager.native_setJava(boolean) (tried Java_org_telegram_tgnet_ConnectionsManager_native_1setJava and Java_org_telegram_tgnet_ConnectionsManager_native_1setJava__Z)
+09-09 22:55:19.116  4934  4934 E AndroidRuntime: 	at org.telegram.tgnet.ConnectionsManager.native_setJava(Native Method)
+09-09 22:55:19.116  4934  4934 E AndroidRuntime: 	at org.telegram.messenger.ApplicationLoader.onCreate(ApplicationLoader.java:261)
+09-09 22:55:19.116  4934  4934 E AndroidRuntime: 	at android.app.Instrumentation.callApplicationOnCreate(Instrumentation.java:1024)
+09-09 22:55:19.116  4934  4934 E AndroidRuntime: 	at android.app.ActivityThread.handleBindApplication(ActivityThread.java:5361)
+09-09 22:55:19.116  4934  4934 E AndroidRuntime: 	at android.app.ActivityThread.-wrap2(ActivityThread.java)
+09-09 22:55:19.116  4934  4934 E AndroidRuntime: 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1528)
+09-09 22:55:19.116  4934  4934 E AndroidRuntime: 	at android.os.Handler.dispatchMessage(Handler.java:102)
+09-09 22:55:19.116  4934  4934 E AndroidRuntime: 	at android.os.Looper.loop(Looper.java:154)
+09-09 22:55:19.116  4934  4934 E AndroidRuntime: 	at android.app.ActivityThread.main(ActivityThread.java:6077)
+09-09 22:55:19.116  4934  4934 E AndroidRuntime: 	at java.lang.reflect.Method.invoke(Native Method)
+09-09 22:55:19.116  4934  4934 E AndroidRuntime: 	at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:866)
+09-09 22:55:19.116  4934  4934 E AndroidRuntime: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:756)
+09-09 22:55:19.166  1648  1982 W ActivityManager:   Force finishing activity org.telegram.mdgram/org.telegram.messenger.DefaultIcon
+09-09 22:57:14.943  5085  5085 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-09 22:57:14.959  5085  5085 D AndroidRuntime: CheckJNI is OFF
+09-09 22:57:15.364  5085  5085 D AndroidRuntime: Calling main entry com.android.commands.pm.Pm
+09-09 22:57:15.422  5085  5085 I AndroidRuntime: VM exiting with result code 0.
 == хвост logcat ==
 --------- beginning of main
-09-09 23:33:26.701  4399  5009 E GmsUtils: Failed to connect to Google API client: ConnectionResult{statusCode=API_UNAVAILABLE, resolution=null, message=null}
-09-09 23:33:27.623  4815  4818 W dex2oat : Compilation of void com.google.android.gms.ads.internal.gmsg.ag.a(java.lang.Object, java.util.Map) took 157.498ms
-09-09 23:33:28.497  4815  4815 W dex2oat : Compilation of void com.google.android.gms.ads.internal.mediation.f.run() took 116.418ms
-09-09 23:33:28.615  4815  4818 W dex2oat : Compilation of com.google.android.gms.ads.internal.mediation.client.g com.google.android.gms.ads.internal.mediation.client.a.a(java.lang.String) took 105.466ms
-09-09 23:33:30.358  4815  4815 W dex2oat : Compilation of void com.google.android.gms.ads.internal.request.m.a(com.google.android.gms.ads.internal.request.y) took 117.908ms
-09-09 23:33:30.568  4815  4815 W dex2oat : Compilation of void com.google.android.gms.ads.internal.request.w.writeToParcel(android.os.Parcel, int) took 185.290ms
-09-09 23:33:30.588  4815  4818 W dex2oat : Compilation of com.google.android.gms.ads.internal.request.w com.google.android.gms.ads.internal.request.x.a(android.os.Parcel) took 193.342ms
-09-09 23:33:30.712  4815  4818 W dex2oat : Compilation of java.lang.Object com.google.android.gms.ads.internal.request.z.createFromParcel(android.os.Parcel) took 121.392ms
-09-09 23:33:30.736  4815  4815 W dex2oat : Compilation of void com.google.android.gms.ads.internal.request.y.writeToParcel(android.os.Parcel, int) took 146.672ms
-09-09 23:33:31.108  4815  4815 W dex2oat : Compilation of com.google.android.gms.ads.internal.request.y com.google.android.gms.ads.internal.request.service.f.a(com.google.android.gms.ads.internal.request.w) took 117.230ms
-09-09 23:33:31.210  4815  4818 W dex2oat : Compilation of org.json.JSONObject com.google.android.gms.ads.internal.request.service.g.a(android.content.Context, com.google.android.gms.ads.internal.request.service.a) took 188.606ms
-09-09 23:33:31.827  4815  4815 W dex2oat : Compilation of zs com.google.android.gms.ads.internal.safebrowsing.b.a(java.lang.Object) took 140.440ms
-09-09 23:33:32.079  4815  4818 W dex2oat : Compilation of boolean com.google.android.gms.ads.internal.signals.b.a(int, android.os.Parcel, android.os.Parcel) took 148.921ms
-09-09 23:33:32.486  4815  4815 W dex2oat : Compilation of void com.google.android.gms.ads.internal.util.h.run() took 136.914ms
-09-09 23:33:32.581  4939  4971 E FirebaseMessaging: Topic sync or token retrieval failed on hard failure exceptions: java.util.concurrent.ExecutionException: java.io.IOException: SERVICE_NOT_AVAILABLE. Won't retry the operation.
-09-09 23:33:32.626  4815  4815 W dex2oat : Compilation of int com.google.android.gms.ads.internal.util.ac.a(android.content.Context, android.telephony.TelephonyManager) took 111.177ms
-09-09 23:33:33.518  4815  4818 W dex2oat : Compilation of nk com.google.android.gms.ads.internal.util.client.n.c(android.content.Context) took 149.776ms
-09-09 23:33:33.883  4815  4815 W dex2oat : Compilation of boolean com.google.android.gms.ads.internal.video.j.onInfo(android.media.MediaPlayer, int, int) took 211.302ms
-09-09 23:33:34.049  4815  4815 W dex2oat : Compilation of void com.google.android.gms.ads.internal.video.j.onMeasure(int, int) took 166.088ms
-09-09 23:33:34.457  4815  4818 W dex2oat : Compilation of void com.google.android.gms.ads.internal.video.gmsg.e.a(java.lang.Object, java.util.Map) took 117.302ms
-09-09 23:33:34.749  4815  4818 W dex2oat : Compilation of boolean com.google.android.gms.ads.internal.video.gmsg.r.a(java.lang.String) took 284.762ms
-09-09 23:33:35.722  2392  5015 I Vision  : Requesting optional module download of ocr.
-09-09 23:33:35.723  2392  5015 I Vision  : Checking for download completion for 825677 -- ocr
-09-09 23:33:35.997  4815  4818 W dex2oat : Compilation of void com.google.android.gms.ads.nonagon.a.<init>(com.google.android.gms.ads.nonagon.c, com.google.android.gms.ads.nonagon.af) took 262.176ms
-09-09 23:33:39.355  4815  4818 W dex2oat : Compilation of zs com.google.android.gms.ads.nonagon.render.be.a(com.google.android.gms.ads.nonagon.transaction.k, com.google.android.gms.ads.nonagon.transaction.a, org.json.JSONObject) took 117.136ms
-09-09 23:33:41.418  4815  4818 W dex2oat : Compilation of void com.google.android.gms.ads.nonagon.transaction.a.<init>(android.util.JsonReader) took 209.400ms
-09-09 23:33:42.332  4815  4815 W dex2oat : Compilation of void ge.a(ha) took 178.409ms
+09-09 22:55:52.748  2381  4917 I ChmraDebugLogger: [52] null
+09-09 22:55:52.758  2381  4917 W ChimeraConfigService: Retry attempt was throttled.
+09-09 22:55:53.750  4822  4824 W dex2oat : Compilation of byte[] afp.a(byte[], byte[]) took 125.508ms
+09-09 22:55:54.958  4822  4824 W dex2oat : Compilation of int ajt.a(java.lang.Object, byte[], int, int, int, int, int, int, long, int, long, agz) took 239.996ms
+09-09 22:55:55.342  4822  4824 W dex2oat : Compilation of void ajt.b(java.lang.Object, ahw) took 223.959ms
+09-09 22:55:55.751  4822  4824 W dex2oat : Compilation of int ajt.f(java.lang.Object) took 332.665ms
+09-09 22:55:56.211  4822  4824 W dex2oat : Compilation of int ajt.g(java.lang.Object) took 458.577ms
+09-09 22:55:56.355  4822  4824 W dex2oat : Compilation of int ajt.a(java.lang.Object) took 141.526ms
+09-09 22:55:56.463  4822  4824 W dex2oat : Compilation of int ajt.a(java.lang.Object, byte[], int, int, int, agz) took 107.306ms
+09-09 22:55:56.583  4822  4824 W dex2oat : Compilation of void ajt.a(java.lang.Object, ahw) took 119.300ms
+09-09 22:55:56.762  4822  4824 W dex2oat : Compilation of void ajt.a(java.lang.Object, akb, aia) took 177.946ms
+09-09 22:55:57.673  4822  4822 I dex2oat : dex2oat took 78.088s (threads: 2) arena alloc=5MB (5992752B) java alloc=6MB (6324808B) native alloc=13MB (14678104B) free=8MB (8390568B)
+09-09 22:55:57.882  5027  5027 W dex2oat : Unexpected CPU variant for X86 using defaults: x86_64
+09-09 22:55:57.894  5027  5027 I dex2oat : /system/bin/dex2oat --dex-file=/data/user_de/0/com.google.android.gms/app_chimera/m/00000005/GoogleCertificates.apk --oat-fd=80 --oat-location=/data/user_de/0/com.google.android.gms/app_chimera/m/00000005/oat/x86_64/GoogleCertificates.dex --compiler-filter=speed
+09-09 22:55:59.049  5027  5027 I dex2oat : dex2oat took 1.173s (threads: 2) arena alloc=699KB (716712B) java alloc=245KB (251088B) native alloc=1136KB (1164160B) free=2MB (2505856B)
+09-09 22:55:59.202  5030  5030 W dex2oat : Unexpected CPU variant for X86 using defaults: x86_64
+09-09 22:55:59.210  5030  5030 I dex2oat : /system/bin/dex2oat --dex-file=/data/user_de/0/com.google.android.gms/app_chimera/m/00000007/MeasurementDynamite.apk --oat-fd=80 --oat-location=/data/user_de/0/com.google.android.gms/app_chimera/m/00000007/oat/x86_64/MeasurementDynamite.dex --compiler-filter=speed
+09-09 22:56:00.411  5030  5032 W dex2oat : Compilation of void aa.a(int[], java.lang.Object[], int) took 183.429ms
+09-09 22:56:00.999  5030  5032 W dex2oat : Compilation of boolean cw.a(int, android.os.Parcel, android.os.Parcel) took 104.026ms
+09-09 22:56:01.415  2381  5033 I Vision  : Requesting optional module download of ocr.
+09-09 22:56:01.415  2381  5033 I Vision  : Exceeded maximum feature download tries for ocr
+09-09 22:56:01.416  2381  5033 W Vision  : Request of optional module download of ocr failed.
+09-09 22:56:01.423  2381  5033 I Vision  : Checking for download completion for 714509 -- ocr
+09-09 22:56:02.142  5030  5030 W dex2oat : Compilation of void je.run() took 241.969ms
+09-09 22:56:02.273  5030  5030 W dex2oat : Compilation of void jp.run() took 100.679ms
+09-09 22:56:02.361  5030  5032 W dex2oat : Compilation of void kk.a(java.lang.String, java.lang.String, long, android.os.Bundle, boolean, boolean, boolean, java.lang.String) took 249.179ms
+09-09 22:56:03.698  5030  5030 I dex2oat : dex2oat took 4.502s (threads: 2) arena alloc=4MB (5043760B) java alloc=758KB (776528B) native alloc=2MB (2219112B) free=2MB (3023768B)
+09-09 22:56:03.852  5034  5034 W dex2oat : Unexpected CPU variant for X86 using defaults: x86_64
+09-09 22:56:03.860  5034  5034 I dex2oat : /system/bin/dex2oat --dex-file=/data/user_de/0/com.google.android.gms/app_chimera/m/00000003/DynamiteModulesA.apk --oat-fd=80 --oat-location=/data/user_de/0/com.google.android.gms/app_chimera/m/00000003/oat/x86_64/DynamiteModulesA.dex --compiler-filter=speed
+09-09 22:56:07.304  5034  5036 W dex2oat : Compilation of gy kc.a(android.content.Context, java.lang.String) took 137.173ms
+09-09 22:56:08.820  5034  5036 W dex2oat : Compilation of int sa.a(java.lang.Object, byte[], int, int, int, int, int, int, long, int, long, pn) took 221.866ms
+09-09 22:56:09.192  5034  5036 W dex2oat : Compilation of void sa.b(java.lang.Object, qe) took 201.344ms
+09-09 22:56:09.571  5034  5036 W dex2oat : Compilation of int sa.f(java.lang.Object) took 300.602ms
+09-09 22:56:09.745  5034  5036 W dex2oat : Compilation of int sa.g(java.lang.Object) took 172.971ms
+09-09 22:56:09.995  5034  5036 W dex2oat : Compilation of void sa.a(java.lang.Object, qe) took 113.727ms
+09-09 22:56:10.292  5034  5034 I dex2oat : dex2oat took 6.446s (threads: 2) arena alloc=5MB (5496992B) java alloc=977KB (1000664B) native alloc=2MB (2866712B) free=7MB (7619048B)
+09-09 22:56:10.512  5038  5038 W dex2oat : Unexpected CPU variant for X86 using defaults: x86_64
+09-09 22:56:10.523  5038  5038 I dex2oat : /system/bin/dex2oat --dex-file=/data/user_de/0/com.google.android.gms/app_chimera/m/00000001/CronetDynamite.apk --oat-fd=80 --oat-location=/data/user_de/0/com.google.android.gms/app_chimera/m/00000001/oat/x86_64/CronetDynamite.dex --compiler-filter=speed
 --------- beginning of system
-09-09 23:33:45.731  1656  1670 I ActivityManager: Killing 2808:com.google.android.calendar/u0a33 (adj 906): empty #17
-09-09 23:33:45.800  2392  5017 I Vision  : Requesting optional module download of ocr.
-09-09 23:33:45.801  2392  5017 I Vision  : Checking for download completion for 835755 -- ocr
-09-09 23:33:45.838  4815  4818 W dex2oat : Compilation of void aen.<init>() took 115.308ms
-09-09 23:33:45.892  1656  4228 D ActivityManager: cleanUpApplicationRecord -- 2808
-09-09 23:33:46.138  4815  4815 W dex2oat : Compilation of byte[] afp.a(byte[], byte[]) took 127.207ms
-09-09 23:33:47.339  4815  4815 W dex2oat : Compilation of int ajt.a(java.lang.Object, byte[], int, int, int, int, int, int, long, int, long, agz) took 214.428ms
-09-09 23:33:47.770  4815  4815 W dex2oat : Compilation of void ajt.b(java.lang.Object, ahw) took 228.693ms
-09-09 23:33:48.174  4815  4815 W dex2oat : Compilation of int ajt.f(java.lang.Object) took 323.500ms
-09-09 23:33:48.548  4815  4815 W dex2oat : Compilation of int ajt.g(java.lang.Object) took 361.431ms
-09-09 23:33:48.779  4815  4815 W dex2oat : Compilation of void ajt.a(java.lang.Object, ahw) took 116.036ms
-09-09 23:33:48.963  4815  4815 W dex2oat : Compilation of void ajt.a(java.lang.Object, akb, aia) took 183.208ms
-09-09 23:33:49.896  4815  4815 I dex2oat : dex2oat took 78.238s (threads: 2) arena alloc=7MB (8347752B) java alloc=6MB (6320760B) native alloc=14MB (14699032B) free=9MB (10466792B)
-09-09 23:33:50.090  5020  5020 W dex2oat : Unexpected CPU variant for X86 using defaults: x86_64
-09-09 23:33:50.099  5020  5020 I dex2oat : /system/bin/dex2oat --dex-file=/data/user_de/0/com.google.android.gms/app_chimera/m/00000005/GoogleCertificates.apk --oat-fd=84 --oat-location=/data/user_de/0/com.google.android.gms/app_chimera/m/00000005/oat/x86_64/GoogleCertificates.dex --compiler-filter=speed
-09-09 23:33:51.209  5020  5020 I dex2oat : dex2oat took 1.126s (threads: 2) arena alloc=699KB (716704B) java alloc=249KB (255056B) native alloc=1137KB (1165288B) free=2MB (2504728B)
-09-09 23:33:51.371  5023  5023 W dex2oat : Unexpected CPU variant for X86 using defaults: x86_64
-09-09 23:33:51.381  5023  5023 I dex2oat : /system/bin/dex2oat --dex-file=/data/user_de/0/com.google.android.gms/app_chimera/m/00000007/MeasurementDynamite.apk --oat-fd=84 --oat-location=/data/user_de/0/com.google.android.gms/app_chimera/m/00000007/oat/x86_64/MeasurementDynamite.dex --compiler-filter=speed
-09-09 23:33:53.592  2392  5026 I GmscoreIpa: how are you::
-09-09 23:33:53.691  5023  5023 W dex2oat : Compilation of java.lang.String ij.a(java.lang.String, java.lang.String[], java.lang.String[], java.util.concurrent.atomic.AtomicReference) took 128.183ms
-09-09 23:33:53.696  5023  5025 W dex2oat : Compilation of java.util.List ii.r() took 128.044ms
-09-09 23:33:53.844  1656  4146 I ActivityManager: Killing 4500:com.google.android.configupdater/u0a5 (adj 906): empty #17
-09-09 23:33:53.920  1656  1767 D ActivityManager: cleanUpApplicationRecord -- 4500
-09-09 23:33:54.036  5023  5023 W dex2oat : Compilation of void il.a(java.lang.String, java.lang.Object, java.lang.Object) took 211.278ms
-09-09 23:33:54.448  5023  5025 W dex2oat : Compilation of void je.run() took 289.678ms
-09-09 23:33:54.561  5023  5023 W dex2oat : Compilation of void kk.a(java.lang.String, java.lang.String, long, android.os.Bundle, boolean, boolean, boolean, java.lang.String) took 207.878ms
-09-09 23:33:55.920  2392  5026 I Vision  : Requesting optional module download of ocr.
-09-09 23:33:55.921  2392  5026 I Vision  : Checking for download completion for 845876 -- ocr
-09-09 23:33:56.081  5023  5023 I dex2oat : dex2oat took 4.717s (threads: 2) arena alloc=6MB (6438336B) java alloc=766KB (784440B) native alloc=2MB (2308416B) free=3MB (3458752B)
-09-09 23:33:56.532  2392  2835 I Icing   : IndexChimeraService.getServiceInterface callingPackage=com.google.android.music componentName=null serviceId=36
-09-09 23:33:56.617  5027  5027 W dex2oat : Unexpected CPU variant for X86 using defaults: x86_64
-09-09 23:33:56.643  5027  5027 I dex2oat : /system/bin/dex2oat --dex-file=/data/user_de/0/com.google.android.gms/app_chimera/m/00000003/DynamiteModulesA.apk --oat-fd=84 --oat-location=/data/user_de/0/com.google.android.gms/app_chimera/m/00000003/oat/x86_64/DynamiteModulesA.dex --compiler-filter=speed
-09-09 23:33:56.752  2392  4997 W Icing   : No valid account for uploading user actions
-09-09 23:33:57.020  2392  2671 I Icing   : IndexChimeraService.getServiceInterface callingPackage=com.google.android.gms componentName=null serviceId=30
-09-09 23:33:57.073  2392  4997 I Icing   : Usage reports ok 0, Failed Usage reports 0, indexed 0, rejected 0
-09-09 23:33:57.093  2392  4997 W Icing   : No valid account for uploading user actions
-09-09 23:33:57.161  2392  4997 I Icing   : Usage reports ok 0, Failed Usage reports 0, indexed 0, rejected 0
-09-09 23:33:57.268  2392  2671 I Icing   : IndexChimeraService.getServiceInterface callingPackage=com.google.android.music componentName=null serviceId=36
-09-09 23:33:57.311  2392  4997 W Icing   : No valid account for uploading user actions
-09-09 23:33:57.397  2392  4997 I Icing   : Usage reports ok 0, Failed Usage reports 0, indexed 0, rejected 0
-09-09 23:33:57.469  2392  2671 I Icing   : IndexChimeraService.getServiceInterface callingPackage=com.google.android.music componentName=null serviceId=36
-09-09 23:33:57.519  2392  4997 W Icing   : No valid account for uploading user actions
-09-09 23:33:57.570  2392  4997 I Icing   : Usage reports ok 0, Failed Usage reports 0, indexed 0, rejected 0
-09-09 23:33:57.670  2392  2671 I Icing   : IndexChimeraService.getServiceInterface callingPackage=com.google.android.music componentName=null serviceId=36
-09-09 23:33:57.767  2392  2403 I art     : Background sticky concurrent mark sweep GC freed 9332(565KB) AllocSpace objects, 5(100KB) LOS objects, 10% free, 16MB/17MB, paused 6.800ms total 68.839ms
-09-09 23:33:57.842  2392  2572 W art     : Long monitor contention with owner lowpool[18] (4997) at boolean android.os.MessageQueue.enqueueMessage(android.os.Message, long)(MessageQueue.java:541) waiters=0 in android.os.Message android.os.MessageQueue.next() for 130ms
-09-09 23:33:57.893  2392  4997 W Icing   : No valid account for uploading user actions
-09-09 23:33:58.021  2392  4997 I Icing   : Usage reports ok 0, Failed Usage reports 0, indexed 0, rejected 0
-09-09 23:34:00.370  5027  5027 W dex2oat : Compilation of java.lang.Object hu.createFromParcel(android.os.Parcel) took 169.795ms
-09-09 23:34:00.596  5027  5029 W dex2oat : Compilation of void ht.writeToParcel(android.os.Parcel, int) took 411.249ms
-09-09 23:34:00.997  5027  5027 W dex2oat : Compilation of gy kc.a(android.content.Context, java.lang.String) took 149.122ms
-09-09 23:34:01.016  5027  5029 W dex2oat : Compilation of boolean kg.a(int, android.os.Parcel, android.os.Parcel) took 118.910ms
-09-09 23:34:02.471  5027  5027 W dex2oat : Compilation of int sa.a(java.lang.Object, byte[], int, int, int, int, int, int, long, int, long, pn) took 197.256ms
-09-09 23:34:02.862  5027  5027 W dex2oat : Compilation of void sa.b(java.lang.Object, qe) took 220.345ms
-09-09 23:34:03.317  5027  5027 W dex2oat : Compilation of int sa.f(java.lang.Object) took 374.265ms
-09-09 23:34:03.465  5027  5027 W dex2oat : Compilation of int sa.g(java.lang.Object) took 144.617ms
-09-09 23:34:03.700  5027  5027 W dex2oat : Compilation of void sa.a(java.lang.Object, qe) took 108.912ms
-09-09 23:34:03.963  5027  5027 I dex2oat : dex2oat took 7.389s (threads: 2) arena alloc=5MB (5496992B) java alloc=981KB (1004704B) native alloc=2MB (2918656B) free=6MB (6518528B)
-09-09 23:34:04.169  5031  5031 W dex2oat : Unexpected CPU variant for X86 using defaults: x86_64
-09-09 23:34:04.178  5031  5031 I dex2oat : /system/bin/dex2oat --dex-file=/data/user_de/0/com.google.android.gms/app_chimera/m/00000001/CronetDynamite.apk --oat-fd=84 --oat-location=/data/user_de/0/com.google.android.gms/app_chimera/m/00000001/oat/x86_64/CronetDynamite.dex --compiler-filter=speed
-09-09 23:34:06.097  2392  5034 I Vision  : Requesting optional module download of ocr.
-09-09 23:34:06.099  2392  5034 I Vision  : Checking for download completion for 856053 -- ocr
-09-09 23:34:06.111  2392  5006 W ChimeraConfigurator: Error syncing flags: qoq: COMMIT_TIMEOUT
-09-09 23:34:06.111  2392  5006 I ChmraDebugLogger: [79] COMMIT_TIMEOUT
-09-09 23:34:06.132  2392  5006 I ChmraDebugLogger: [52] null
-09-09 23:34:06.138  2392  5006 W ChimeraConfigService: Retry attempt was throttled.
-09-09 23:34:06.297  5031  5033 W dex2oat : Compilation of java.lang.String du.getDefaultUserAgent() took 351.899ms
-09-09 23:34:06.703  5031  5031 I dex2oat : dex2oat took 2.540s (threads: 2) arena alloc=1107KB (1134504B) java alloc=385KB (394912B) native alloc=1278KB (1309104B) free=3MB (3409488B)
-09-09 23:34:13.784  1656  1668 I ActivityManager: Killing 3904:com.android.providers.calendar/u0a2 (adj 906): empty #17
-09-09 23:34:13.807  1656  1667 D ActivityManager: cleanUpApplicationRecord -- 3904
-09-09 23:34:16.184  2392  5036 I Vision  : Requesting optional module download of ocr.
-09-09 23:34:16.184  2392  5036 I Vision  : Exceeded maximum feature download tries for ocr
-09-09 23:34:16.185  2392  5036 W Vision  : Request of optional module download of ocr failed.
-09-09 23:34:16.188  2392  5036 I Vision  : Checking for download completion for 866143 -- ocr
-09-09 23:34:26.240  2392  5039 I Vision  : Requesting optional module download of ocr.
-09-09 23:34:26.288  2392  5039 I Vision  : Checking for download completion for 876242 -- ocr
-09-09 23:34:26.317  2392  5039 I ChimeraConfigurator: Starting update, reason: 4 urgentFeatures: vision.ocr:-1
-09-09 23:34:36.315  2392  5040 I Vision  : Requesting optional module download of ocr.
-09-09 23:34:36.317  2392  5040 I Vision  : Checking for download completion for 886272 -- ocr
-09-09 23:34:46.370  2392  5042 I Vision  : Requesting optional module download of ocr.
-09-09 23:34:46.370  2392  5042 I Vision  : Checking for download completion for 896325 -- ocr
-09-09 23:34:56.393  2392  5051 I Vision  : Requesting optional module download of ocr.
-09-09 23:34:56.394  2392  5051 I Vision  : Checking for download completion for 906349 -- ocr
-09-09 23:35:00.443  5057  5057 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
-09-09 23:35:00.460  5057  5057 D AndroidRuntime: CheckJNI is OFF
-09-09 23:35:00.671  5057  5057 W art     : Unexpected CPU variant for X86 using defaults: x86_64
-09-09 23:35:00.700  5057  5057 D ICU     : No timezone override file found: /data/misc/zoneinfo/current/icu/icu_tzdata.dat
-09-09 23:35:00.822  5057  5057 E memtrack: Couldn't load memtrack module (No such file or directory)
-09-09 23:35:00.822  5057  5057 E android.os.Debug: failed to load memtrack module: -2
-09-09 23:35:00.828  5057  5057 I Radio-JNI: register_android_hardware_Radio DONE
-09-09 23:35:00.911  5057  5057 D AndroidRuntime: Calling main entry com.android.commands.pm.Pm
-09-09 23:35:00.970  5057  5057 I art     : System.exit called, status: 0
-09-09 23:35:00.970  5057  5057 I AndroidRuntime: VM exiting with result code 0.
-total 248
-drwxr-xr-x  2 runner runner   4096 Sep  9 23:35 .
-drwxr-xr-x 17 runner runner   4096 Sep  9 23:19 ..
--rw-r--r--  1 runner runner  39418 Sep  9 23:35 emu.log
--rw-r--r--  1 runner runner   6084 Sep  9 23:19 emulator.log
--rw-r--r--  1 runner runner 195186 Sep  9 23:35 screen.png
+09-09 22:56:11.468  1648  1664 I ActivityManager: Killing 2805:android.process.media/u0a11 (adj 906): empty #17
+09-09 22:56:11.749  5038  5038 W dex2oat : Compilation of void J.N.MHz6Fn06() took 321.568ms
+09-09 22:56:11.893  1648  2473 D ActivityManager: cleanUpApplicationRecord -- 2805
+09-09 22:56:11.986  2381  5041 I Vision  : Requesting optional module download of ocr.
+09-09 22:56:12.011  5038  5038 W dex2oat : Compilation of java.lang.String[] J.N.MHzche6O() took 261.099ms
+09-09 22:56:12.066  2381  5041 I Vision  : Checking for download completion for 725158 -- ocr
+09-09 22:56:12.194  2381  5041 I ChimeraConfigurator: Starting update, reason: 4 urgentFeatures: vision.ocr:-1
+09-09 22:56:12.332  5038  5040 W dex2oat : Compilation of byte[] org.chromium.net.AndroidKeyStore.encryptWithPrivateKey(java.security.PrivateKey, java.lang.String, byte[]) took 166.461ms
+09-09 22:56:13.280  5038  5038 I dex2oat : dex2oat took 2.776s (threads: 2) arena alloc=1008KB (1032872B) java alloc=381KB (390984B) native alloc=1232KB (1262400B) free=3MB (3456192B)
+09-09 22:56:16.641  2381  3139 I GmscoreIpa: how are you::
+09-09 22:56:16.702  1648  4144 I ActivityManager: Start proc 5042:android.process.media/u0a11 for content provider com.android.providers.media/.MediaProvider
+09-09 22:56:16.716  5042  5042 W art     : Unexpected CPU variant for X86 using defaults: x86_64
+09-09 22:56:16.795  1648  1661 I ActivityManager: Killing 3651:com.google.android.configupdater/u0a5 (adj 906): empty #17
+09-09 22:56:16.843  5042  5042 W System  : ClassLoader referenced unknown path: /system/priv-app/MediaProvider/lib/x86_64
+09-09 22:56:16.850  1648  4142 D ActivityManager: cleanUpApplicationRecord -- 3651
+09-09 22:56:16.933  5042  5042 W System  : ClassLoader referenced unknown path: /system/priv-app/DownloadProvider/lib/x86_64
+09-09 22:56:18.762  2381  3011 I Icing   : IndexChimeraService.getServiceInterface callingPackage=com.google.android.music componentName=null serviceId=36
+09-09 22:56:18.893  2381  2624 W Icing   : No valid account for uploading user actions
+09-09 22:56:19.082  2381  2716 I Icing   : IndexChimeraService.getServiceInterface callingPackage=com.google.android.gms componentName=null serviceId=30
+09-09 22:56:19.120  2381  2624 I Icing   : Usage reports ok 0, Failed Usage reports 0, indexed 0, rejected 0
+09-09 22:56:19.132  1648  1658 I art     : Background sticky concurrent mark sweep GC freed 35722(2MB) AllocSpace objects, 4(80KB) LOS objects, 20% free, 14MB/17MB, paused 2.359ms total 119.158ms
+09-09 22:56:19.146  2381  2624 W Icing   : No valid account for uploading user actions
+09-09 22:56:19.220  2381  3011 I Icing   : IndexChimeraService.getServiceInterface callingPackage=com.google.android.music componentName=null serviceId=36
+09-09 22:56:19.250  2381  2624 I Icing   : Usage reports ok 0, Failed Usage reports 0, indexed 0, rejected 0
+09-09 22:56:19.255  2381  2624 W Icing   : No valid account for uploading user actions
+09-09 22:56:19.279  2381  2624 I Icing   : Usage reports ok 0, Failed Usage reports 0, indexed 0, rejected 0
+09-09 22:56:19.349  2381  3011 I Icing   : IndexChimeraService.getServiceInterface callingPackage=com.google.android.music componentName=null serviceId=36
+09-09 22:56:19.438  2381  2624 W Icing   : No valid account for uploading user actions
+09-09 22:56:19.462  2381  2624 I Icing   : Usage reports ok 0, Failed Usage reports 0, indexed 0, rejected 0
+09-09 22:56:19.495  2381  3011 I Icing   : IndexChimeraService.getServiceInterface callingPackage=com.google.android.music componentName=null serviceId=36
+09-09 22:56:19.521  2381  2624 W Icing   : No valid account for uploading user actions
+09-09 22:56:19.544  2381  2624 I Icing   : Usage reports ok 0, Failed Usage reports 0, indexed 0, rejected 0
+09-09 22:56:22.084  2381  5058 I Vision  : Requesting optional module download of ocr.
+09-09 22:56:22.085  2381  5058 I Vision  : Checking for download completion for 735178 -- ocr
+09-09 22:56:32.116  2381  5064 I Vision  : Requesting optional module download of ocr.
+09-09 22:56:32.128  2381  5064 I Vision  : Checking for download completion for 745209 -- ocr
+09-09 22:56:42.120  1648  1664 I ActivityManager: Killing 4102:com.google.android.talk/u0a52 (adj 906): empty #17
+09-09 22:56:42.156  1648  2472 D ActivityManager: cleanUpApplicationRecord -- 4102
+09-09 22:56:42.163  2381  5065 I Vision  : Requesting optional module download of ocr.
+09-09 22:56:42.164  2381  5065 I Vision  : Checking for download completion for 755256 -- ocr
+09-09 22:56:52.218  2381  5067 I Vision  : Requesting optional module download of ocr.
+09-09 22:56:52.219  2381  5067 I Vision  : Checking for download completion for 765311 -- ocr
+09-09 22:56:52.810  2381  5041 W ChimeraConfigurator: Error syncing flags: qoq: COMMIT_TIMEOUT
+09-09 22:56:52.811  2381  5041 I ChmraDebugLogger: [79] COMMIT_TIMEOUT
+09-09 22:56:52.821  2381  5041 I ChmraDebugLogger: [52] null
+09-09 22:56:52.824  2381  5041 W ChimeraConfigService: Retry attempt was throttled.
+09-09 22:56:59.923  1648  1942 I ActivityManager: Killing 3840:com.android.providers.calendar/u0a2 (adj 906): empty #17
+09-09 22:56:59.989  1648  4690 D ActivityManager: cleanUpApplicationRecord -- 3840
+09-09 22:57:02.334  2381  5068 I MS_RegisterService: Tachyon host: www.google.com, Tachyon port: 443
+09-09 22:57:02.371  2381  5069 I Vision  : Requesting optional module download of ocr.
+09-09 22:57:02.371  2381  5069 I Vision  : Exceeded maximum feature download tries for ocr
+09-09 22:57:02.372  2381  5069 W Vision  : Request of optional module download of ocr failed.
+09-09 22:57:02.373  2381  5069 I Vision  : Checking for download completion for 775465 -- ocr
+09-09 22:57:02.414  2381  5070 I MS_RegisterService: RegisterService intent:Intent { act=com.google.android.gms.matchstick.register_intent_action cat=[targeted_intent_op_prefix:com.google.android.libraries.matchstick.net.SilentRegisterIntentOperation] flg=0x4 cmp=com.google.android.gms/.chimera.GmsIntentOperationService (has extras) } isPeriodic:false
+09-09 22:57:02.515  2381  5070 W DynamiteModule: Local module descriptor class for providerinstaller not found.
+09-09 22:57:02.516  2381  5070 W ProviderHelper: Unknown dynamite feature providerinstaller
+09-09 22:57:02.530  2381  5070 I DynamiteModule: Considering local module providerinstaller:0 and remote module providerinstaller:0
+09-09 22:57:02.530  2381  5070 W ProviderInstaller: Failed to load providerinstaller module: No acceptable module found. Local version is 0 and remote version is 0.
+09-09 22:57:05.504  2480  4472 W GLSUser : [DeviceKeyStore] Cannot load key: Device key file not found.
+09-09 22:57:05.913  2480  4472 W GLSUser : [AppCertManager] Failed to get security token.
+09-09 22:57:05.913  2480  4472 W GLSUser : java.io.IOException: QUOTA_EXCEEDED
+09-09 22:57:05.913  2480  4472 W GLSUser : 	at adiw.b(:com.google.android.gms@202414023@20.24.14 (040800-319035315):23)
+09-09 22:57:05.913  2480  4472 W GLSUser : 	at adiw.a(:com.google.android.gms@202414023@20.24.14 (040800-319035315):18)
+09-09 22:57:05.913  2480  4472 W GLSUser : 	at adiw.a(:com.google.android.gms@202414023@20.24.14 (040800-319035315):11)
+09-09 22:57:05.913  2480  4472 W GLSUser : 	at hwy.a(:com.google.android.gms@202414023@20.24.14 (040800-319035315):17)
+09-09 22:57:05.913  2480  4472 W GLSUser : 	at hww.a(:com.google.android.gms@202414023@20.24.14 (040800-319035315):5)
+09-09 22:57:05.913  2480  4472 W GLSUser : 	at hww.a(:com.google.android.gms@202414023@20.24.14 (040800-319035315):46)
+09-09 22:57:05.913  2480  4472 W GLSUser : 	at cpc.onTransact(:com.google.android.gms@202414023@20.24.14 (040800-319035315):5)
+09-09 22:57:05.913  2480  4472 W GLSUser : 	at android.os.Binder.transact(Binder.java:499)
+09-09 22:57:05.913  2480  4472 W GLSUser : 	at cta.onTransact(:com.google.android.gms@202414023@20.24.14 (040800-319035315):2)
+09-09 22:57:05.913  2480  4472 W GLSUser : 	at android.os.Binder.transact(Binder.java:499)
+09-09 22:57:05.913  2480  4472 W GLSUser : 	at aaeo.onTransact(:com.google.android.gms@202414023@20.24.14 (040800-319035315):17)
+09-09 22:57:05.913  2480  4472 W GLSUser : 	at android.os.Binder.execTransact(Binder.java:565)
+09-09 22:57:05.972  2480  4472 W GLSUser : [AppCertManager] IOException while requesting key: 
+09-09 22:57:05.972  2480  4472 W GLSUser : java.io.IOException: Invalid device key response.
+09-09 22:57:05.972  2480  4472 W GLSUser : 	at hwy.a(:com.google.android.gms@202414023@20.24.14 (040800-319035315):49)
+09-09 22:57:05.972  2480  4472 W GLSUser : 	at hww.a(:com.google.android.gms@202414023@20.24.14 (040800-319035315):5)
+09-09 22:57:05.972  2480  4472 W GLSUser : 	at hww.a(:com.google.android.gms@202414023@20.24.14 (040800-319035315):46)
+09-09 22:57:05.972  2480  4472 W GLSUser : 	at cpc.onTransact(:com.google.android.gms@202414023@20.24.14 (040800-319035315):5)
+09-09 22:57:05.972  2480  4472 W GLSUser : 	at android.os.Binder.transact(Binder.java:499)
+09-09 22:57:05.972  2480  4472 W GLSUser : 	at cta.onTransact(:com.google.android.gms@202414023@20.24.14 (040800-319035315):2)
+09-09 22:57:05.972  2480  4472 W GLSUser : 	at android.os.Binder.transact(Binder.java:499)
+09-09 22:57:05.972  2480  4472 W GLSUser : 	at aaeo.onTransact(:com.google.android.gms@202414023@20.24.14 (040800-319035315):17)
+09-09 22:57:05.972  2480  4472 W GLSUser : 	at android.os.Binder.execTransact(Binder.java:565)
+09-09 22:57:05.973  2480  4472 W GLSUser : [DeviceKeyStore] Cannot load key: Device key file not found.
+09-09 22:57:06.124  2381  2624 W Conscrypt: Could not set socket write timeout: java.net.SocketException: Socket closed
+09-09 22:57:06.125  2381  2624 W Conscrypt: 	at com.google.android.gms.org.conscrypt.Platform.setSocketWriteTimeout(:com.google.android.gms@202414023@20.24.14 (040800-319035315):2)
+09-09 22:57:06.125  2381  2624 W Conscrypt: 	at com.google.android.gms.org.conscrypt.ConscryptFileDescriptorSocket.setSoWriteTimeout(:com.google.android.gms@202414023@20.24.14 (040800-319035315):0)
+09-09 22:57:06.269  2381  2624 W Conscrypt: Could not set socket write timeout: java.net.SocketException: Socket closed
+09-09 22:57:06.270  2381  2624 W Conscrypt: 	at com.google.android.gms.org.conscrypt.Platform.setSocketWriteTimeout(:com.google.android.gms@202414023@20.24.14 (040800-319035315):2)
+09-09 22:57:06.270  2381  2624 W Conscrypt: 	at com.google.android.gms.org.conscrypt.ConscryptFileDescriptorSocket.setSoWriteTimeout(:com.google.android.gms@202414023@20.24.14 (040800-319035315):0)
+09-09 22:57:06.459  2381  5070 E MS_RegisterService: Exception during register request.
+09-09 22:57:06.459  2381  5070 E MS_RegisterService: ckdr: UNAUTHENTICATED: Request is missing required authentication credential. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.
+09-09 22:57:06.459  2381  5070 E MS_RegisterService: 	at ckdq.c(:com.google.android.gms@202414023@20.24.14 (040800-319035315):3)
+09-09 22:57:06.459  2381  5070 E MS_RegisterService: 	at sjo.a(:com.google.android.gms@202414023@20.24.14 (040800-319035315):48)
+09-09 22:57:06.459  2381  5070 E MS_RegisterService: 	at afty.a(:com.google.android.gms@202414023@20.24.14 (040800-319035315):12)
+09-09 22:57:06.459  2381  5070 E MS_RegisterService: 	at com.google.android.libraries.matchstick.net.SilentRegisterIntentOperation.onHandleIntent(:com.google.android.gms@202414023@20.24.14 (040800-319035315):248)
+09-09 22:57:06.459  2381  5070 E MS_RegisterService: 	at com.google.android.chimera.IntentOperation.onHandleIntent(:com.google.android.gms@202414023@20.24.14 (040800-319035315):2)
+09-09 22:57:06.459  2381  5070 E MS_RegisterService: 	at qlx.onHandleIntent(:com.google.android.gms@202414023@20.24.14 (040800-319035315):4)
+09-09 22:57:06.459  2381  5070 E MS_RegisterService: 	at cuo.run(:com.google.android.gms@202414023@20.24.14 (040800-319035315):5)
+09-09 22:57:06.459  2381  5070 E MS_RegisterService: 	at cun.run(:com.google.android.gms@202414023@20.24.14 (040800-319035315):10)
+09-09 22:57:06.459  2381  5070 E MS_RegisterService: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1133)
+09-09 22:57:06.459  2381  5070 E MS_RegisterService: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:607)
+09-09 22:57:06.459  2381  5070 E MS_RegisterService: 	at java.lang.Thread.run(Thread.java:761)
+09-09 22:57:12.388  2381  5070 I Vision  : Requesting optional module download of ocr.
+09-09 22:57:12.410  2381  5070 I Vision  : Checking for download completion for 785499 -- ocr
+09-09 22:57:12.425  2381  5079 I ChimeraConfigurator: Starting update, reason: 4 urgentFeatures: vision.ocr:-1
+09-09 22:57:14.943  5085  5085 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-09 22:57:14.959  5085  5085 D AndroidRuntime: CheckJNI is OFF
+09-09 22:57:15.151  5085  5085 W art     : Unexpected CPU variant for X86 using defaults: x86_64
+09-09 22:57:15.177  5085  5085 D ICU     : No timezone override file found: /data/misc/zoneinfo/current/icu/icu_tzdata.dat
+09-09 22:57:15.290  5085  5085 E memtrack: Couldn't load memtrack module (No such file or directory)
+09-09 22:57:15.290  5085  5085 E android.os.Debug: failed to load memtrack module: -2
+09-09 22:57:15.294  5085  5085 I Radio-JNI: register_android_hardware_Radio DONE
+09-09 22:57:15.364  5085  5085 D AndroidRuntime: Calling main entry com.android.commands.pm.Pm
+09-09 22:57:15.421  5085  5085 I art     : System.exit called, status: 0
+09-09 22:57:15.422  5085  5085 I AndroidRuntime: VM exiting with result code 0.
+total 252
+drwxr-xr-x  2 runner runner   4096 Sep  9 22:57 .
+drwxr-xr-x 17 runner runner   4096 Sep  9 22:43 ..
+-rw-r--r--  1 runner runner  42597 Sep  9 22:57 emu.log
+-rw-r--r--  1 runner runner   6084 Sep  9 22:44 emulator.log
+-rw-r--r--  1 runner runner 195589 Sep  9 22:57 screen.png
